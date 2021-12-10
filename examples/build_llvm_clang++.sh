@@ -4,10 +4,12 @@ set -euxo pipefail
 
 for dir in source*cpp
 do
-    cd "$dir"
+    pushd "$dir"
     mkdir -p generated/llvm/clang++
     
-    (cd generated/llvm/clang++ && clang++ -S -emit-llvm ../../../sample.cpp)
+    pushd generated/llvm/clang++
+    clang++ -S -emit-llvm ../../../sample.cpp
+    popd
     
-    cd -
+    popd
 done

@@ -4,10 +4,12 @@ set -euxo pipefail
 
 for dir in source*cpp
 do
-    cd "$dir"
+    pushd "$dir"
     mkdir -p generated/exec/ko-clang++
+
+    pushd generated/exec/ko-clang++
+    ../../../../../../bin/ko-clang++ -o sample ../../../sample.cpp
+    popd
     
-    (cd generated/exec/ko-clang++ && ../../../../../../bin/ko-clang++ -o sample ../../../sample.cpp)
-    
-    cd -
+    popd
 done
