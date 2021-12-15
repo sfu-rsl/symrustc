@@ -14,6 +14,8 @@ do
     if [[ $(ls output_split?* | wc -l) == "1" ]]
     then
         rm output_split00
+    else
+        grep 'diverging input' output_split* > output0
     fi
     popd
     popd
