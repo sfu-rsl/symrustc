@@ -8,7 +8,7 @@ do
     mkdir -p generated/llvm/sym++
 
     pushd generated/llvm/sym++
-    sym++ -S -emit-llvm ../../../sample.cpp
+    sym++ -S -emit-llvm "$@" ../../../sample.cpp
     popd
     
     popd

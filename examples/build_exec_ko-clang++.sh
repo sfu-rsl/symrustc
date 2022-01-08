@@ -8,7 +8,7 @@ do
     mkdir -p generated/exec/ko-clang++
 
     pushd generated/exec/ko-clang++
-    ../../../../../../bin/ko-clang++ -o sample ../../../sample.cpp
+    ../../../../../../bin/ko-clang++ "$@" ../../../sample.cpp
     popd
     
     popd

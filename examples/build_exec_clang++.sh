@@ -8,7 +8,7 @@ do
     mkdir -p generated/exec/clang++
     
     pushd generated/exec/clang++
-    clang++ -o sample ../../../sample.cpp
+    clang++ "$@" ../../../sample.cpp
     popd
     
     popd

@@ -8,7 +8,7 @@ do
     mkdir -p generated/llvm/ko-clang++
 
     pushd generated/llvm/ko-clang++
-    ../../../../../../bin/ko-clang++ -S -emit-llvm ../../../sample.cpp
+    ../../../../../../bin/ko-clang++ -S -emit-llvm "$@" ../../../sample.cpp
     popd
     
     popd
