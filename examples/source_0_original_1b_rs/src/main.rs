@@ -12,7 +12,7 @@ fn main() -> Result<(), io::Error> {
     println!("What's your name?");
     match BufReader::new(io::stdin()).read_until(b'\n', &mut buf) {
         Ok(_) => {
-            if buf == b"root\n" {
+            if buf.starts_with(b"root") {
                 println!("What is your command?")
             } else {
                 print!("Hello, (");
