@@ -67,10 +67,10 @@ RUN ln -s ~/llvm_source/symcc symcc_source
 
 # Note: Ideally, all submodules must also follow the change of version happening in the super-root project.
 RUN cd symcc_source \
-    && git checkout -b submodule \
-    && git checkout -b main origin/main/10.0-2020-05-05 \
+    && git checkout -b submodule0 \
+    && git checkout -b main0 origin/main/10.0-2020-05-05 \
     && cp -a . ~/symcc_source_main \
-    && git checkout submodule
+    && git checkout submodule0
 
 
 #
