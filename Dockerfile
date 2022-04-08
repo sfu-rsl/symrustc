@@ -95,7 +95,7 @@ RUN git clone -b v2.56b https://github.com/google/AFL.git afl \
 #
 # Build SymCC with the simple backend
 #
-FROM builder_depend AS builder_simple
+FROM builder_depend AS builder_symcc_simple
 RUN mkdir symcc_build_simple \
     && cd symcc_build_simple \
     && cmake -G Ninja ~/symcc_source_main \
@@ -109,7 +109,7 @@ RUN mkdir symcc_build_simple \
 #
 # Build libc++ with SymCC using the simple backend
 #
-FROM builder_simple AS builder_libcxx
+FROM builder_symcc_simple AS builder_symcc_libcxx
 RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
   && mkdir -p rust_source/build/x86_64-unknown-linux-gnu/llvm/build \
   && cd rust_source/build/x86_64-unknown-linux-gnu/llvm/build \
@@ -128,7 +128,7 @@ RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
 #
 # Build SymCC with the Qsym backend
 #
-FROM builder_libcxx AS builder_qsym
+FROM builder_symcc_libcxx AS builder_symcc_qsym
 RUN mkdir symcc_build \
     && cd symcc_build \
     && cmake -G Ninja ~/symcc_source_main \
@@ -147,7 +147,7 @@ FROM builder_source AS builder_rust
 RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
         curl
 
-COPY --chown=ubuntu:ubuntu --from=builder_qsym $HOME/symcc_build symcc_build
+COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/symcc_build symcc_build
 
 RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
     && cd rust_source \
@@ -158,7 +158,7 @@ RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
 
 
 #
-# Build SymCC additional tools
+# Build additional tools
 #
 FROM builder_rust AS builder_addons
 
@@ -182,8 +182,8 @@ RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
         zlib1g
 
 RUN ln -s ~/symcc_source/util/pure_concolic_execution.sh symcc_build
-COPY --chown=ubuntu:ubuntu --from=builder_qsym $HOME/libcxx_symcc_install libcxx_symcc_install
-COPY --chown=ubuntu:ubuntu --from=builder_qsym $HOME/afl afl
+COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/libcxx_symcc_install libcxx_symcc_install
+COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/afl afl
 RUN mkdir symcc_build_clang \
     && ln -s ~/symcc_build/symcc symcc_build_clang/clang \
     && ln -s ~/symcc_build/sym++ symcc_build_clang/clang++
