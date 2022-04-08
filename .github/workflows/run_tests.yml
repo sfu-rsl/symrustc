@@ -1,7 +1,7 @@
-name: Compile and test SymCC
+name: Build all
 on: [push, pull_request]
 jobs:
-  build_and_test_symcc:
+  all:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -17,7 +17,13 @@ jobs:
         run: docker build --target builder_libcxx  -t symcc .
       - name: Build and test SymCC with Qsym backend
         run: docker build --target builder_qsym  -t symcc .
+      - name: Build Rust compiler with SymCC
+        run: docker build --target builder_rust  -t symcc .
       - name: Build SymCC additional tools
         run: docker build --target builder_addons  -t symcc .
-      - name: Creation of the final SymCC docker image with Qsym backend and libcxx
-        run: docker build  -t symcc .
+      - name: Creation of the final docker image
+        run: docker build --target builder_final  -t symcc .
+      - name: Build C++ examples
+        run: docker build --target builder_examples_cpp  -t symcc .
+      - name: Build Rust examples
+        run: docker build --target builder_examples_rs  -t symcc .

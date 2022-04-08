@@ -12,7 +12,7 @@ do
 
     pushd generated/llvm/clang++_isystem
     clang++-10 \
-        -isystem /libcxx_symcc_install/include/c++/v1 \
+        -isystem ~/libcxx_symcc_install/include/c++/v1 \
         -stdlib=libc++ \
         -S -emit-llvm "$@" ../../../sample.cpp
     popd

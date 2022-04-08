@@ -7,5 +7,5 @@ set -euxo pipefail
 
 param_exec="-fno-discard-value-names -o sample" # --target=aarch64-linux-gnu -mllvm '-rng-seed=1'
 
-export SYMCC_LIBCXX_PATH=/libcxx_symcc_install
+export SYMCC_LIBCXX_PATH=~/libcxx_symcc_install
 ./build_exec_sym++_simple_z3.sh $param_exec

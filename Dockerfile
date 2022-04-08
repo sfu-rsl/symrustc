@@ -1,3 +1,8 @@
+# SPDX-License-Identifier
+# Copyright (C) 2021-2022 Simon Fraser University (www.sfu.ca)
+
+# #
+
 # This file is part of SymCC.
 #
 # SymCC is free software: you can redistribute it and/or modify it under the
@@ -12,6 +17,7 @@
 # You should have received a copy of the GNU General Public License along with
 # SymCC. If not, see <https://www.gnu.org/licenses/>.
 
+# #
 
 #
 # The base image
@@ -31,41 +37,51 @@ WORKDIR $HOME
 
 
 #
-# Prepare SymCC source
+# Prepare project source
 #
 FROM builder_base AS builder_source
 
 RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
         clang-10 \
+        cmake \
         g++ \
-        git
+        git \
+        libz3-dev \
+        ninja-build \
+        python3-pip
 
-COPY --chown=ubuntu:ubuntu . symcc_source
+RUN mkdir belcarra_source
+COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
-# Init submodules if they are not initialiazed yet
-WORKDIR $HOME/symcc_source
-RUN if git submodule status | grep "^-">/dev/null ; then \
-    echo "Initializing submodules"; \
-    git submodule init; \
-    git submodule update; \
+# Download the Rust compiler with SymCC
+RUN git clone -b symcc_comp_utils/1.46.0 --depth 1 https://github.com/sfu-rsl/rust.git rust_source
+
+# Init submodules
+RUN if git -C rust_source submodule status | grep "^-">/dev/null ; then \
+    git -C rust_source submodule update --init --recursive; \
     fi
-WORKDIR $HOME
+
+#
+RUN ln -s ~/rust_source/src/llvm-project llvm_source
+RUN ln -s ~/llvm_source/symcc symcc_source
+
+# Note: Ideally, all submodules must also follow the change of version happening in the super-root project.
+RUN cd symcc_source \
+    && git checkout -b submodule \
+    && git checkout -b main origin/main/10.0-2020-05-05 \
+    && cp -a . ~/symcc_source_main \
+    && git checkout submodule
 
 
 #
-# Prepare SymCC dependencies
+# Prepare project dependencies
 #
 FROM builder_source AS builder_depend
 
-# Install dependencies
 RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        cmake \
-        libz3-dev \
         llvm-10-dev \
         llvm-10-tools \
-        ninja-build \
         python2 \
-        python3-pip \
         zlib1g-dev
 RUN pip3 install lit
 ENV PATH $HOME/.local/bin:$PATH
@@ -75,10 +91,6 @@ RUN git clone -b v2.56b https://github.com/google/AFL.git afl \
     && cd afl \
     && make
 
-# Download the LLVM sources already so that we don't need to get them again when
-# SymCC changes
-RUN git clone -b llvmorg-10.0.1 --depth 1 https://github.com/llvm/llvm-project.git llvm_source
-
 
 #
 # Build SymCC with the simple backend
@@ -86,7 +98,7 @@ RUN git clone -b llvmorg-10.0.1 --depth 1 https://github.com/llvm/llvm-project.g
 FROM builder_depend AS builder_simple
 RUN mkdir symcc_build_simple \
     && cd symcc_build_simple \
-    && cmake -G Ninja ~/symcc_source \
+    && cmake -G Ninja ~/symcc_source_main \
         -DLLVM_VERSION_FORCE=10 \
         -DQSYM_BACKEND=OFF \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
@@ -99,8 +111,8 @@ RUN mkdir symcc_build_simple \
 #
 FROM builder_simple AS builder_libcxx
 RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
-  && mkdir libcxx_symcc_build \
-  && cd libcxx_symcc_build \
+  && mkdir -p rust_source/build/x86_64-unknown-linux-gnu/llvm/build \
+  && cd rust_source/build/x86_64-unknown-linux-gnu/llvm/build \
   && cmake -G Ninja ~/llvm_source/llvm \
   -DLLVM_ENABLE_PROJECTS="libcxx;libcxxabi" \
   -DLLVM_TARGETS_TO_BUILD="X86" \
@@ -119,7 +131,7 @@ RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
 FROM builder_libcxx AS builder_qsym
 RUN mkdir symcc_build \
     && cd symcc_build \
-    && cmake -G Ninja ~/symcc_source \
+    && cmake -G Ninja ~/symcc_source_main \
         -DLLVM_VERSION_FORCE=10 \
         -DQSYM_BACKEND=ON \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
@@ -128,37 +140,98 @@ RUN mkdir symcc_build \
 
 
 #
-# Build SymCC additional tools
+# Build Rust compiler with SymCC support
 #
-FROM builder_source AS builder_addons
+FROM builder_source AS builder_rust
 
 RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        cargo
+        curl
 
-RUN cargo install --path symcc_source/util/symcc_fuzzing_helper
+COPY --chown=ubuntu:ubuntu --from=builder_qsym $HOME/symcc_build symcc_build
+
+RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
+    && cd rust_source \
+    && sed -e 's/#ninja = false/ninja = true/' \
+        config.toml.example > config.toml \
+    && export SYMCC_RUNTIME_DIR=$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
+    && /usr/bin/python3 ./x.py build
+
+
+#
+# Build SymCC additional tools
+#
+FROM builder_rust AS builder_addons
+
+RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
+    && cd symcc_build \
+    && SYMCC_RUNTIME_DIR=$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
+       RUSTFLAGS="-L${SYMCC_RUNTIME_DIR} -Clink-arg=-Wl,-rpath,${SYMCC_RUNTIME_DIR} -C passes=symcc -lSymRuntime" \
+       RUSTC=~/rust_source/build/x86_64-unknown-linux-gnu/stage2/bin/rustc \
+       ~/rust_source/build/x86_64-unknown-linux-gnu/stage0/bin/cargo install --path ~/symcc_source/util/symcc_fuzzing_helper
+ENV PATH $HOME/.cargo/bin:$PATH
 
 
 #
 # The final image
 #
-FROM builder_source
+FROM builder_addons as builder_final
 
 RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
         build-essential \
         libllvm10 \
         zlib1g
 
-COPY --chown=ubuntu:ubuntu --from=builder_qsym $HOME/symcc_build symcc_build
-COPY --chown=ubuntu:ubuntu --from=builder_addons $HOME/.cargo/bin/symcc_fuzzing_helper symcc_build/
 RUN ln -s ~/symcc_source/util/pure_concolic_execution.sh symcc_build
 COPY --chown=ubuntu:ubuntu --from=builder_qsym $HOME/libcxx_symcc_install libcxx_symcc_install
 COPY --chown=ubuntu:ubuntu --from=builder_qsym $HOME/afl afl
+RUN mkdir symcc_build_clang \
+    && ln -s ~/symcc_build/symcc symcc_build_clang/clang \
+    && ln -s ~/symcc_build/sym++ symcc_build_clang/clang++
 
-ENV PATH $HOME/symcc_build:$PATH
+ENV PATH $HOME/symcc_build_clang:$HOME/symcc_build:$PATH
 ENV AFL_PATH $HOME/afl
 ENV AFL_CC clang-10
 ENV AFL_CXX clang++-10
 ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
 
-RUN ln -s ~/symcc_source/sample.cpp
 RUN mkdir /tmp/output
+
+
+#
+# Building C++ examples
+#
+FROM builder_final AS builder_examples_cpp
+
+RUN cd belcarra_source/examples \
+    && ./build_docker2.sh
+
+
+#
+# Building Rust examples
+#
+FROM builder_final AS builder_examples_rs
+
+RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        bsdmainutils
+
+ARG RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
+ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1b_rs
+ARG BELCARRA_INPUT=test
+ARG HEXDUMP="hexdump -v -C"
+
+RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
+    && cd $BELCARRA_EXAMPLE \
+    && SYMCC_RUNTIME_DIR=$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
+       RUSTFLAGS="-L${SYMCC_RUNTIME_DIR} -Clink-arg=-Wl,-rpath,${SYMCC_RUNTIME_DIR} -C passes=symcc -lSymRuntime" \
+       RUSTC=$RUST_BUILD/stage2/bin/rustc \
+       $RUST_BUILD/stage0/bin/cargo rustc
+
+RUN cd $BELCARRA_EXAMPLE \
+    && echo $BELCARRA_INPUT | ./target/debug/belcarra \
+    && echo $BELCARRA_INPUT | $HEXDUMP /dev/stdin > /tmp/belcarra_stdin_hex
+
+SHELL ["/bin/bash", "-c"]
+RUN ls /tmp/output/* | while read i ; \
+    do echo -e "=============================\n$i" ; \
+       $HEXDUMP "$i" | (git diff --color-words --no-index /tmp/belcarra_stdin_hex - || true) | tail -n +5 ; \
+    done
