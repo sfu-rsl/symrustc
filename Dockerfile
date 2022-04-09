@@ -20,7 +20,7 @@
 # #
 
 #
-# The base image
+# Set up Ubuntu environment
 #
 FROM ubuntu:20.04 AS builder_base
 
@@ -37,7 +37,7 @@ WORKDIR $HOME
 
 
 #
-# Prepare project source
+# Set up project source
 #
 FROM builder_base AS builder_source
 
@@ -74,7 +74,7 @@ RUN cd symcc_source \
 
 
 #
-# Prepare project dependencies
+# Set up project dependencies
 #
 FROM builder_source AS builder_depend
 
@@ -93,7 +93,7 @@ RUN git clone -b v2.56b https://github.com/google/AFL.git afl \
 
 
 #
-# Build SymCC with the simple backend
+# Build SymCC simple backend
 #
 FROM builder_depend AS builder_symcc_simple
 RUN mkdir symcc_build_simple \
@@ -107,7 +107,7 @@ RUN mkdir symcc_build_simple \
 
 
 #
-# Build libc++ with SymCC using the simple backend
+# Build LLVM libcxx using SymCC simple backend
 #
 FROM builder_symcc_simple AS builder_symcc_libcxx
 RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
@@ -126,7 +126,7 @@ RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
 
 
 #
-# Build SymCC with the Qsym backend
+# Build SymCC Qsym backend
 #
 FROM builder_symcc_libcxx AS builder_symcc_qsym
 RUN mkdir symcc_build \
@@ -172,7 +172,7 @@ ENV PATH $HOME/.cargo/bin:$PATH
 
 
 #
-# The final image
+# Create final image
 #
 FROM builder_addons as builder_final
 
@@ -198,7 +198,7 @@ RUN mkdir /tmp/output
 
 
 #
-# Building C++ examples
+# Build concolic C++ examples
 #
 FROM builder_final AS builder_examples_cpp
 
@@ -207,7 +207,7 @@ RUN cd belcarra_source/examples \
 
 
 #
-# Building Rust examples
+# Build concolic Rust examples
 #
 FROM builder_final AS builder_examples_rs
 
