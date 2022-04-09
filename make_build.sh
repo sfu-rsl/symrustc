@@ -32,7 +32,7 @@ function print_sh () {
     echo
 }
 
-fic='generated/build.yml'
+fic='.github/workflows/build.yml'
 cat > "$fic" <<EOF
 name: Build all
 on: [push, pull_request]
