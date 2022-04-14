@@ -41,8 +41,10 @@ WORKDIR $HOME
 #
 FROM builder_base AS builder_source
 
+ENV BELCARRA_LLVM_VERSION 10
+
 RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        clang-10 \
+        clang-$BELCARRA_LLVM_VERSION \
         cmake \
         g++ \
         git \
@@ -54,7 +56,9 @@ RUN mkdir belcarra_source
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 # Download the Rust compiler with SymCC
-RUN git clone -b symcc_comp_utils/1.46.0 --depth 1 https://github.com/sfu-rsl/rust.git rust_source
+ARG BELCARRA_RUST_VERSION
+ENV BELCARRA_RUST_VERSION=${BELCARRA_RUST_VERSION:-symcc_comp_utils/1.46.0}
+RUN git clone -b $BELCARRA_RUST_VERSION --depth 1 https://github.com/sfu-rsl/rust.git rust_source
 
 # Init submodules
 RUN if git -C rust_source submodule status | grep "^-">/dev/null ; then \
@@ -67,10 +71,10 @@ RUN ln -s ~/llvm_source/symcc symcc_source
 
 # Note: Ideally, all submodules must also follow the change of version happening in the super-root project.
 RUN cd symcc_source \
-    && git checkout -b submodule0 \
-    && git checkout -b main0 origin/main/10.0-2020-05-05 \
+    && current=$(git log -1 --pretty=format:%H) \
+    && git checkout origin/main/$(git branch -r --contains "$current" | tr '/' '\n' | tail -n 1) \
     && cp -a . ~/symcc_source_main \
-    && git checkout submodule0
+    && git checkout "$current"
 
 
 #
@@ -79,8 +83,8 @@ RUN cd symcc_source \
 FROM builder_source AS builder_depend
 
 RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        llvm-10-dev \
-        llvm-10-tools \
+        llvm-$BELCARRA_LLVM_VERSION-dev \
+        llvm-$BELCARRA_LLVM_VERSION-tools \
         python2 \
         zlib1g-dev
 RUN pip3 install lit
@@ -99,7 +103,7 @@ FROM builder_depend AS builder_symcc_simple
 RUN mkdir symcc_build_simple \
     && cd symcc_build_simple \
     && cmake -G Ninja ~/symcc_source_main \
-        -DLLVM_VERSION_FORCE=10 \
+        -DLLVM_VERSION_FORCE=$BELCARRA_LLVM_VERSION \
         -DQSYM_BACKEND=OFF \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DZ3_TRUST_SYSTEM_VERSION=on \
@@ -132,7 +136,7 @@ FROM builder_symcc_libcxx AS builder_symcc_qsym
 RUN mkdir symcc_build \
     && cd symcc_build \
     && cmake -G Ninja ~/symcc_source_main \
-        -DLLVM_VERSION_FORCE=10 \
+        -DLLVM_VERSION_FORCE=$BELCARRA_LLVM_VERSION \
         -DQSYM_BACKEND=ON \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DZ3_TRUST_SYSTEM_VERSION=on \
@@ -178,7 +182,7 @@ FROM builder_addons as builder_final
 
 RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
         build-essential \
-        libllvm10 \
+        libllvm$BELCARRA_LLVM_VERSION \
         zlib1g
 
 RUN ln -s ~/symcc_source/util/pure_concolic_execution.sh symcc_build
@@ -190,8 +194,8 @@ RUN mkdir symcc_build_clang \
 
 ENV PATH $HOME/symcc_build_clang:$HOME/symcc_build:$PATH
 ENV AFL_PATH $HOME/afl
-ENV AFL_CC clang-10
-ENV AFL_CXX clang++-10
+ENV AFL_CC clang-$BELCARRA_LLVM_VERSION
+ENV AFL_CXX clang++-$BELCARRA_LLVM_VERSION
 ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
 
 RUN mkdir /tmp/output
