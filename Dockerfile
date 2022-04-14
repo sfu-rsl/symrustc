@@ -26,7 +26,8 @@ FROM ubuntu:20.04 AS builder_base
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        sudo
+        sudo \
+    && apt-get clean
 
 RUN useradd -m -s /bin/bash ubuntu \
     && echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/ubuntu
@@ -43,14 +44,16 @@ FROM builder_base AS builder_source
 
 ENV BELCARRA_LLVM_VERSION 10
 
-RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+RUN sudo apt-get update \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
         clang-$BELCARRA_LLVM_VERSION \
         cmake \
         g++ \
         git \
         libz3-dev \
         ninja-build \
-        python3-pip
+        python3-pip \
+    && sudo apt-get clean
 
 RUN mkdir belcarra_source
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
@@ -82,11 +85,13 @@ RUN cd symcc_source \
 #
 FROM builder_source AS builder_depend
 
-RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+RUN sudo apt-get update \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
         llvm-$BELCARRA_LLVM_VERSION-dev \
         llvm-$BELCARRA_LLVM_VERSION-tools \
         python2 \
-        zlib1g-dev
+        zlib1g-dev \
+    && sudo apt-get clean
 RUN pip3 install lit
 ENV PATH $HOME/.local/bin:$PATH
 
@@ -148,8 +153,10 @@ RUN mkdir symcc_build \
 #
 FROM builder_source AS builder_rust
 
-RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        curl
+RUN sudo apt-get update \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        curl \
+    && sudo apt-get clean
 
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/symcc_build symcc_build
 
@@ -180,10 +187,12 @@ ENV PATH $HOME/.cargo/bin:$PATH
 #
 FROM builder_addons as builder_final
 
-RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+RUN sudo apt-get update \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
         build-essential \
         libllvm$BELCARRA_LLVM_VERSION \
-        zlib1g
+        zlib1g \
+    && sudo apt-get clean
 
 RUN ln -s ~/symcc_source/util/pure_concolic_execution.sh symcc_build
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/libcxx_symcc_install libcxx_symcc_install
@@ -215,8 +224,10 @@ RUN cd belcarra_source/examples \
 #
 FROM builder_final AS builder_examples_rs
 
-RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        bsdmainutils
+RUN sudo apt-get update \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        bsdmainutils \
+    && sudo apt-get clean
 
 ARG RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1b_rs
