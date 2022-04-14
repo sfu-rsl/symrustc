@@ -65,19 +65,22 @@ RUN git clone -b $BELCARRA_RUST_VERSION --depth 1 https://github.com/sfu-rsl/rus
 
 # Init submodules
 RUN if git -C rust_source submodule status | grep "^-">/dev/null ; then \
-    git -C rust_source submodule update --init --recursive; \
+      git -C rust_source submodule update --init --recursive; \
     fi
 
 #
 RUN ln -s ~/rust_source/src/llvm-project llvm_source
 RUN ln -s ~/llvm_source/symcc symcc_source
 
+# Note: Depending on the commit revision, the Rust compiler source may not have yet a SymCC directory. In this docker stage, we treat such case as a "non-aborting failure" (subsequent stages may raise different errors).
+RUN if [ -d symcc_source ] ; then \
+      cd symcc_source \
+      && current=$(git log -1 --pretty=format:%H) \
 # Note: Ideally, all submodules must also follow the change of version happening in the super-root project.
-RUN cd symcc_source \
-    && current=$(git log -1 --pretty=format:%H) \
-    && git checkout origin/main/$(git branch -r --contains "$current" | tr '/' '\n' | tail -n 1) \
-    && cp -a . ~/symcc_source_main \
-    && git checkout "$current"
+      && git checkout origin/main/$(git branch -r --contains "$current" | tr '/' '\n' | tail -n 1) \
+      && cp -a . ~/symcc_source_main \
+      && git checkout "$current"; \
+    fi
 
 
 #
