@@ -79,6 +79,9 @@ RUN if [ -d symcc_source ] ; then \
       && git checkout "$current"; \
     fi
 
+# Download AFL
+RUN git clone -b v2.56b https://github.com/google/AFL.git afl
+
 
 #
 # Set up project dependencies
@@ -95,9 +98,13 @@ RUN sudo apt-get update \
 RUN pip3 install lit
 ENV PATH $HOME/.local/bin:$PATH
 
-# Build AFL.
-RUN git clone -b v2.56b https://github.com/google/AFL.git afl \
-    && cd afl \
+
+#
+# Build AFL
+#
+FROM builder_source AS builder_afl
+
+RUN cd afl \
     && make
 
 
@@ -198,7 +205,7 @@ RUN sudo apt-get update \
 
 RUN ln -s ~/symcc_source/util/pure_concolic_execution.sh symcc_build
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/libcxx_symcc_install libcxx_symcc_install
-COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/afl afl
+COPY --chown=ubuntu:ubuntu --from=builder_afl $HOME/afl afl
 RUN mkdir symcc_build_clang \
     && ln -s ~/symcc_build/symcc symcc_build_clang/clang \
     && ln -s ~/symcc_build/sym++ symcc_build_clang/clang++
