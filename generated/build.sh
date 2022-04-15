@@ -35,12 +35,12 @@ docker build --target builder_final -t belcarra_final .
 # Build concolic C++ examples
 docker build --target builder_examples_cpp -t belcarra_examples_cpp .
 
-# Build concolic Rust examples: Initialization
+# Build concolic Rust examples - Initialization
 docker build --target builder_examples_rs_init -t belcarra_examples_rs_init .
 
-# Build concolic Rust examples: Rust source
+# Build concolic Rust examples - Rust source
 docker build --target builder_examples_rs_src -t belcarra_examples_rs_src .
 
-# Build concolic Rust examples: Rust compiler
+# Build concolic Rust examples - Rust compiler
 docker build --target builder_examples_rs_compiler -t belcarra_examples_rs_compiler .
 
