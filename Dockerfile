@@ -167,6 +167,8 @@ RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
     && cd rust_source \
     && sed -e 's/#ninja = false/ninja = true/' \
         config.toml.example > config.toml \
+    && sed -i -e 's/is_x86_feature_detected!("sse2")/false \&\& is_x86_feature_detected!("sse2")/' \
+        src/librustc_span/analyze_source_file.rs \
     && export SYMCC_RUNTIME_DIR=$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
     && /usr/bin/python3 ./x.py build
 
@@ -223,14 +225,20 @@ RUN cd belcarra_source/examples \
 
 
 #
-# Build concolic Rust examples
+# Build concolic Rust examples: Initialization
 #
-FROM builder_final AS builder_examples_rs
+FROM builder_final AS builder_examples_rs_init
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
         bsdmainutils \
     && sudo apt-get clean
+
+
+#
+# Build concolic Rust examples: Rust source
+#
+FROM builder_examples_rs_init AS builder_examples_rs_src
 
 ARG RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1b_rs
@@ -253,3 +261,16 @@ RUN ls /tmp/output/* | while read i ; \
     do echo -e "=============================\n$i" ; \
        $HEXDUMP "$i" | (git diff --color-words --no-index /tmp/belcarra_stdin_hex - || true) | tail -n +5 ; \
     done
+
+
+#
+# Build concolic Rust examples: Rust compiler
+#
+FROM builder_examples_rs_init AS builder_examples_rs_compiler
+
+ARG RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
+ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1b_rs
+ARG HEXDUMP="hexdump -v -C"
+
+RUN cd $BELCARRA_EXAMPLE \
+    && ./exec_rustc_file.sh -C passes=symcc -lSymRuntime
