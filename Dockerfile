@@ -232,7 +232,7 @@ RUN cd belcarra_source/examples \
 
 
 #
-# Build concolic Rust examples: Initialization
+# Build concolic Rust examples - Initialization
 #
 FROM builder_final AS builder_examples_rs_init
 
@@ -243,7 +243,7 @@ RUN sudo apt-get update \
 
 
 #
-# Build concolic Rust examples: Rust source
+# Build concolic Rust examples - Rust source
 #
 FROM builder_examples_rs_init AS builder_examples_rs_src
 
@@ -271,7 +271,7 @@ RUN ls /tmp/output/* | while read i ; \
 
 
 #
-# Build concolic Rust examples: Rust compiler
+# Build concolic Rust examples - Rust compiler
 #
 FROM builder_examples_rs_init AS builder_examples_rs_compiler
 
