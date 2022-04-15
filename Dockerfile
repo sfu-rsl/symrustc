@@ -55,9 +55,6 @@ RUN sudo apt-get update \
         python3-pip \
     && sudo apt-get clean
 
-RUN mkdir belcarra_source
-COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
-
 # Download the Rust compiler with SymCC
 ARG BELCARRA_RUST_VERSION
 ENV BELCARRA_RUST_VERSION=${BELCARRA_RUST_VERSION:-symcc_comp_utils/1.46.0}
@@ -213,6 +210,9 @@ ENV AFL_CXX clang++-$BELCARRA_LLVM_VERSION
 ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
 
 RUN mkdir /tmp/output
+
+RUN mkdir belcarra_source
+COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 
 #
