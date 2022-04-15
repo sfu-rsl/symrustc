@@ -14,6 +14,9 @@ jobs:
       - name: Set up project dependencies
         run: docker build --target builder_depend -t belcarra_depend .
 
+      - name: Build AFL
+        run: docker build --target builder_afl -t belcarra_afl .
+
       - name: Build SymCC simple backend
         run: docker build --target builder_symcc_simple -t belcarra_symcc_simple .
 

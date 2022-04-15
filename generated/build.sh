@@ -11,6 +11,9 @@ docker build --target builder_source -t belcarra_source .
 # Set up project dependencies
 docker build --target builder_depend -t belcarra_depend .
 
+# Build AFL
+docker build --target builder_afl -t belcarra_afl .
+
 # Build SymCC simple backend
 docker build --target builder_symcc_simple -t belcarra_symcc_simple .
 
