@@ -180,6 +180,8 @@ RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
 
 ENV BELCARRA_RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 
+ENV PATH $HOME/.cargo/bin:$PATH
+
 COPY --chown=ubuntu:ubuntu examples/exec_cargo.sh $HOME/
 
 
@@ -191,13 +193,28 @@ FROM builder_rust AS builder_addons
 RUN cd symcc_build \
     && ~/exec_cargo.sh install --path ~/symcc_source/util/symcc_fuzzing_helper
 
-ENV PATH $HOME/.cargo/bin:$PATH
+
+#
+# Create main image
+#
+FROM builder_rust as builder_main
+
+COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/libcxx_symcc_install libcxx_symcc_install
+
+RUN mkdir symcc_build_clang \
+    && ln -s ~/symcc_build/symcc symcc_build_clang/clang \
+    && ln -s ~/symcc_build/sym++ symcc_build_clang/clang++
+
+ENV PATH $HOME/symcc_build:$PATH
+ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
+
+RUN mkdir /tmp/output
 
 
 #
 # Create final image
 #
-FROM builder_addons as builder_final
+FROM builder_main as builder_final
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -207,19 +224,12 @@ RUN sudo apt-get update \
     && sudo apt-get clean
 
 RUN ln -s ~/symcc_source/util/pure_concolic_execution.sh symcc_build
-COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/libcxx_symcc_install libcxx_symcc_install
 COPY --chown=ubuntu:ubuntu --from=builder_afl $HOME/afl afl
-RUN mkdir symcc_build_clang \
-    && ln -s ~/symcc_build/symcc symcc_build_clang/clang \
-    && ln -s ~/symcc_build/sym++ symcc_build_clang/clang++
+COPY --chown=ubuntu:ubuntu --from=builder_addons $HOME/.cargo .cargo
 
-ENV PATH $HOME/symcc_build:$PATH
 ENV AFL_PATH $HOME/afl
 ENV AFL_CC clang-$BELCARRA_LLVM_VERSION
 ENV AFL_CXX clang++-$BELCARRA_LLVM_VERSION
-ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
-
-RUN mkdir /tmp/output
 
 
 #
@@ -278,7 +288,7 @@ RUN cd belcarra_source/examples \
 #
 # Build concolic Rust examples - Initialization
 #
-FROM builder_final AS builder_examples_rs_init
+FROM builder_main AS builder_examples_rs_init
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
