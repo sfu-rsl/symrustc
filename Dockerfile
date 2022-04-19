@@ -178,18 +178,19 @@ RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
     && export SYMCC_RUNTIME_DIR=~/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
     && /usr/bin/python3 ./x.py build
 
+ENV BELCARRA_RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
+
+COPY --chown=ubuntu:ubuntu examples/exec_cargo.sh $HOME/
+
 
 #
 # Build additional tools
 #
 FROM builder_rust AS builder_addons
 
-RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
-    && cd symcc_build \
-    && SYMCC_RUNTIME_DIR=~/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
-       RUSTFLAGS="-L${SYMCC_RUNTIME_DIR} -Clink-arg=-Wl,-rpath,${SYMCC_RUNTIME_DIR} -C passes=symcc -lSymRuntime" \
-       RUSTC=~/rust_source/build/x86_64-unknown-linux-gnu/stage2/bin/rustc \
-       ~/rust_source/build/x86_64-unknown-linux-gnu/stage0/bin/cargo install --path ~/symcc_source/util/symcc_fuzzing_helper
+RUN cd symcc_build \
+    && ~/exec_cargo.sh install --path ~/symcc_source/util/symcc_fuzzing_helper
+
 ENV PATH $HOME/.cargo/bin:$PATH
 
 
@@ -212,16 +213,13 @@ RUN mkdir symcc_build_clang \
     && ln -s ~/symcc_build/symcc symcc_build_clang/clang \
     && ln -s ~/symcc_build/sym++ symcc_build_clang/clang++
 
-ENV PATH $HOME/symcc_build_clang:$HOME/symcc_build:$PATH
+ENV PATH $HOME/symcc_build:$PATH
 ENV AFL_PATH $HOME/afl
 ENV AFL_CC clang-$BELCARRA_LLVM_VERSION
 ENV AFL_CXX clang++-$BELCARRA_LLVM_VERSION
 ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
 
 RUN mkdir /tmp/output
-
-RUN mkdir belcarra_source
-COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 
 #
@@ -287,26 +285,22 @@ RUN sudo apt-get update \
         bsdmainutils \
     && sudo apt-get clean
 
+RUN mkdir belcarra_source
+COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
+
 
 #
 # Build concolic Rust examples - Rust source
 #
 FROM builder_examples_rs_init AS builder_examples_rs_src
 
-ARG BELCARRA_RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
-ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1b_rs
-ARG BELCARRA_INPUT=test
+ARG BELCARRA_EXAMPLE0=$HOME/belcarra_source/examples
 
-RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
-    && cd $BELCARRA_EXAMPLE \
-    && SYMCC_RUNTIME_DIR=~/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
-       RUSTFLAGS="-L${SYMCC_RUNTIME_DIR} -Clink-arg=-Wl,-rpath,${SYMCC_RUNTIME_DIR} -C passes=symcc -lSymRuntime" \
-       RUSTC=$BELCARRA_RUST_BUILD/stage2/bin/rustc \
-       $BELCARRA_RUST_BUILD/stage0/bin/cargo rustc
+RUN cd $BELCARRA_EXAMPLE0 \
+    && ./build_docker_rust_compile.sh
 
-RUN cd $BELCARRA_EXAMPLE \
-    && echo $BELCARRA_INPUT | ./target/debug/belcarra \
-    && echo $BELCARRA_INPUT | ../hexdump.sh /dev/stdin
+RUN cd $BELCARRA_EXAMPLE0 \
+    && ./build_docker_rust_exec.sh
 
 
 #
@@ -314,7 +308,6 @@ RUN cd $BELCARRA_EXAMPLE \
 #
 FROM builder_examples_rs_init AS builder_examples_rs_compiler_file
 
-ARG BELCARRA_RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1b_rs
 
 RUN cd $BELCARRA_EXAMPLE \
@@ -326,7 +319,6 @@ RUN cd $BELCARRA_EXAMPLE \
 #
 FROM builder_examples_rs_init AS builder_examples_rs_compiler_stdin
 
-ARG BELCARRA_RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_2_base_1a_rs
 
 RUN cd $BELCARRA_EXAMPLE \

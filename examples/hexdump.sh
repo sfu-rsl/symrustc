@@ -9,7 +9,7 @@ HEXDUMP="hexdump -v -C"
 
 $HEXDUMP "$1" > /tmp/belcarra_stdin_hex
 
-ls /tmp/output/* | while read i
+(ls /tmp/output/* || true) | while read i
 do
     echo -e "=============================\n$i"
     $HEXDUMP "$i" | (git diff --color-words --no-index /tmp/belcarra_stdin_hex - || true) | tail -n +5
