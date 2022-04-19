@@ -171,7 +171,7 @@ RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
     && cd rust_source \
     && sed -e 's/#ninja = false/ninja = true/' \
         config.toml.example > config.toml \
-    && sed -i -e 's/is_x86_feature_detected!("sse2")/false \&\& is_x86_feature_detected!("sse2")/' \
+    && sed -i -e 's/is_x86_feature_detected!("sse2")/false \&\& &/' \
         src/librustc_span/analyze_source_file.rs \
     && export SYMCC_RUNTIME_DIR=$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
     && /usr/bin/python3 ./x.py build
