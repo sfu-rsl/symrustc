@@ -266,6 +266,18 @@ RUN cd belcarra_source/examples \
 
 
 #
+# Build concolic C++ examples - Only clang
+#
+FROM builder_source AS builder_examples_cpp_clang
+
+RUN mkdir belcarra_source
+COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
+
+RUN cd belcarra_source/examples \
+    && ./build_docker_none.sh
+
+
+#
 # Build concolic Rust examples - Initialization
 #
 FROM builder_final AS builder_examples_rs_init

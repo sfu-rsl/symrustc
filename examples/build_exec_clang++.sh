@@ -11,7 +11,7 @@ do
     mkdir -p generated/exec/clang++
     
     pushd generated/exec/clang++
-    clang++ "$@" ../../../sample.cpp
+    clang++-10 "$@" ../../../sample.cpp
     popd
     
     popd

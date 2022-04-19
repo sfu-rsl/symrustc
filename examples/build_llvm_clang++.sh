@@ -11,7 +11,7 @@ do
     mkdir -p generated/llvm/clang++
     
     pushd generated/llvm/clang++
-    clang++ -S -emit-llvm "$@" ../../../sample.cpp
+    clang++-10 -S -emit-llvm "$@" ../../../sample.cpp
     popd
     
     popd
