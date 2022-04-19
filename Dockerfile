@@ -296,7 +296,6 @@ FROM builder_examples_rs_init AS builder_examples_rs_src
 ARG RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1b_rs
 ARG BELCARRA_INPUT=test
-ARG HEXDUMP="hexdump -v -C"
 
 RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
     && cd $BELCARRA_EXAMPLE \
@@ -307,12 +306,7 @@ RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
 
 RUN cd $BELCARRA_EXAMPLE \
     && echo $BELCARRA_INPUT | ./target/debug/belcarra \
-    && echo $BELCARRA_INPUT | $HEXDUMP /dev/stdin > /tmp/belcarra_stdin_hex
-
-RUN ls /tmp/output/* | while read i ; \
-    do echo -e "=============================\n$i" ; \
-       $HEXDUMP "$i" | (git diff --color-words --no-index /tmp/belcarra_stdin_hex - || true) | tail -n +5 ; \
-    done
+    && echo $BELCARRA_INPUT | ../hexdump.sh /dev/stdin
 
 
 #
@@ -322,7 +316,6 @@ FROM builder_examples_rs_init AS builder_examples_rs_compiler
 
 ARG RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1b_rs
-ARG HEXDUMP="hexdump -v -C"
 
 RUN cd $BELCARRA_EXAMPLE \
     && ./exec_rustc_file.sh -C passes=symcc -lSymRuntime
