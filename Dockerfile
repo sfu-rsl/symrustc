@@ -293,7 +293,7 @@ RUN sudo apt-get update \
 #
 FROM builder_examples_rs_init AS builder_examples_rs_src
 
-ARG RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
+ARG BELCARRA_RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1b_rs
 ARG BELCARRA_INPUT=test
 
@@ -301,8 +301,8 @@ RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
     && cd $BELCARRA_EXAMPLE \
     && SYMCC_RUNTIME_DIR=~/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
        RUSTFLAGS="-L${SYMCC_RUNTIME_DIR} -Clink-arg=-Wl,-rpath,${SYMCC_RUNTIME_DIR} -C passes=symcc -lSymRuntime" \
-       RUSTC=$RUST_BUILD/stage2/bin/rustc \
-       $RUST_BUILD/stage0/bin/cargo rustc
+       RUSTC=$BELCARRA_RUST_BUILD/stage2/bin/rustc \
+       $BELCARRA_RUST_BUILD/stage0/bin/cargo rustc
 
 RUN cd $BELCARRA_EXAMPLE \
     && echo $BELCARRA_INPUT | ./target/debug/belcarra \
@@ -314,7 +314,7 @@ RUN cd $BELCARRA_EXAMPLE \
 #
 FROM builder_examples_rs_init AS builder_examples_rs_compiler_file
 
-ARG RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
+ARG BELCARRA_RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1b_rs
 
 RUN cd $BELCARRA_EXAMPLE \
@@ -326,7 +326,7 @@ RUN cd $BELCARRA_EXAMPLE \
 #
 FROM builder_examples_rs_init AS builder_examples_rs_compiler_stdin
 
-ARG RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
+ARG BELCARRA_RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_2_base_1a_rs
 
 RUN cd $BELCARRA_EXAMPLE \

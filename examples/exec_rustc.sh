@@ -5,7 +5,7 @@
 
 set -euxo pipefail
 
-dir_rustc=$RUST_BUILD/stage2
+dir_rustc=$BELCARRA_RUST_BUILD/stage2
 input_file1="$1"; shift
 input_file2="$1"; shift
 
@@ -15,7 +15,7 @@ mkdir -p target/debug/deps
 
 rustc_exit_code=0
 
-CARGO=$RUST_BUILD/stage0/bin/cargo \
+CARGO=$BELCARRA_RUST_BUILD/stage0/bin/cargo \
 CARGO_BIN_NAME=belcarra \
 CARGO_CRATE_NAME=belcarra \
 CARGO_MANIFEST_DIR=$BELCARRA_EXAMPLE \
