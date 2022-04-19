@@ -20,7 +20,7 @@ do
     mkdir -p generated/llvm/sym++
 
     pushd generated/llvm/sym++
-    sym++ -S -emit-llvm "$@" ../../../sample.cpp
+    ~/symcc_build/sym++ -S -emit-llvm "$@" ../../../sample.cpp
     popd
     
     popd

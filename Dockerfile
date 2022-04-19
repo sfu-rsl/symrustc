@@ -223,11 +223,43 @@ COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 
 #
-# Build concolic C++ examples
+# Build concolic C++ examples - SymCC/Z3, libcxx regular
 #
-FROM builder_final AS builder_examples_cpp
+FROM builder_symcc_simple AS builder_examples_cpp_z3_libcxx_reg
+
+RUN mkdir belcarra_source
+COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 RUN cd belcarra_source/examples \
+    && export SYMCC_REGULAR_LIBCXX=yes \
+    && ./build_docker1.sh
+
+
+#
+# Build concolic C++ examples - SymCC/Z3, libcxx instrumented
+#
+FROM builder_symcc_libcxx AS builder_examples_cpp_z3_libcxx_inst
+
+RUN mkdir belcarra_source
+COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
+
+RUN cd belcarra_source/examples \
+    && export SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install \
+    && ./build_docker1.sh
+
+
+#
+# Build concolic C++ examples - SymCC/QSYM
+#
+FROM builder_symcc_qsym AS builder_examples_cpp_qsym
+
+RUN mkdir /tmp/output
+
+RUN mkdir belcarra_source
+COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
+
+RUN cd belcarra_source/examples \
+    && export SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install \
     && ./build_docker2.sh
 
 

@@ -13,7 +13,7 @@ do
     mkdir -p generated/exec/sym++_qsym/sample_input
     
     pushd generated/exec/sym++_qsym
-    sym++ "$@" ../../../sample.cpp
+    ~/symcc_build/sym++ "$@" ../../../sample.cpp
     echo test | (./sample || true) 2>&1 | tee output
     csplit -f output_split output '/_sym_push_path_constraint /' '{*}'
     if [[ $(ls output_split?* | wc -l) == "1" ]]
