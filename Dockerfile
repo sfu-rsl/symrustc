@@ -169,7 +169,7 @@ RUN sudo apt-get update \
 
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/symcc_build symcc_build
 
-RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
+RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
     && cd rust_source \
     && sed -e 's/#ninja = false/ninja = true/' \
         config.toml.example > config.toml \
@@ -184,7 +184,7 @@ RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
 #
 FROM builder_rust AS builder_addons
 
-RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
+RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
     && cd symcc_build \
     && SYMCC_RUNTIME_DIR=~/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
        RUSTFLAGS="-L${SYMCC_RUNTIME_DIR} -Clink-arg=-Wl,-rpath,${SYMCC_RUNTIME_DIR} -C passes=symcc -lSymRuntime" \
@@ -297,7 +297,7 @@ ARG RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1b_rs
 ARG BELCARRA_INPUT=test
 
-RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
+RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
     && cd $BELCARRA_EXAMPLE \
     && SYMCC_RUNTIME_DIR=~/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
        RUSTFLAGS="-L${SYMCC_RUNTIME_DIR} -Clink-arg=-Wl,-rpath,${SYMCC_RUNTIME_DIR} -C passes=symcc -lSymRuntime" \
