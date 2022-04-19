@@ -32,8 +32,14 @@ docker build --target builder_addons -t belcarra_addons .
 # Create final image
 docker build --target builder_final -t belcarra_final .
 
-# Build concolic C++ examples
-docker build --target builder_examples_cpp -t belcarra_examples_cpp .
+# Build concolic C++ examples - SymCC/Z3, libcxx regular
+docker build --target builder_examples_cpp_z3_libcxx_reg -t belcarra_examples_cpp_z3_libcxx_reg .
+
+# Build concolic C++ examples - SymCC/Z3, libcxx instrumented
+docker build --target builder_examples_cpp_z3_libcxx_inst -t belcarra_examples_cpp_z3_libcxx_inst .
+
+# Build concolic C++ examples - SymCC/QSYM
+docker build --target builder_examples_cpp_qsym -t belcarra_examples_cpp_qsym .
 
 # Build concolic Rust examples - Initialization
 docker build --target builder_examples_rs_init -t belcarra_examples_rs_init .

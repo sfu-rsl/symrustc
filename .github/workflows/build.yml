@@ -35,8 +35,14 @@ jobs:
       - name: Create final image
         run: docker build --target builder_final -t belcarra_final .
 
-      - name: Build concolic C++ examples
-        run: docker build --target builder_examples_cpp -t belcarra_examples_cpp .
+      - name: Build concolic C++ examples - SymCC/Z3, libcxx regular
+        run: docker build --target builder_examples_cpp_z3_libcxx_reg -t belcarra_examples_cpp_z3_libcxx_reg .
+
+      - name: Build concolic C++ examples - SymCC/Z3, libcxx instrumented
+        run: docker build --target builder_examples_cpp_z3_libcxx_inst -t belcarra_examples_cpp_z3_libcxx_inst .
+
+      - name: Build concolic C++ examples - SymCC/QSYM
+        run: docker build --target builder_examples_cpp_qsym -t belcarra_examples_cpp_qsym .
 
       - name: Build concolic Rust examples - Initialization
         run: docker build --target builder_examples_rs_init -t belcarra_examples_rs_init .
