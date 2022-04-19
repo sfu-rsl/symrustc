@@ -1,0 +1,1 @@
+../exec_rustc_stdin.sh
