@@ -41,6 +41,9 @@ docker build --target builder_examples_cpp_z3_libcxx_inst -t belcarra_examples_c
 # Build concolic C++ examples - SymCC/QSYM
 docker build --target builder_examples_cpp_qsym -t belcarra_examples_cpp_qsym .
 
+# Build concolic C++ examples - Only clang
+docker build --target builder_examples_cpp_clang -t belcarra_examples_cpp_clang .
+
 # Build concolic Rust examples - Initialization
 docker build --target builder_examples_rs_init -t belcarra_examples_rs_init .
 

@@ -44,6 +44,9 @@ jobs:
       - name: Build concolic C++ examples - SymCC/QSYM
         run: docker build --target builder_examples_cpp_qsym -t belcarra_examples_cpp_qsym .
 
+      - name: Build concolic C++ examples - Only clang
+        run: docker build --target builder_examples_cpp_clang -t belcarra_examples_cpp_clang .
+
       - name: Build concolic Rust examples - Initialization
         run: docker build --target builder_examples_rs_init -t belcarra_examples_rs_init .
 
