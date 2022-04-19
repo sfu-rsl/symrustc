@@ -190,14 +190,13 @@ COPY --chown=ubuntu:ubuntu examples/exec_cargo.sh $HOME/
 #
 FROM builder_rust AS builder_addons
 
-RUN cd symcc_build \
-    && ~/exec_cargo.sh install --path ~/symcc_source/util/symcc_fuzzing_helper
+RUN ~/exec_cargo.sh install --path ~/symcc_source/util/symcc_fuzzing_helper
 
 
 #
 # Create main image
 #
-FROM builder_rust as builder_main
+FROM builder_rust AS builder_main
 
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/libcxx_symcc_install libcxx_symcc_install
 
@@ -214,7 +213,7 @@ RUN mkdir /tmp/output
 #
 # Create final image
 #
-FROM builder_main as builder_final
+FROM builder_main AS builder_final
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
