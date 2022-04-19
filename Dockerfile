@@ -24,6 +24,8 @@
 #
 FROM ubuntu:20.04 AS builder_base
 
+SHELL ["/bin/bash", "-c"]
+
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         sudo \
@@ -173,7 +175,7 @@ RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
         config.toml.example > config.toml \
     && sed -i -e 's/is_x86_feature_detected!("sse2")/false \&\& &/' \
         src/librustc_span/analyze_source_file.rs \
-    && export SYMCC_RUNTIME_DIR=$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
+    && export SYMCC_RUNTIME_DIR=~/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
     && /usr/bin/python3 ./x.py build
 
 
@@ -184,7 +186,7 @@ FROM builder_rust AS builder_addons
 
 RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
     && cd symcc_build \
-    && SYMCC_RUNTIME_DIR=$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
+    && SYMCC_RUNTIME_DIR=~/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
        RUSTFLAGS="-L${SYMCC_RUNTIME_DIR} -Clink-arg=-Wl,-rpath,${SYMCC_RUNTIME_DIR} -C passes=symcc -lSymRuntime" \
        RUSTC=~/rust_source/build/x86_64-unknown-linux-gnu/stage2/bin/rustc \
        ~/rust_source/build/x86_64-unknown-linux-gnu/stage0/bin/cargo install --path ~/symcc_source/util/symcc_fuzzing_helper
@@ -244,7 +246,7 @@ RUN mkdir belcarra_source
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 RUN cd belcarra_source/examples \
-    && export SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install \
+    && export SYMCC_LIBCXX_PATH=~/libcxx_symcc_install \
     && ./build_docker1.sh
 
 
@@ -259,7 +261,7 @@ RUN mkdir belcarra_source
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 RUN cd belcarra_source/examples \
-    && export SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install \
+    && export SYMCC_LIBCXX_PATH=~/libcxx_symcc_install \
     && ./build_docker2.sh
 
 
@@ -286,7 +288,7 @@ ARG HEXDUMP="hexdump -v -C"
 
 RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
     && cd $BELCARRA_EXAMPLE \
-    && SYMCC_RUNTIME_DIR=$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
+    && SYMCC_RUNTIME_DIR=~/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
        RUSTFLAGS="-L${SYMCC_RUNTIME_DIR} -Clink-arg=-Wl,-rpath,${SYMCC_RUNTIME_DIR} -C passes=symcc -lSymRuntime" \
        RUSTC=$RUST_BUILD/stage2/bin/rustc \
        $RUST_BUILD/stage0/bin/cargo rustc
@@ -295,7 +297,6 @@ RUN cd $BELCARRA_EXAMPLE \
     && echo $BELCARRA_INPUT | ./target/debug/belcarra \
     && echo $BELCARRA_INPUT | $HEXDUMP /dev/stdin > /tmp/belcarra_stdin_hex
 
-SHELL ["/bin/bash", "-c"]
 RUN ls /tmp/output/* | while read i ; \
     do echo -e "=============================\n$i" ; \
        $HEXDUMP "$i" | (git diff --color-words --no-index /tmp/belcarra_stdin_hex - || true) | tail -n +5 ; \
