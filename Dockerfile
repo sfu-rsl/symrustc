@@ -310,12 +310,24 @@ RUN cd $BELCARRA_EXAMPLE \
 
 
 #
-# Build concolic Rust examples - Rust compiler
+# Build concolic Rust examples - Rust compiler, file
 #
-FROM builder_examples_rs_init AS builder_examples_rs_compiler
+FROM builder_examples_rs_init AS builder_examples_rs_compiler_file
 
 ARG RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1b_rs
 
 RUN cd $BELCARRA_EXAMPLE \
     && ./exec_rustc_file.sh -C passes=symcc -lSymRuntime
+
+
+#
+# Build concolic Rust examples - Rust compiler, stdin
+#
+FROM builder_examples_rs_init AS builder_examples_rs_compiler_stdin
+
+ARG RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
+ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_2_base_1a_rs
+
+RUN cd $BELCARRA_EXAMPLE \
+    && cat ./src/main.rs | ./exec_rustc_stdin.sh -C passes=symcc -lSymRuntime
