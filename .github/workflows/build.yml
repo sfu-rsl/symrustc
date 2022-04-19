@@ -32,6 +32,9 @@ jobs:
       - name: Build additional tools
         run: docker build --target builder_addons -t belcarra_addons .
 
+      - name: Create main image
+        run: docker build --target builder_main -t belcarra_main .
+
       - name: Create final image
         run: docker build --target builder_final -t belcarra_final .
 

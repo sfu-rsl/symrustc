@@ -29,6 +29,9 @@ docker build --target builder_rust -t belcarra_rust .
 # Build additional tools
 docker build --target builder_addons -t belcarra_addons .
 
+# Create main image
+docker build --target builder_main -t belcarra_main .
+
 # Create final image
 docker build --target builder_final -t belcarra_final .
 
