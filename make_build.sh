@@ -15,20 +15,16 @@ do
 done
 }
 
-function print_cmd () {
-    echo 'docker build --target '"$1"' -t belcarra_'"$(echo "$1" | cut -d _ -f 2-)"' .'
-}
-
 function print_yml () {
     echo '      - name: '"$1"
     echo -n '        run: '
-    print_cmd "$2"
+    echo 'docker build --target '"$2"' -t belcarra_'"$(echo "$2" | cut -d _ -f 2-)"' .'
     echo
 }
 
 function print_sh () {
     echo '# '"$1"
-    print_cmd "$2"
+    echo 'docker_b '"$(echo "$2" | cut -d _ -f 2-)"
     echo
 }
 
@@ -45,10 +41,15 @@ EOF
 parse_dockerfile print_yml >> "$fic"
 
 fic='generated/build.sh'
-cat > "$fic" <<EOF
+cat > "$fic" <<"EOF"
 #!/bin/bash
 
 set -euxo pipefail
+
+function docker_b () {
+  date
+  /usr/bin/time -v docker build --target "builder_$1" -t "belcarra_$1" .
+}
 
 EOF
 parse_dockerfile print_sh >> "$fic"
