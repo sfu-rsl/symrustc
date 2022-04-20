@@ -323,6 +323,7 @@ FROM builder_examples_rs_init AS builder_examples_rs_compiler_file
 ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1b_rs
 
 RUN cd $BELCARRA_EXAMPLE \
+    && export BELCARRA_INPUT_FILE=$BELCARRA_EXAMPLE/src/main.rs \
     && ../exec_rustc_file.sh -C passes=symcc -lSymRuntime
 
 
@@ -334,4 +335,5 @@ FROM builder_examples_rs_init AS builder_examples_rs_compiler_stdin
 ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_2_base_1a_rs
 
 RUN cd $BELCARRA_EXAMPLE \
-    && cat ./src/main.rs | ../exec_rustc_stdin.sh -C passes=symcc -lSymRuntime
+    && export BELCARRA_INPUT_FILE=$BELCARRA_EXAMPLE/src/main.rs \
+    && ../exec_rustc_stdin.sh -C passes=symcc -lSymRuntime

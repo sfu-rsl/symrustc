@@ -5,8 +5,7 @@
 
 set -euxo pipefail
 
-input_file1="$1"; shift
-input_file2="$1"; shift
+rustc_input_file="$1"; shift
 
 target_d=$BELCARRA_EXAMPLE/target/debug
 target_d_d=$target_d/deps
@@ -37,7 +36,7 @@ LD_LIBRARY_PATH="$target_d_d:$BELCARRA_LD_LIBRARY_PATH" \
 $BELCARRA_RUSTC \
   --crate-name belcarra \
   --edition=2018 \
-  "$input_file1" \
+  "$rustc_input_file" \
   --error-format=json \
   --json=diagnostic-rendered-ansi \
   --crate-type bin \
@@ -54,6 +53,6 @@ $BELCARRA_RUSTC \
   "$@" \
 || rustc_exit_code=$?
 
-$BELCARRA_EXAMPLE/../hexdump.sh "$input_file2"
+$BELCARRA_EXAMPLE/../hexdump.sh $BELCARRA_INPUT_FILE
 
 exit $rustc_exit_code

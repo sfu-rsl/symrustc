@@ -5,8 +5,6 @@
 
 set -euxo pipefail
 
-input_file=$BELCARRA_EXAMPLE/src/main.rs
+export SYMCC_INPUT_FILE=$BELCARRA_INPUT_FILE
 
-export SYMCC_INPUT_FILE="$input_file"
-
-$BELCARRA_EXAMPLE/../exec_rustc.sh "$input_file" "$input_file" "$@"
+$BELCARRA_EXAMPLE/../exec_rustc.sh $BELCARRA_INPUT_FILE "$@"
