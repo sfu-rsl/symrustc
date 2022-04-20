@@ -50,15 +50,6 @@ jobs:
       - name: Build concolic C++ examples - Only clang
         run: docker build --target builder_examples_cpp_clang -t belcarra_examples_cpp_clang .
 
-      - name: Build concolic Rust examples - Initialization
-        run: docker build --target builder_examples_rs_init -t belcarra_examples_rs_init .
-
-      - name: Build concolic Rust examples - Rust source
-        run: docker build --target builder_examples_rs_src -t belcarra_examples_rs_src .
-
-      - name: Build concolic Rust examples - Rust compiler, file
-        run: docker build --target builder_examples_rs_compiler_file -t belcarra_examples_rs_compiler_file .
-
-      - name: Build concolic Rust examples - Rust compiler, stdin
-        run: docker build --target builder_examples_rs_compiler_stdin -t belcarra_examples_rs_compiler_stdin .
+      - name: Build concolic Rust examples
+        run: docker build --target builder_examples_rs -t belcarra_examples_rs .
 

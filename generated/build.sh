@@ -47,15 +47,6 @@ docker build --target builder_examples_cpp_qsym -t belcarra_examples_cpp_qsym .
 # Build concolic C++ examples - Only clang
 docker build --target builder_examples_cpp_clang -t belcarra_examples_cpp_clang .
 
-# Build concolic Rust examples - Initialization
-docker build --target builder_examples_rs_init -t belcarra_examples_rs_init .
-
-# Build concolic Rust examples - Rust source
-docker build --target builder_examples_rs_src -t belcarra_examples_rs_src .
-
-# Build concolic Rust examples - Rust compiler, file
-docker build --target builder_examples_rs_compiler_file -t belcarra_examples_rs_compiler_file .
-
-# Build concolic Rust examples - Rust compiler, stdin
-docker build --target builder_examples_rs_compiler_stdin -t belcarra_examples_rs_compiler_stdin .
+# Build concolic Rust examples
+docker build --target builder_examples_rs -t belcarra_examples_rs .
 
