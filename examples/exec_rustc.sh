@@ -12,17 +12,16 @@ input_file2="$1"; shift
 
 mkdir -p target/debug/deps
 
+#
+
+metadata=b4b070263fc6e28b
 rustc_exit_code=0
 
 CARGO=$BELCARRA_CARGO \
-CARGO_BIN_NAME=belcarra \
-CARGO_CRATE_NAME=belcarra \
 CARGO_MANIFEST_DIR=$BELCARRA_EXAMPLE \
 CARGO_PKG_AUTHORS='' \
 CARGO_PKG_DESCRIPTION='' \
 CARGO_PKG_HOMEPAGE='' \
-CARGO_PKG_LICENSE='' \
-CARGO_PKG_LICENSE_FILE='' \
 CARGO_PKG_NAME=belcarra \
 CARGO_PKG_REPOSITORY='' \
 CARGO_PKG_VERSION=0.1.0 \
@@ -30,8 +29,7 @@ CARGO_PKG_VERSION_MAJOR=0 \
 CARGO_PKG_VERSION_MINOR=1 \
 CARGO_PKG_VERSION_PATCH=0 \
 CARGO_PKG_VERSION_PRE='' \
-CARGO_PRIMARY_PACKAGE=1 \
-LD_LIBRARY_PATH="$BELCARRA_EXAMPLE/target/debug/deps:$BELCARRA_LD_LIBRARY_PATH::$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build" \
+LD_LIBRARY_PATH="$BELCARRA_EXAMPLE/target/debug/deps:$BELCARRA_LD_LIBRARY_PATH" \
 \
 $BELCARRA_RUSTC \
   --crate-name belcarra \
@@ -43,8 +41,8 @@ $BELCARRA_RUSTC \
   --emit=dep-info,link \
   -C embed-bitcode=no \
   -C debuginfo=2 \
-  -C metadata=fdf6308bae5a5c1e \
-  -C extra-filename=-fdf6308bae5a5c1e \
+  -C metadata=$metadata \
+  -C extra-filename=-$metadata \
   --out-dir $BELCARRA_EXAMPLE/target/debug/deps \
   -C incremental=$BELCARRA_EXAMPLE/target/debug/incremental \
   -L dependency=$BELCARRA_EXAMPLE/target/debug/deps \
