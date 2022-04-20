@@ -35,7 +35,7 @@ RUN useradd -m -s /bin/bash ubuntu \
     && echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/ubuntu
 
 USER ubuntu
-ENV HOME /home/ubuntu
+ENV HOME=/home/ubuntu
 WORKDIR $HOME
 
 
@@ -44,7 +44,7 @@ WORKDIR $HOME
 #
 FROM builder_base AS builder_source
 
-ENV BELCARRA_LLVM_VERSION 10
+ENV BELCARRA_LLVM_VERSION=10
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -98,7 +98,7 @@ RUN sudo apt-get update \
         zlib1g-dev \
     && sudo apt-get clean
 RUN pip3 install lit
-ENV PATH $HOME/.local/bin:$PATH
+ENV PATH=$HOME/.local/bin:$PATH
 
 
 #
@@ -180,7 +180,7 @@ RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
 
 ENV BELCARRA_RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 
-ENV PATH $HOME/.cargo/bin:$PATH
+ENV PATH=$HOME/.cargo/bin:$PATH
 
 COPY --chown=ubuntu:ubuntu examples/exec_cargo.sh $HOME/
 
@@ -204,7 +204,7 @@ RUN mkdir symcc_build_clang \
     && ln -s ~/symcc_build/symcc symcc_build_clang/clang \
     && ln -s ~/symcc_build/sym++ symcc_build_clang/clang++
 
-ENV PATH $HOME/symcc_build:$PATH
+ENV PATH=$HOME/symcc_build:$PATH
 ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
 
 RUN mkdir /tmp/output
@@ -226,9 +226,9 @@ RUN ln -s ~/symcc_source/util/pure_concolic_execution.sh symcc_build
 COPY --chown=ubuntu:ubuntu --from=builder_afl $HOME/afl afl
 COPY --chown=ubuntu:ubuntu --from=builder_addons $HOME/.cargo .cargo
 
-ENV AFL_PATH $HOME/afl
-ENV AFL_CC clang-$BELCARRA_LLVM_VERSION
-ENV AFL_CXX clang++-$BELCARRA_LLVM_VERSION
+ENV AFL_PATH=$HOME/afl
+ENV AFL_CC=clang-$BELCARRA_LLVM_VERSION
+ENV AFL_CXX=clang++-$BELCARRA_LLVM_VERSION
 
 
 #
