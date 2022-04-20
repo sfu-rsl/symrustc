@@ -22,8 +22,10 @@ do
     then
         export BELCARRA_INPUT_FILE=$BELCARRA_EXAMPLE/src/main.rs
 
-        CARGO_TARGET_DIR=target_rustc_file ./exec_rustc_file.sh -C passes=symcc -lSymRuntime "${dir[@]:2}"
-        CARGO_TARGET_DIR=target_rustc_stdin ./exec_rustc_stdin.sh -C passes=symcc -lSymRuntime "${dir[@]:2}"
+        CARGO_TARGET_DIR=target_rustc_file_on ./exec_rustc_file.sh -C passes=symcc -lSymRuntime "${dir[@]:2}"
+        CARGO_TARGET_DIR=target_rustc_file_off ./exec_rustc_file.sh "${dir[@]:2}"
+        CARGO_TARGET_DIR=target_rustc_stdin_on ./exec_rustc_stdin.sh -C passes=symcc -lSymRuntime "${dir[@]:2}"
+        CARGO_TARGET_DIR=target_rustc_stdin_off ./exec_rustc_stdin.sh "${dir[@]:2}"
     fi
 
     ./exec_cargo.sh rustc --manifest-path $BELCARRA_EXAMPLE/Cargo.toml "${dir[@]:2}"
@@ -42,10 +44,13 @@ do
     if eval ${dir[1]}; then
         for target0 in target_rustc_file target_rustc_stdin
         do
-            target=${dir[0]}/${target0}
-            ls $target/$BELCARRA_TARGET_NAME/output | wc -l
-            cat $target/$BELCARRA_TARGET_NAME/hexdump_stdout
-            cat $target/$BELCARRA_TARGET_NAME/hexdump_stderr
+            for target_pass in on off
+            do
+                target=${dir[0]}/${target0}_$target_pass
+                ls $target/$BELCARRA_TARGET_NAME/output | wc -l
+                cat $target/$BELCARRA_TARGET_NAME/hexdump_stdout
+                cat $target/$BELCARRA_TARGET_NAME/hexdump_stderr
+            done
         done
     fi
 done

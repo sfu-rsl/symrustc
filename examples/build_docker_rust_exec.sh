@@ -7,6 +7,30 @@ set -euxo pipefail
 
 BELCARRA_TARGET_NAME=belcarra/source
 
+function belcarra_exec () {
+    declare -i code_expected="$1"; shift
+    target="$1"; shift
+    input="$@"
+    
+    output_dir=$BELCARRA_EXAMPLE0/$target/$BELCARRA_TARGET_NAME
+    export SYMCC_OUTPUT_DIR=$output_dir/output
+
+    mkdir -p $SYMCC_OUTPUT_DIR
+
+    declare -i code_actual=0
+    echo $input | $target/debug/belcarra || code_actual=$?
+    echo $input | ./hexdump.sh /dev/stdin
+
+    ls $output_dir/output | wc -l
+    cat $output_dir/hexdump_stdout
+    cat $output_dir/hexdump_stderr
+
+    if (( $code_expected != $code_actual )); then
+        echo "Unexpected exit code" >&2
+        exit 1
+    fi
+}
+
 for dir in "source_0_original_1a_rs 0 true 17 test" \
            "source_0_original_1b_rs 0 true 40 test" \
            "source_2_base_1a_rs 1 true 0" \
@@ -22,28 +46,20 @@ do
     
     for target0 in ${targets[@]}
     do
-        declare -i code_expected=${dir[1]}
-        target=${dir[0]}/${target0}
-        input="${dir[@]:4}"
-    
-        output_dir=$BELCARRA_EXAMPLE0/$target/$BELCARRA_TARGET_NAME
-        export SYMCC_OUTPUT_DIR=$output_dir/output
-
-        mkdir -p $SYMCC_OUTPUT_DIR
-        
-        declare -i code_actual=0
-        echo $input | $target/debug/belcarra || code_actual=$?
-        echo $input | ./hexdump.sh /dev/stdin
-
-        ls $output_dir/output | wc -l
-        cat $output_dir/hexdump_stdout
-        cat $output_dir/hexdump_stderr
-    
-        if (( $code_expected != $code_actual )); then
-            echo "Unexpected exit code" >&2
-            exit 1
-        fi
-        
+        belcarra_exec ${dir[1]} ${dir[0]}/${target0}_on "${dir[@]:4}"
         [ $(ls $SYMCC_OUTPUT_DIR | wc -l) -eq ${dir[3]} ]
+
+        target=${dir[0]}/${target0}_off
+        belcarra_exec ${dir[1]} $target "${dir[@]:4}"
+        
+        declare -i count=$(ls $SYMCC_OUTPUT_DIR | wc -l)
+        if (( $count != 0 )); then
+            if (( $count >= ${dir[3]} )); then
+                echo "check not expected to succeed" >&2
+                exit 1
+            else
+                echo "warning: $BELCARRA_EXAMPLE0/$target not empty" >&2
+            fi
+        fi
     done
 done

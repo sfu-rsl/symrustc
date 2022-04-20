@@ -296,6 +296,7 @@ FROM builder_main AS builder_examples_rs
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
         bsdmainutils \
+        clang \
     && sudo apt-get clean
 
 RUN mkdir belcarra_source
