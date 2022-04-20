@@ -7,12 +7,16 @@ set -euxo pipefail
 
 rustc_input_file="$1"; shift
 
-target_d=$BELCARRA_EXAMPLE/target/debug
+target=$BELCARRA_EXAMPLE/$CARGO_TARGET_DIR
+target_d=$target/debug
 target_d_d=$target_d/deps
 
 #
 
-mkdir -p $target_d_d
+export SYMCC_OUTPUT_DIR=$target/$BELCARRA_TARGET_NAME/output
+
+mkdir -p $target_d_d \
+         $SYMCC_OUTPUT_DIR
 
 #
 
@@ -52,6 +56,8 @@ $BELCARRA_RUSTC \
   -Clink-arg=-Wl,-rpath,$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
   "$@" \
 || rustc_exit_code=$?
+
+ln -s $target_d_d/belcarra-$metadata $target_d/belcarra
 
 $BELCARRA_EXAMPLE/../hexdump.sh $BELCARRA_INPUT_FILE
 

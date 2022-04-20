@@ -6,9 +6,14 @@
 set -euxo pipefail
 
 export SYMCC_NO_SYMBOLIC_INPUT=yes
-SYMCC_RUNTIME_DIR=~/symcc_build/SymRuntime-prefix/src/SymRuntime-build
 
-export RUSTFLAGS="-L${SYMCC_RUNTIME_DIR} -Clink-arg=-Wl,-rpath,${SYMCC_RUNTIME_DIR} -C passes=symcc -lSymRuntime"
+SYMCC_RUNTIME_DIR=~/symcc_build/SymRuntime-prefix/src/SymRuntime-build
 export RUSTC=$BELCARRA_RUSTC
 
-$BELCARRA_CARGO "$@"
+#
+
+export PATH=~/symcc_build_clang:"$PATH" # e.g. for SymRustC programs explicitly using clang or clang++ in their build
+CARGO_TARGET_DIR=$BELCARRA_EXAMPLE/target_cargo \
+RUSTFLAGS="-L${SYMCC_RUNTIME_DIR} -Clink-arg=-Wl,-rpath,${SYMCC_RUNTIME_DIR} -C passes=symcc -lSymRuntime" \
+    $BELCARRA_CARGO "$@"
+

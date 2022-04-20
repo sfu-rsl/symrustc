@@ -5,18 +5,47 @@
 
 set -euxo pipefail
 
-export PATH=~/symcc_build_clang:"$PATH"
+export BELCARRA_TARGET_NAME=belcarra/compiler
+
+for dir in "source_0_original_1a_rs true" \
+           "source_0_original_1b_rs true" \
+           "source_2_base_1a_rs true" \
+           "source_4_symcc_1_rs false" \
+           "source_4_symcc_2_rs false -- -Clinker=clang++" # Semantically: should symlink to sym++ to enable concolic annotation.
+do
+    dir=( $dir )
+    
+    export BELCARRA_EXAMPLE=$BELCARRA_EXAMPLE0/${dir[0]}
+
+    if eval ${dir[1]}
+       # TODO: at the time of writing, examples having several Rust source files (e.g. comprising build.rs) are not yet implemented
+    then
+        export BELCARRA_INPUT_FILE=$BELCARRA_EXAMPLE/src/main.rs
+
+        CARGO_TARGET_DIR=target_rustc_file ./exec_rustc_file.sh -C passes=symcc -lSymRuntime "${dir[@]:2}"
+        CARGO_TARGET_DIR=target_rustc_stdin ./exec_rustc_stdin.sh -C passes=symcc -lSymRuntime "${dir[@]:2}"
+    fi
+
+    ./exec_cargo.sh rustc --manifest-path $BELCARRA_EXAMPLE/Cargo.toml "${dir[@]:2}"
+done
 
 #
 
-for dir in source_0_original_1a_rs \
-           source_0_original_1b_rs \
-           source_2_base_1a_rs \
-           source_4_symcc_1_rs \
-           "source_4_symcc_2_rs -- -Clinker=clang++" # Semantically: should symlink to sym++ to enable concolic annotation.
+for dir in "source_0_original_1a_rs true" \
+           "source_0_original_1b_rs true" \
+           "source_2_base_1a_rs true" \
+           "source_4_symcc_1_rs false" \
+           "source_4_symcc_2_rs false"
 do
     dir=( $dir )
-    pushd ${dir[0]}
-    ~/exec_cargo.sh rustc "${dir[@]:1}"
-    popd
+
+    if eval ${dir[1]}; then
+        for target0 in target_rustc_file target_rustc_stdin
+        do
+            target=${dir[0]}/${target0}
+            ls $target/$BELCARRA_TARGET_NAME/output | wc -l
+            cat $target/$BELCARRA_TARGET_NAME/hexdump_stdout
+            cat $target/$BELCARRA_TARGET_NAME/hexdump_stderr
+        done
+    fi
 done

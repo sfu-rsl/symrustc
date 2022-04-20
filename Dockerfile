@@ -193,7 +193,8 @@ COPY --chown=ubuntu:ubuntu examples/exec_cargo.sh $HOME/
 #
 FROM builder_rust AS builder_addons
 
-RUN ~/exec_cargo.sh install --path ~/symcc_source/util/symcc_fuzzing_helper
+RUN export BELCARRA_EXAMPLE=~/symcc_source/util/symcc_fuzzing_helper \
+    && ~/exec_cargo.sh install --path $BELCARRA_EXAMPLE
 
 
 #
@@ -288,9 +289,9 @@ RUN cd belcarra_source/examples \
 
 
 #
-# Build concolic Rust examples - Initialization
+# Build concolic Rust examples
 #
-FROM builder_main AS builder_examples_rs_init
+FROM builder_main AS builder_examples_rs
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -300,11 +301,7 @@ RUN sudo apt-get update \
 RUN mkdir belcarra_source
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
-
 #
-# Build concolic Rust examples - Rust source
-#
-FROM builder_examples_rs_init AS builder_examples_rs_src
 
 ARG BELCARRA_EXAMPLE0=$HOME/belcarra_source/examples
 
@@ -313,27 +310,3 @@ RUN cd $BELCARRA_EXAMPLE0 \
 
 RUN cd $BELCARRA_EXAMPLE0 \
     && ./build_docker_rust_exec.sh
-
-
-#
-# Build concolic Rust examples - Rust compiler, file
-#
-FROM builder_examples_rs_init AS builder_examples_rs_compiler_file
-
-ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1b_rs
-
-RUN cd $BELCARRA_EXAMPLE \
-    && export BELCARRA_INPUT_FILE=$BELCARRA_EXAMPLE/src/main.rs \
-    && ../exec_rustc_file.sh -C passes=symcc -lSymRuntime
-
-
-#
-# Build concolic Rust examples - Rust compiler, stdin
-#
-FROM builder_examples_rs_init AS builder_examples_rs_compiler_stdin
-
-ARG BELCARRA_EXAMPLE=$HOME/belcarra_source/examples/source_2_base_1a_rs
-
-RUN cd $BELCARRA_EXAMPLE \
-    && export BELCARRA_INPUT_FILE=$BELCARRA_EXAMPLE/src/main.rs \
-    && ../exec_rustc_stdin.sh -C passes=symcc -lSymRuntime

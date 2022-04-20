@@ -6,13 +6,14 @@
 set -euo pipefail
 
 hexdump="hexdump -v -C"
+output_dir=$SYMCC_OUTPUT_DIR/..
 
 #
 
-$hexdump "$1" > /tmp/belcarra_stdin_hex
+$hexdump "$1" > $output_dir/hexdump_stdin
 
-(ls /tmp/output/* || true) | while read i
+(ls $SYMCC_OUTPUT_DIR/* || true) | while read i
 do
     echo -e "=============================\n$i"
-    $hexdump "$i" | (git diff --color-words --no-index /tmp/belcarra_stdin_hex - || true) | tail -n +5
-done
+    $hexdump "$i" | (git diff --color-words --no-index $output_dir/hexdump_stdin - || true) | tail -n +5
+done 2>$output_dir/hexdump_stderr >$output_dir/hexdump_stdout
