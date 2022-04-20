@@ -186,6 +186,7 @@ ENV BELCARRA_LD_LIBRARY_PATH=$BELCARRA_RUST_BUILD/stage2/lib
 ENV PATH=$HOME/.cargo/bin:$PATH
 
 COPY --chown=ubuntu:ubuntu examples/exec_cargo.sh $HOME/
+COPY --chown=ubuntu:ubuntu examples/wait_all.sh $HOME/
 
 
 #
@@ -193,7 +194,9 @@ COPY --chown=ubuntu:ubuntu examples/exec_cargo.sh $HOME/
 #
 FROM builder_rust AS builder_addons
 
-RUN export BELCARRA_EXAMPLE=~/symcc_source/util/symcc_fuzzing_helper \
+RUN source ~/wait_all.sh \
+    && export -f wait_all \
+    && export BELCARRA_EXAMPLE=~/symcc_source/util/symcc_fuzzing_helper \
     && ~/exec_cargo.sh install --path $BELCARRA_EXAMPLE
 
 
