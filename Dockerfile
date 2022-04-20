@@ -178,8 +178,11 @@ RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
     && export SYMCC_RUNTIME_DIR=~/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
     && /usr/bin/python3 ./x.py build
 
-ENV BELCARRA_RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
+ARG BELCARRA_RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 
+ENV BELCARRA_CARGO=$BELCARRA_RUST_BUILD/stage0/bin/cargo
+ENV BELCARRA_RUSTC=$BELCARRA_RUST_BUILD/stage2/bin/rustc
+ENV BELCARRA_LD_LIBRARY_PATH=$BELCARRA_RUST_BUILD/stage2/lib
 ENV PATH=$HOME/.cargo/bin:$PATH
 
 COPY --chown=ubuntu:ubuntu examples/exec_cargo.sh $HOME/

@@ -5,7 +5,6 @@
 
 set -euxo pipefail
 
-dir_rustc=$BELCARRA_RUST_BUILD/stage2
 input_file1="$1"; shift
 input_file2="$1"; shift
 
@@ -15,7 +14,7 @@ mkdir -p target/debug/deps
 
 rustc_exit_code=0
 
-CARGO=$BELCARRA_RUST_BUILD/stage0/bin/cargo \
+CARGO=$BELCARRA_CARGO \
 CARGO_BIN_NAME=belcarra \
 CARGO_CRATE_NAME=belcarra \
 CARGO_MANIFEST_DIR=$BELCARRA_EXAMPLE \
@@ -32,9 +31,9 @@ CARGO_PKG_VERSION_MINOR=1 \
 CARGO_PKG_VERSION_PATCH=0 \
 CARGO_PKG_VERSION_PRE='' \
 CARGO_PRIMARY_PACKAGE=1 \
-LD_LIBRARY_PATH="$BELCARRA_EXAMPLE/target/debug/deps:$dir_rustc/lib::$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build" \
+LD_LIBRARY_PATH="$BELCARRA_EXAMPLE/target/debug/deps:$BELCARRA_LD_LIBRARY_PATH::$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build" \
 \
-$dir_rustc/bin/rustc \
+$BELCARRA_RUSTC \
   --crate-name belcarra \
   --edition=2018 \
   "$input_file1" \
