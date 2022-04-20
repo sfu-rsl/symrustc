@@ -8,9 +8,12 @@ set -euxo pipefail
 input_file1="$1"; shift
 input_file2="$1"; shift
 
+target_d=$BELCARRA_EXAMPLE/target/debug
+target_d_d=$target_d/deps
+
 #
 
-mkdir -p target/debug/deps
+mkdir -p $target_d_d
 
 #
 
@@ -29,7 +32,7 @@ CARGO_PKG_VERSION_MAJOR=0 \
 CARGO_PKG_VERSION_MINOR=1 \
 CARGO_PKG_VERSION_PATCH=0 \
 CARGO_PKG_VERSION_PRE='' \
-LD_LIBRARY_PATH="$BELCARRA_EXAMPLE/target/debug/deps:$BELCARRA_LD_LIBRARY_PATH" \
+LD_LIBRARY_PATH="$target_d_d:$BELCARRA_LD_LIBRARY_PATH" \
 \
 $BELCARRA_RUSTC \
   --crate-name belcarra \
@@ -43,9 +46,9 @@ $BELCARRA_RUSTC \
   -C debuginfo=2 \
   -C metadata=$metadata \
   -C extra-filename=-$metadata \
-  --out-dir $BELCARRA_EXAMPLE/target/debug/deps \
-  -C incremental=$BELCARRA_EXAMPLE/target/debug/incremental \
-  -L dependency=$BELCARRA_EXAMPLE/target/debug/deps \
+  --out-dir $target_d_d \
+  -C incremental=$target_d/incremental \
+  -L dependency=$target_d_d \
   -L$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
   -Clink-arg=-Wl,-rpath,$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
   "$@" \
