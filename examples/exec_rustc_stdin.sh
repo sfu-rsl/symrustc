@@ -7,4 +7,4 @@ set -euxo pipefail
 
 tee_file=/tmp/belcarra_stdin
 
-tee $tee_file | $BELCARRA_EXAMPLE/../exec_rustc.sh - $tee_file
+tee $tee_file | $BELCARRA_EXAMPLE/../exec_rustc.sh - $tee_file "$@"
