@@ -5,4 +5,4 @@
 
 set -euxo pipefail
 
-find . -name sample -delete
+cat $BELCARRA_INPUT_FILE | $BELCARRA_HOME_RS/rustc.sh - "$@"

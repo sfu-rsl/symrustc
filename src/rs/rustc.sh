@@ -59,6 +59,6 @@ $BELCARRA_RUSTC \
 
 ln -s $target_d_d/belcarra-$metadata $target_d/belcarra
 
-$BELCARRA_EXAMPLE/../hexdump.sh $BELCARRA_INPUT_FILE
+$BELCARRA_HOME_RS/hexdump.sh $BELCARRA_INPUT_FILE
 
 exit $rustc_exit_code

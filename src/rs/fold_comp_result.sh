@@ -19,7 +19,7 @@ function belcarra_exec () {
 
     declare -i code_actual=0
     echo $input | $target/debug/belcarra || code_actual=$?
-    echo $input | ./hexdump.sh /dev/stdin
+    echo $input | $BELCARRA_HOME_RS/hexdump.sh /dev/stdin
 
     ls $output_dir/output | wc -l
     cat $output_dir/hexdump_stdout

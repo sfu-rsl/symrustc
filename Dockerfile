@@ -57,6 +57,10 @@ RUN sudo apt-get update \
         python3-pip \
     && sudo apt-get clean
 
+ENV BELCARRA_HOME=$HOME/belcarra_source
+ENV BELCARRA_HOME_CPP=$BELCARRA_HOME/src/cpp
+ENV BELCARRA_HOME_RS=$BELCARRA_HOME/src/rs
+
 # Download the Rust compiler with SymCC
 ARG BELCARRA_RUST_VERSION
 ENV BELCARRA_RUST_VERSION=${BELCARRA_RUST_VERSION:-symcc_comp_utils/1.46.0}
@@ -185,8 +189,8 @@ ENV BELCARRA_RUSTC=$BELCARRA_RUST_BUILD/stage2/bin/rustc
 ENV BELCARRA_LD_LIBRARY_PATH=$BELCARRA_RUST_BUILD/stage2/lib
 ENV PATH=$HOME/.cargo/bin:$PATH
 
-COPY --chown=ubuntu:ubuntu examples/exec_cargo.sh $HOME/
-COPY --chown=ubuntu:ubuntu examples/wait_all.sh $HOME/
+COPY --chown=ubuntu:ubuntu src/rs/cargo.sh $BELCARRA_HOME_RS/
+COPY --chown=ubuntu:ubuntu src/rs/wait_all.sh $BELCARRA_HOME_RS/
 
 
 #
@@ -194,10 +198,10 @@ COPY --chown=ubuntu:ubuntu examples/wait_all.sh $HOME/
 #
 FROM builder_rust AS builder_addons
 
-RUN source ~/wait_all.sh \
+RUN source $BELCARRA_HOME_RS/wait_all.sh \
     && export -f wait_all \
     && export BELCARRA_EXAMPLE=~/symcc_source/util/symcc_fuzzing_helper \
-    && ~/exec_cargo.sh install --path $BELCARRA_EXAMPLE
+    && $BELCARRA_HOME_RS/cargo.sh install --path $BELCARRA_EXAMPLE
 
 
 #
@@ -243,12 +247,12 @@ ENV AFL_CXX=clang++-$BELCARRA_LLVM_VERSION
 #
 FROM builder_symcc_simple AS builder_examples_cpp_z3_libcxx_reg
 
-RUN mkdir belcarra_source
+COPY --chown=ubuntu:ubuntu src/cpp belcarra_source/src/cpp
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 RUN cd belcarra_source/examples \
     && export SYMCC_REGULAR_LIBCXX=yes \
-    && ./build_docker1.sh
+    && $BELCARRA_HOME_CPP/main_fold_sym++_simple_z3.sh
 
 
 #
@@ -256,12 +260,12 @@ RUN cd belcarra_source/examples \
 #
 FROM builder_symcc_libcxx AS builder_examples_cpp_z3_libcxx_inst
 
-RUN mkdir belcarra_source
+COPY --chown=ubuntu:ubuntu src/cpp belcarra_source/src/cpp
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 RUN cd belcarra_source/examples \
     && export SYMCC_LIBCXX_PATH=~/libcxx_symcc_install \
-    && ./build_docker1.sh
+    && $BELCARRA_HOME_CPP/main_fold_sym++_simple_z3.sh
 
 
 #
@@ -271,12 +275,12 @@ FROM builder_symcc_qsym AS builder_examples_cpp_qsym
 
 RUN mkdir /tmp/output
 
-RUN mkdir belcarra_source
+COPY --chown=ubuntu:ubuntu src/cpp belcarra_source/src/cpp
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 RUN cd belcarra_source/examples \
     && export SYMCC_LIBCXX_PATH=~/libcxx_symcc_install \
-    && ./build_docker2.sh
+    && $BELCARRA_HOME_CPP/main_fold_sym++_qsym.sh
 
 
 #
@@ -284,11 +288,11 @@ RUN cd belcarra_source/examples \
 #
 FROM builder_source AS builder_examples_cpp_clang
 
-RUN mkdir belcarra_source
+COPY --chown=ubuntu:ubuntu src/cpp belcarra_source/src/cpp
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 RUN cd belcarra_source/examples \
-    && ./build_docker_none.sh
+    && $BELCARRA_HOME_CPP/main_fold_clang++.sh
 
 
 #
@@ -302,7 +306,7 @@ RUN sudo apt-get update \
         clang \
     && sudo apt-get clean
 
-RUN mkdir belcarra_source
+COPY --chown=ubuntu:ubuntu src/rs belcarra_source/src/rs
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 #
@@ -310,7 +314,7 @@ COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 ARG BELCARRA_EXAMPLE0=$HOME/belcarra_source/examples
 
 RUN cd $BELCARRA_EXAMPLE0 \
-    && ./build_docker_rust_compile.sh
+    && $BELCARRA_HOME_RS/fold_own_compiler.sh
 
 RUN cd $BELCARRA_EXAMPLE0 \
-    && ./build_docker_rust_exec.sh
+    && $BELCARRA_HOME_RS/fold_comp_result.sh

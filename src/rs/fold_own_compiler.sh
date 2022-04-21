@@ -5,7 +5,7 @@
 
 set -euxo pipefail
 
-source ./wait_all.sh
+source $BELCARRA_HOME_RS/wait_all.sh
 
 export -f wait_all
 
@@ -26,13 +26,13 @@ do
     then
         export BELCARRA_INPUT_FILE=$BELCARRA_EXAMPLE/src/main.rs
 
-        CARGO_TARGET_DIR=target_rustc_file_on ./exec_rustc_file.sh -C passes=symcc -lSymRuntime "${dir[@]:2}" &
-        CARGO_TARGET_DIR=target_rustc_file_off ./exec_rustc_file.sh "${dir[@]:2}" &
-        CARGO_TARGET_DIR=target_rustc_stdin_on ./exec_rustc_stdin.sh -C passes=symcc -lSymRuntime "${dir[@]:2}" &
-        CARGO_TARGET_DIR=target_rustc_stdin_off ./exec_rustc_stdin.sh "${dir[@]:2}" &
+        CARGO_TARGET_DIR=target_rustc_file_on $BELCARRA_HOME_RS/rustc_file.sh -C passes=symcc -lSymRuntime "${dir[@]:2}" &
+        CARGO_TARGET_DIR=target_rustc_file_off $BELCARRA_HOME_RS/rustc_file.sh "${dir[@]:2}" &
+        CARGO_TARGET_DIR=target_rustc_stdin_on $BELCARRA_HOME_RS/rustc_stdin.sh -C passes=symcc -lSymRuntime "${dir[@]:2}" &
+        CARGO_TARGET_DIR=target_rustc_stdin_off $BELCARRA_HOME_RS/rustc_stdin.sh "${dir[@]:2}" &
     fi
 
-    ./exec_cargo.sh rustc --manifest-path $BELCARRA_EXAMPLE/Cargo.toml "${dir[@]:2}" &
+    $BELCARRA_HOME_RS/cargo.sh rustc --manifest-path $BELCARRA_EXAMPLE/Cargo.toml "${dir[@]:2}" &
 done
 
 wait_all
