@@ -60,6 +60,7 @@ RUN sudo apt-get update \
 ENV BELCARRA_HOME=$HOME/belcarra_source
 ENV BELCARRA_HOME_CPP=$BELCARRA_HOME/src/cpp
 ENV BELCARRA_HOME_RS=$BELCARRA_HOME/src/rs
+ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
 
 # Download the Rust compiler with SymCC
 ARG BELCARRA_RUST_VERSION
@@ -140,7 +141,7 @@ RUN export SYMCC_REGULAR_LIBCXX=yes SYMCC_NO_SYMBOLIC_INPUT=yes \
   -DLLVM_TARGETS_TO_BUILD="X86" \
   -DLLVM_DISTRIBUTION_COMPONENTS="cxx;cxxabi;cxx-headers" \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX=~/libcxx_symcc_install \
+  -DCMAKE_INSTALL_PREFIX=$SYMCC_LIBCXX_PATH \
   -DCMAKE_C_COMPILER=$HOME/symcc_build_simple/symcc \
   -DCMAKE_CXX_COMPILER=$HOME/symcc_build_simple/sym++ \
   && ninja distribution \
@@ -171,7 +172,11 @@ RUN sudo apt-get update \
         curl \
     && sudo apt-get clean
 
+#
+
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/symcc_build symcc_build
+
+#
 
 RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
     && cd rust_source \
@@ -182,6 +187,8 @@ RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
     && export SYMCC_RUNTIME_DIR=~/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
     && /usr/bin/python3 ./x.py build
 
+#
+
 ARG BELCARRA_RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 
 ENV BELCARRA_CARGO=$BELCARRA_RUST_BUILD/stage0/bin/cargo
@@ -189,8 +196,13 @@ ENV BELCARRA_RUSTC=$BELCARRA_RUST_BUILD/stage2/bin/rustc
 ENV BELCARRA_LD_LIBRARY_PATH=$BELCARRA_RUST_BUILD/stage2/lib
 ENV PATH=$HOME/.cargo/bin:$PATH
 
+COPY --chown=ubuntu:ubuntu --from=builder_symcc_libcxx $SYMCC_LIBCXX_PATH $SYMCC_LIBCXX_PATH
 COPY --chown=ubuntu:ubuntu src/rs/cargo.sh $BELCARRA_HOME_RS/
 COPY --chown=ubuntu:ubuntu src/rs/wait_all.sh $BELCARRA_HOME_RS/
+
+RUN mkdir symcc_build_clang \
+    && ln -s ~/symcc_build/symcc symcc_build_clang/clang \
+    && ln -s ~/symcc_build/sym++ symcc_build_clang/clang++
 
 
 #
@@ -205,26 +217,9 @@ RUN source $BELCARRA_HOME_RS/wait_all.sh \
 
 
 #
-# Create main image
-#
-FROM builder_rust AS builder_main
-
-COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/libcxx_symcc_install libcxx_symcc_install
-
-RUN mkdir symcc_build_clang \
-    && ln -s ~/symcc_build/symcc symcc_build_clang/clang \
-    && ln -s ~/symcc_build/sym++ symcc_build_clang/clang++
-
-ENV PATH=$HOME/symcc_build:$PATH
-ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
-
-RUN mkdir /tmp/output
-
-
-#
 # Create final image
 #
-FROM builder_main AS builder_final
+FROM builder_rust AS builder_final
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -236,6 +231,8 @@ RUN sudo apt-get update \
 RUN ln -s ~/symcc_source/util/pure_concolic_execution.sh symcc_build
 COPY --chown=ubuntu:ubuntu --from=builder_afl $HOME/afl afl
 COPY --chown=ubuntu:ubuntu --from=builder_addons $HOME/.cargo .cargo
+
+ENV PATH=$HOME/symcc_build:$PATH
 
 ENV AFL_PATH=$HOME/afl
 ENV AFL_CC=clang-$BELCARRA_LLVM_VERSION
@@ -264,7 +261,6 @@ COPY --chown=ubuntu:ubuntu src/cpp belcarra_source/src/cpp
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 RUN cd belcarra_source/examples \
-    && export SYMCC_LIBCXX_PATH=~/libcxx_symcc_install \
     && $BELCARRA_HOME_CPP/main_fold_sym++_simple_z3.sh
 
 
@@ -279,7 +275,6 @@ COPY --chown=ubuntu:ubuntu src/cpp belcarra_source/src/cpp
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 RUN cd belcarra_source/examples \
-    && export SYMCC_LIBCXX_PATH=~/libcxx_symcc_install \
     && $BELCARRA_HOME_CPP/main_fold_sym++_qsym.sh
 
 
@@ -298,7 +293,7 @@ RUN cd belcarra_source/examples \
 #
 # Build concolic Rust examples
 #
-FROM builder_main AS builder_examples_rs
+FROM builder_rust AS builder_examples_rs
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
