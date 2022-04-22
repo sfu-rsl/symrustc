@@ -28,17 +28,14 @@ docker_b symcc_libcxx
 # Build SymCC Qsym backend
 docker_b symcc_qsym
 
-# Build Rust compiler with SymCC support
-docker_b rust
+# Build SymRustC
+docker_b symrustc
 
 # Build additional tools
 docker_b addons
 
-# Create main image
+# Build main image
 docker_b main
-
-# Create final image
-docker_b final
 
 # Build concolic C++ examples - SymCC/Z3, libcxx regular
 docker_b examples_cpp_z3_libcxx_reg

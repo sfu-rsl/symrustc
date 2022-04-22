@@ -26,17 +26,14 @@ jobs:
       - name: Build SymCC Qsym backend
         run: docker build --target builder_symcc_qsym -t belcarra_symcc_qsym .
 
-      - name: Build Rust compiler with SymCC support
-        run: docker build --target builder_rust -t belcarra_rust .
+      - name: Build SymRustC
+        run: docker build --target builder_symrustc -t belcarra_symrustc .
 
       - name: Build additional tools
         run: docker build --target builder_addons -t belcarra_addons .
 
-      - name: Create main image
+      - name: Build main image
         run: docker build --target builder_main -t belcarra_main .
-
-      - name: Create final image
-        run: docker build --target builder_final -t belcarra_final .
 
       - name: Build concolic C++ examples - SymCC/Z3, libcxx regular
         run: docker build --target builder_examples_cpp_z3_libcxx_reg -t belcarra_examples_cpp_z3_libcxx_reg .
