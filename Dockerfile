@@ -163,9 +163,9 @@ RUN mkdir symcc_build \
 
 
 #
-# Build Rust compiler with SymCC support
+# Build SymRustC
 #
-FROM builder_source AS builder_rust
+FROM builder_source AS builder_symrustc
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -208,7 +208,7 @@ RUN mkdir symcc_build_clang \
 #
 # Build additional tools
 #
-FROM builder_rust AS builder_addons
+FROM builder_symrustc AS builder_addons
 
 RUN source $BELCARRA_HOME_RS/wait_all.sh \
     && export -f wait_all \
@@ -217,9 +217,9 @@ RUN source $BELCARRA_HOME_RS/wait_all.sh \
 
 
 #
-# Create final image
+# Build main image
 #
-FROM builder_rust AS builder_final
+FROM builder_symrustc AS builder_main
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -293,7 +293,7 @@ RUN cd belcarra_source/examples \
 #
 # Build concolic Rust examples
 #
-FROM builder_rust AS builder_examples_rs
+FROM builder_symrustc AS builder_examples_rs
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
