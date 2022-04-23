@@ -11,7 +11,7 @@ do
     mkdir -p generated/llvm/clang++_isystem
 
     pushd generated/llvm/clang++_isystem
-    clang++-10 \
+    clang++-$BELCARRA_LLVM_VERSION \
         -isystem ~/libcxx_symcc_install/include/c++/v1 \
         -stdlib=libc++ \
         -S -emit-llvm "$@" ../../../sample.cpp
