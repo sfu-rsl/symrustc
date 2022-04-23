@@ -2,11 +2,6 @@
 
 set -euxo pipefail
 
-function docker_b () {
-  date
-  /usr/bin/time -v docker build --target "builder_$1" -t "belcarra_$1" .
-}
-
 # Set up Ubuntu environment
 docker_b base
 
