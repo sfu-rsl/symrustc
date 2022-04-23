@@ -46,10 +46,5 @@ cat > "$fic" <<"EOF"
 
 set -euxo pipefail
 
-function docker_b () {
-  date
-  /usr/bin/time -v docker build --target "builder_$1" -t "belcarra_$1" .
-}
-
 EOF
 parse_dockerfile print_sh >> "$fic"
