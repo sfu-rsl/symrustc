@@ -1,5 +1,5 @@
 name: Build all
-on: [push, pull_request]
+on: []
 jobs:
   all:
     runs-on: ubuntu-20.04
