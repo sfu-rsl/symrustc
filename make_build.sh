@@ -31,7 +31,7 @@ function print_sh () {
 fic='.github/workflows/build.yml'
 cat > "$fic" <<EOF
 name: Build all
-on: [push, pull_request]
+on: []
 jobs:
   all:
     runs-on: ubuntu-20.04
