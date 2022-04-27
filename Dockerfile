@@ -321,6 +321,7 @@ COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 #
 
+ARG BELCARRA_CI
 ARG BELCARRA_EXAMPLE0=$HOME/belcarra_source/examples
 
 RUN cd $BELCARRA_EXAMPLE0 \

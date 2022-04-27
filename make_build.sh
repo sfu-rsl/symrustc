@@ -18,7 +18,7 @@ done
 function print_yml () {
     echo '      - name: '"$1"
     echo -n '        run: '
-    echo 'docker build --target '"$2"' -t belcarra_'"$(echo "$2" | cut -d _ -f 2-)"' .'
+    echo 'docker build --target '"$2"' -t belcarra_'"$(echo "$2" | cut -d _ -f 2-)"' --build-arg BELCARRA_CI=yes .'
     echo
 }
 
@@ -31,7 +31,7 @@ function print_sh () {
 fic='.github/workflows/build.yml'
 cat > "$fic" <<EOF
 name: Build all
-on: []
+on: [push, pull_request]
 jobs:
   all:
     runs-on: ubuntu-20.04
