@@ -13,10 +13,13 @@ export RUSTC=$BELCARRA_RUSTC
 
 #
 
+# Note: Changing $PATH is optional. For instance, it can be done for supporting Rust programs using clang or clang++ in their build.
+PATH=~/clang_build:"$PATH" \
 CARGO_TARGET_DIR=$BELCARRA_EXAMPLE/target_cargo_off \
-    fork $BELCARRA_CARGO "$@" # Note: if the program relies on clang or clang++ in its build, then a tentative to find it in $PATH will typically be made (in this case, the environment is assumed to contain the binary in search; this can be done by natively installing the necessary on the OS side).
+    fork $BELCARRA_CARGO "$@"
 
-export PATH=~/symcc_build_clang:"$PATH" # e.g. for SymRustC programs explicitly using clang or clang++ in their build
+# Note: Same remarks apply for SymRustC programs. However here, we have to use the "concolic SymCC" versions of clang or clang++.
+PATH=~/symcc_build_clang:"$PATH" \
 CARGO_TARGET_DIR=$BELCARRA_EXAMPLE/target_cargo_on \
 RUSTFLAGS="$RUSTFLAGS -C passes=symcc -lSymRuntime" \
     fork $BELCARRA_CARGO "$@"

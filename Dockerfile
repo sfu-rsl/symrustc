@@ -314,11 +314,14 @@ FROM builder_symrustc AS builder_examples_rs
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
         bsdmainutils \
-        clang \
     && sudo apt-get clean
 
 COPY --chown=ubuntu:ubuntu src/rs belcarra_source/src/rs
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
+
+RUN mkdir clang_build \
+    && ln -s $(which clang-$BELCARRA_LLVM_VERSION) clang_build/clang \
+    && ln -s $(which clang++-$BELCARRA_LLVM_VERSION) clang_build/clang++
 
 #
 
