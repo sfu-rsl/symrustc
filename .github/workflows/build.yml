@@ -1,55 +1,55 @@
 name: Build all
-on: []
+on: [push, pull_request]
 jobs:
   all:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Set up Ubuntu environment
-        run: docker build --target builder_base -t belcarra_base .
+        run: docker build --target builder_base -t belcarra_base --build-arg BELCARRA_CI=yes .
 
       - name: Set up project source
-        run: docker build --target builder_source -t belcarra_source .
+        run: docker build --target builder_source -t belcarra_source --build-arg BELCARRA_CI=yes .
 
       - name: Set up project dependencies
-        run: docker build --target builder_depend -t belcarra_depend .
+        run: docker build --target builder_depend -t belcarra_depend --build-arg BELCARRA_CI=yes .
 
       - name: Build AFL
-        run: docker build --target builder_afl -t belcarra_afl .
+        run: docker build --target builder_afl -t belcarra_afl --build-arg BELCARRA_CI=yes .
 
       - name: Build SymCC simple backend
-        run: docker build --target builder_symcc_simple -t belcarra_symcc_simple .
+        run: docker build --target builder_symcc_simple -t belcarra_symcc_simple --build-arg BELCARRA_CI=yes .
 
       - name: Build LLVM libcxx using SymCC simple backend
-        run: docker build --target builder_symcc_libcxx -t belcarra_symcc_libcxx .
+        run: docker build --target builder_symcc_libcxx -t belcarra_symcc_libcxx --build-arg BELCARRA_CI=yes .
 
       - name: Build SymCC Qsym backend
-        run: docker build --target builder_symcc_qsym -t belcarra_symcc_qsym .
+        run: docker build --target builder_symcc_qsym -t belcarra_symcc_qsym --build-arg BELCARRA_CI=yes .
 
       - name: Build SymLLVM
-        run: docker build --target builder_symllvm -t belcarra_symllvm .
+        run: docker build --target builder_symllvm -t belcarra_symllvm --build-arg BELCARRA_CI=yes .
 
       - name: Build SymRustC
-        run: docker build --target builder_symrustc -t belcarra_symrustc .
+        run: docker build --target builder_symrustc -t belcarra_symrustc --build-arg BELCARRA_CI=yes .
 
       - name: Build additional tools
-        run: docker build --target builder_addons -t belcarra_addons .
+        run: docker build --target builder_addons -t belcarra_addons --build-arg BELCARRA_CI=yes .
 
       - name: Build main image
-        run: docker build --target builder_main -t belcarra_main .
+        run: docker build --target builder_main -t belcarra_main --build-arg BELCARRA_CI=yes .
 
       - name: Build concolic C++ examples - SymCC/Z3, libcxx regular
-        run: docker build --target builder_examples_cpp_z3_libcxx_reg -t belcarra_examples_cpp_z3_libcxx_reg .
+        run: docker build --target builder_examples_cpp_z3_libcxx_reg -t belcarra_examples_cpp_z3_libcxx_reg --build-arg BELCARRA_CI=yes .
 
       - name: Build concolic C++ examples - SymCC/Z3, libcxx instrumented
-        run: docker build --target builder_examples_cpp_z3_libcxx_inst -t belcarra_examples_cpp_z3_libcxx_inst .
+        run: docker build --target builder_examples_cpp_z3_libcxx_inst -t belcarra_examples_cpp_z3_libcxx_inst --build-arg BELCARRA_CI=yes .
 
       - name: Build concolic C++ examples - SymCC/QSYM
-        run: docker build --target builder_examples_cpp_qsym -t belcarra_examples_cpp_qsym .
+        run: docker build --target builder_examples_cpp_qsym -t belcarra_examples_cpp_qsym --build-arg BELCARRA_CI=yes .
 
       - name: Build concolic C++ examples - Only clang
-        run: docker build --target builder_examples_cpp_clang -t belcarra_examples_cpp_clang .
+        run: docker build --target builder_examples_cpp_clang -t belcarra_examples_cpp_clang --build-arg BELCARRA_CI=yes .
 
       - name: Build concolic Rust examples
-        run: docker build --target builder_examples_rs -t belcarra_examples_rs .
+        run: docker build --target builder_examples_rs -t belcarra_examples_rs --build-arg BELCARRA_CI=yes .
 
