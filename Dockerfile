@@ -163,6 +163,18 @@ RUN mkdir symcc_build \
 
 
 #
+# Build SymLLVM
+#
+FROM builder_source AS builder_symllvm
+
+COPY --chown=ubuntu:ubuntu src/llvm/cmake.sh $BELCARRA_HOME/src/llvm/
+
+RUN mkdir -p rust_source/build/x86_64-unknown-linux-gnu/llvm/build \
+  && cd rust_source/build/x86_64-unknown-linux-gnu/llvm/build \
+  && $BELCARRA_HOME/src/llvm/cmake.sh
+
+
+#
 # Build SymRustC
 #
 FROM builder_source AS builder_symrustc
@@ -175,6 +187,9 @@ RUN sudo apt-get update \
 #
 
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/symcc_build symcc_build
+
+RUN mkdir -p rust_source/build/x86_64-unknown-linux-gnu
+COPY --chown=ubuntu:ubuntu --from=builder_symllvm $HOME/rust_source/build/x86_64-unknown-linux-gnu/llvm rust_source/build/x86_64-unknown-linux-gnu/llvm
 
 #
 
