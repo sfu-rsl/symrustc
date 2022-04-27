@@ -7,8 +7,6 @@ set -euxo pipefail
 
 source $BELCARRA_HOME_RS/wait_all.sh
 
-export -f wait_all
-
 export BELCARRA_TARGET_NAME=belcarra/compiler
 
 for dir in "source_0_original_1a_rs true" \

@@ -25,3 +25,8 @@ function wait_all () {
         exit $err
     fi
 }
+
+#
+
+export -f fork
+export -f wait_all

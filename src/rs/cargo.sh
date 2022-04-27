@@ -14,11 +14,11 @@ export RUSTC=$BELCARRA_RUSTC
 #
 
 CARGO_TARGET_DIR=$BELCARRA_EXAMPLE/target_cargo_off \
-    $BELCARRA_CARGO "$@" & # Note: if the program relies on clang or clang++ in its build, then a tentative to find it in $PATH will typically be made (in this case, the environment is assumed to contain the binary in search; this can be done by natively installing the necessary on the OS side).
+    fork $BELCARRA_CARGO "$@" # Note: if the program relies on clang or clang++ in its build, then a tentative to find it in $PATH will typically be made (in this case, the environment is assumed to contain the binary in search; this can be done by natively installing the necessary on the OS side).
 
 export PATH=~/symcc_build_clang:"$PATH" # e.g. for SymRustC programs explicitly using clang or clang++ in their build
 CARGO_TARGET_DIR=$BELCARRA_EXAMPLE/target_cargo_on \
 RUSTFLAGS="$RUSTFLAGS -C passes=symcc -lSymRuntime" \
-    $BELCARRA_CARGO "$@" &
+    fork $BELCARRA_CARGO "$@"
 
 wait_all

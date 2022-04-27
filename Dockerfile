@@ -225,8 +225,9 @@ RUN mkdir symcc_build_clang \
 #
 FROM builder_symrustc AS builder_addons
 
+ARG BELCARRA_CI
+
 RUN source $BELCARRA_HOME_RS/wait_all.sh \
-    && export -f wait_all \
     && export BELCARRA_EXAMPLE=~/symcc_source/util/symcc_fuzzing_helper \
     && $BELCARRA_HOME_RS/cargo.sh install --path $BELCARRA_EXAMPLE
 
