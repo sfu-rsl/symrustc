@@ -23,6 +23,9 @@ docker_b symcc_libcxx
 # Build SymCC Qsym backend
 docker_b symcc_qsym
 
+# Build SymLLVM
+docker_b symllvm
+
 # Build SymRustC
 docker_b symrustc
 

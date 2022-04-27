@@ -26,6 +26,9 @@ jobs:
       - name: Build SymCC Qsym backend
         run: docker build --target builder_symcc_qsym -t belcarra_symcc_qsym .
 
+      - name: Build SymLLVM
+        run: docker build --target builder_symllvm -t belcarra_symllvm .
+
       - name: Build SymRustC
         run: docker build --target builder_symrustc -t belcarra_symrustc .
 
