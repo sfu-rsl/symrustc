@@ -61,4 +61,8 @@ ln -s $target_d_d/belcarra-$metadata $target_d/belcarra
 
 $BELCARRA_HOME_RS/hexdump.sh $BELCARRA_INPUT_FILE
 
-exit $rustc_exit_code
+if [[ ! -v BELCARRA_EX_SKIP_RUSTC ]] ; then
+    exit $rustc_exit_code
+else
+    echo "$target: rustc exit code: $rustc_exit_code" >&2
+fi
