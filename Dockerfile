@@ -44,7 +44,7 @@ WORKDIR $HOME
 #
 FROM builder_base AS builder_source
 
-ENV SYMRUSTC_LLVM_VERSION=10
+ENV SYMRUSTC_LLVM_VERSION=11
 
 # error: failed to get `cc` as a dependency of package `bootstrap v0.0.0 (/home/ubuntu/belcarra_source0/src/rs/rust_source/src/bootstrap)`
 # Caused by: failed to fetch `https://github.com/rust-lang/crates.io-index`
@@ -85,7 +85,7 @@ RUN [[ -v SYMRUSTC_RUST_VERSION ]] && dir='rust_source' || dir='belcarra_source0
 
 #
 RUN ln -s ~/rust_source/src/llvm-project llvm_source
-RUN git clone -b rust_runtime/20220326 https://github.com/sfu-rsl/LibAFL.git libafl
+RUN git clone -b rust_runtime/20221214 https://github.com/sfu-rsl/LibAFL.git libafl
 RUN ln -s ~/llvm_source/symcc symcc_source
 
 # Note: Depending on the commit revision, the Rust compiler source may not have yet a SymCC directory. In this docker stage, we treat such case as a "non-aborting failure" (subsequent stages may raise different errors).
@@ -228,7 +228,7 @@ RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
     && sed -i -e 's/is_x86_feature_detected!("sse2")/false \&\& &/' \
         src/librustc_span/analyze_source_file.rs \
     && export SYMCC_RUNTIME_DIR=$SYMRUSTC_RUNTIME_DIR \
-    && /usr/bin/python3 ./x.py build
+    && /usr/bin/python3 ./x.py build --stage 2
 
 #
 
@@ -290,9 +290,9 @@ FROM builder_symrustc AS builder_base_rust
 ENV RUSTUP_HOME=$HOME/rustup \
     CARGO_HOME=$HOME/cargo \
     PATH=$HOME/cargo/bin:$PATH \
-    RUST_VERSION=1.63.0
+    RUST_VERSION=1.65.0
 
-# https://github.com/rust-lang/docker-rust/blob/2301a502c3ff8bbf30c32a6ef2114f3b363c4553/1.63.0/bullseye/Dockerfile
+# https://github.com/rust-lang/docker-rust/blob/76e3311a6326bc93a1e96ad7ae06c05763b62b18/1.65.0/bullseye/Dockerfile
 RUN set -eux; \
     dpkgArch="$(dpkg --print-architecture)"; \
     case "${dpkgArch##*-}" in \
@@ -383,7 +383,7 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
 
 # Building the client-server main fuzzing loop
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
-      mkdir $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/target $SYMRUSTC_LIBAFL_SOLVING_DIR/runtime/target; \
+      mkdir $SYMRUSTC_LIBAFL_SOLVING_DIR/target; \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_SOLVING_DIR \
@@ -403,12 +403,11 @@ RUN sudo apt-get update \
         psmisc \
     && sudo apt-get clean
 
-COPY --chown=ubuntu:ubuntu --from=builder_libafl_solving $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/target $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/target
-COPY --chown=ubuntu:ubuntu --from=builder_libafl_solving $SYMRUSTC_LIBAFL_SOLVING_DIR/runtime/target $SYMRUSTC_LIBAFL_SOLVING_DIR/runtime/target
+COPY --chown=ubuntu:ubuntu --from=builder_libafl_solving $SYMRUSTC_LIBAFL_SOLVING_DIR/target $SYMRUSTC_LIBAFL_SOLVING_DIR/target
 
 # Pointing to the Rust runtime back-end
 RUN cd -P $SYMRUSTC_RUNTIME_DIR/.. \
-    && ln -s $SYMRUSTC_LIBAFL_SOLVING_DIR/runtime/target/release "$(basename $SYMRUSTC_RUNTIME_DIR)0"
+    && ln -s $SYMRUSTC_LIBAFL_SOLVING_DIR/target/release "$(basename $SYMRUSTC_RUNTIME_DIR)0"
 
 # TODO: file name to be generalized
 RUN ln -s $SYMRUSTC_HOME_RS/libafl_solving_bin.sh $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/target_symcc0.out

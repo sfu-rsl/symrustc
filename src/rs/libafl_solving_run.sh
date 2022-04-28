@@ -28,7 +28,7 @@ echo "$@" > $fic_corpus
 
 ln -s $(find -L $SYMRUSTC_DIR/target_cargo_on/debug -maxdepth 1 -type f -executable | grep . -m 1) target_symcc.out
 
-fuzz_bin=$(find -L target/release -maxdepth 1 -type f -executable | grep . -m 1)
+fuzz_bin=$(find -L $SYMRUSTC_LIBAFL_SOLVING_DIR/target/release -maxdepth 1 -type f -executable | grep -v '\.so' -m 1)
 
 mkfifo $fic_server
 
