@@ -44,7 +44,7 @@ WORKDIR $HOME
 #
 FROM builder_base AS builder_source
 
-ENV SYMRUSTC_LLVM_VERSION=10
+ENV SYMRUSTC_LLVM_VERSION=11
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -207,7 +207,7 @@ RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
     && sed -i -e 's/is_x86_feature_detected!("sse2")/false \&\& &/' \
         src/librustc_span/analyze_source_file.rs \
     && export SYMCC_RUNTIME_DIR=$SYMRUSTC_RUNTIME_DIR \
-    && /usr/bin/python3 ./x.py build
+    && /usr/bin/python3 ./x.py build --stage 2
 
 #
 

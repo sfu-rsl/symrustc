@@ -34,9 +34,11 @@ jobs="$(python3 -c 'import os; print(len(os.sched_getaffinity(0)))')"
   "-DCMAKE_INSTALL_MESSAGE=LAZY" \
   "-DCMAKE_C_COMPILER=cc" \
   "-DCMAKE_CXX_COMPILER=c++" \
+  "-DCMAKE_ASM_COMPILER=cc" \
   "-DCMAKE_C_FLAGS=-ffunction-sections -fdata-sections -fPIC -m64" \
   "-DCMAKE_CXX_FLAGS=-ffunction-sections -fdata-sections -fPIC -m64" \
   "-DCMAKE_INSTALL_PREFIX=$HOME/belcarra_source0/src/rs/rust_source/build/x86_64-unknown-linux-gnu/llvm" \
+  "-DCMAKE_ASM_FLAGS= -ffunction-sections -fdata-sections -fPIC -m64" \
   "-DCMAKE_BUILD_TYPE=Release"
 
 "cmake" "--build" "." "--target" "install" "--config" "Release" "--" "-j" "$jobs"
