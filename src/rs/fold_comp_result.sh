@@ -40,8 +40,11 @@ do
     dir=( $dir )
 
     targets=( target_cargo )
-    if [[ ! -v BELCARRA_EX_SKIP_RUSTC ]] && eval ${dir[2]}; then
-        targets+=( target_rustc_file target_rustc_stdin )
+    if eval ${dir[2]}; then
+        targets+=( target_rustc_none )
+        if [[ ! -v BELCARRA_EX_SKIP_RUSTC ]] ; then
+            targets+=( target_rustc_file target_rustc_stdin )
+        fi
     fi
     
     for target0 in ${targets[@]}

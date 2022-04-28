@@ -24,6 +24,8 @@ do
     then
         export BELCARRA_INPUT_FILE=$BELCARRA_EXAMPLE/src/main.rs
 
+        CARGO_TARGET_DIR=target_rustc_none_on fork $BELCARRA_HOME_RS/rustc_none.sh -C passes=symcc -lSymRuntime "${dir[@]:2}"
+        CARGO_TARGET_DIR=target_rustc_none_off fork $BELCARRA_HOME_RS/rustc_none.sh "${dir[@]:2}"
         CARGO_TARGET_DIR=target_rustc_file_on fork $BELCARRA_HOME_RS/rustc_file.sh -C passes=symcc -lSymRuntime "${dir[@]:2}"
         CARGO_TARGET_DIR=target_rustc_file_off fork $BELCARRA_HOME_RS/rustc_file.sh "${dir[@]:2}"
         CARGO_TARGET_DIR=target_rustc_stdin_on fork $BELCARRA_HOME_RS/rustc_stdin.sh -C passes=symcc -lSymRuntime "${dir[@]:2}"
@@ -37,7 +39,7 @@ wait_all
 
 #
 
-targets+=( target_rustc_file target_rustc_stdin )
+targets+=( target_rustc_none target_rustc_file target_rustc_stdin )
 
 for dir in "source_0_original_1a_rs true" \
            "source_0_original_1b_rs true" \
