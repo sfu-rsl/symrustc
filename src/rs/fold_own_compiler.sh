@@ -19,7 +19,7 @@ do
     
     export BELCARRA_EXAMPLE=$BELCARRA_EXAMPLE0/${dir[0]}
 
-    if eval ${dir[1]}
+    if [[ ! -v BELCARRA_EX_SKIP_RUSTC ]] && eval ${dir[1]}
        # TODO: at the time of writing, examples having several Rust source files (e.g. comprising build.rs) are not yet implemented
     then
         export BELCARRA_INPUT_FILE=$BELCARRA_EXAMPLE/src/main.rs
@@ -37,6 +37,10 @@ wait_all
 
 #
 
+if [[ ! -v BELCARRA_EX_SKIP_RUSTC ]] ; then
+    targets+=( target_rustc_file target_rustc_stdin )
+fi
+
 for dir in "source_0_original_1a_rs true" \
            "source_0_original_1b_rs true" \
            "source_2_base_1a_rs true" \
@@ -46,7 +50,7 @@ do
     dir=( $dir )
 
     if eval ${dir[1]}; then
-        for target0 in target_rustc_file target_rustc_stdin
+        for target0 in ${targets[@]}
         do
             for target_pass in on off
             do

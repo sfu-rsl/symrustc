@@ -326,6 +326,7 @@ RUN mkdir clang_build \
 #
 
 ARG BELCARRA_CI
+ARG BELCARRA_EX_SKIP_RUSTC
 ARG BELCARRA_EXAMPLE0=$HOME/belcarra_source/examples
 
 RUN cd $BELCARRA_EXAMPLE0 \
