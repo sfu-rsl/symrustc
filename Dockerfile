@@ -22,7 +22,7 @@
 #
 # Set up Ubuntu environment
 #
-FROM ubuntu:20.04 AS builder_base
+FROM ubuntu:22.04 AS builder_base
 
 SHELL ["/bin/bash", "-c"]
 
@@ -45,12 +45,7 @@ WORKDIR $HOME
 FROM builder_base AS builder_source
 
 ENV SYMRUSTC_LLVM_VERSION=11
-
-# error: failed to get `cc` as a dependency of package `bootstrap v0.0.0 (/home/ubuntu/belcarra_source0/src/rs/rust_source/src/bootstrap)`
-# Caused by: failed to fetch `https://github.com/rust-lang/crates.io-index`
-# Caused by: error reading from the zlib stream; class=Zlib (5)
-# See: https://github.com/rust-lang/cargo/issues/10303#issuecomment-1015007926
-ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
+ENV SYMRUSTC_LLVM_VERSION_LONG=11.1
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -135,7 +130,7 @@ FROM builder_depend AS builder_symcc_simple
 RUN mkdir symcc_build_simple \
     && cd symcc_build_simple \
     && cmake -G Ninja ~/symcc_source_main \
-        -DLLVM_VERSION_FORCE=$SYMRUSTC_LLVM_VERSION \
+        -DLLVM_VERSION_FORCE=$SYMRUSTC_LLVM_VERSION_LONG \
         -DQSYM_BACKEND=OFF \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DZ3_TRUST_SYSTEM_VERSION=on \
@@ -168,7 +163,7 @@ FROM builder_symcc_libcxx AS builder_symcc_qsym
 RUN mkdir symcc_build \
     && cd symcc_build \
     && cmake -G Ninja ~/symcc_source_main \
-        -DLLVM_VERSION_FORCE=$SYMRUSTC_LLVM_VERSION \
+        -DLLVM_VERSION_FORCE=$SYMRUSTC_LLVM_VERSION_LONG \
         -DQSYM_BACKEND=ON \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DZ3_TRUST_SYSTEM_VERSION=on \
