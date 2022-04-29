@@ -26,8 +26,10 @@ function belcarra_exec () {
     cat $output_dir/hexdump_stderr
 
     if (( $code_expected != $code_actual )); then
-        echo "Unexpected exit code" >&2
-        exit 1
+        echo "$target: Unexpected exit code" >&2
+        if [[ ! -v BELCARRA_EX_SKIP_RUSTC ]] ; then
+            exit 1
+        fi
     fi
 }
 
@@ -41,24 +43,26 @@ do
 
     targets=( target_cargo )
     if eval ${dir[2]}; then
-        targets+=( target_rustc_none )
-        if [[ ! -v BELCARRA_EX_SKIP_RUSTC ]] ; then
-            targets+=( target_rustc_file target_rustc_stdin )
-        fi
+        targets+=( target_rustc_none target_rustc_file target_rustc_stdin )
     fi
     
     for target0 in ${targets[@]}
     do
         belcarra_exec ${dir[1]} ${dir[0]}/${target0}_on "${dir[@]:4}"
-        [ $(ls $SYMCC_OUTPUT_DIR | wc -l) -eq ${dir[3]} ]
-
+        if [ $(ls $SYMCC_OUTPUT_DIR | wc -l) -ne ${dir[3]} ] ; then
+            echo "$target: check expected to succeed" >&2
+            if [[ ! -v BELCARRA_EX_SKIP_RUSTC ]] ; then
+                exit 1
+            fi
+        fi
+        
         target=${dir[0]}/${target0}_off
         belcarra_exec ${dir[1]} $target "${dir[@]:4}"
         
         declare -i count=$(ls $SYMCC_OUTPUT_DIR | wc -l)
         if (( $count != 0 )); then
             if (( $count >= ${dir[3]} )); then
-                echo "check not expected to succeed" >&2
+                echo "$target: check not expected to succeed" >&2
                 exit 1
             else
                 echo "warning: $BELCARRA_EXAMPLE0/$target not empty" >&2
