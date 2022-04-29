@@ -27,7 +27,7 @@ function belcarra_exec () {
 
     if (( $code_expected != $code_actual )); then
         echo "$target: Unexpected exit code" >&2
-        if [[ ! -v BELCARRA_EX_SKIP_RUSTC ]] ; then
+        if [[ ! -v BELCARRA_SKIP_FAIL ]] ; then
             exit 1
         fi
     fi
@@ -51,7 +51,7 @@ do
         belcarra_exec ${dir[1]} ${dir[0]}/${target0}_on "${dir[@]:4}"
         if [ $(ls $SYMCC_OUTPUT_DIR | wc -l) -ne ${dir[3]} ] ; then
             echo "$target: check expected to succeed" >&2
-            if [[ ! -v BELCARRA_EX_SKIP_RUSTC ]] ; then
+            if [[ ! -v BELCARRA_SKIP_FAIL ]] ; then
                 exit 1
             fi
         fi
