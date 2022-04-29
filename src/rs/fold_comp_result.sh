@@ -26,7 +26,7 @@ function belcarra_exec () {
     cat $output_dir/hexdump_stderr
 
     if (( $code_expected != $code_actual )); then
-        echo "$target: Unexpected exit code" >&2
+        echo "$target: Unexpected exit code: $code_actual" >&2
         if [[ ! -v BELCARRA_SKIP_FAIL ]] ; then
             exit 1
         fi
