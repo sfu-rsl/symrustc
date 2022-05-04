@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-name="$(basename $PWD)_log_$(git log -1 --pretty=format:%H)__"
+name="$(basename $PWD)_log_$(git log -1 --pretty=format:%H || true)__"
 
 function tee_log () {
     fic="../$name$(date '+%F_%T' | tr -d ':-')"
