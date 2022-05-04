@@ -15,7 +15,6 @@ jobs="$(python3 -c 'import os; print(len(os.sched_getaffinity(0)))')"
   "-DLLVM_TARGETS_TO_BUILD=AArch64;ARM;Hexagon;MSP430;Mips;NVPTX;PowerPC;RISCV;Sparc;SystemZ;WebAssembly;X86" \
   "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=AVR" \
   "-DLLVM_INCLUDE_EXAMPLES=OFF" \
-  "-DLLVM_INCLUDE_TESTS=OFF" \
   "-DLLVM_INCLUDE_DOCS=OFF" \
   "-DLLVM_INCLUDE_BENCHMARKS=OFF" \
   "-DLLVM_ENABLE_TERMINFO=OFF" \
