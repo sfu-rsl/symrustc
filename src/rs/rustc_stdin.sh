@@ -5,4 +5,4 @@
 
 set -euxo pipefail
 
-cat $BELCARRA_INPUT_FILE | $BELCARRA_HOME_RS/rustc.sh - "$@"
+cat $SYMRUSTC_INPUT_FILE | $SYMRUSTC_HOME_RS/rustc.sh - "$@"

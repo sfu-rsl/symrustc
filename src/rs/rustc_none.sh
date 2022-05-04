@@ -7,4 +7,4 @@ set -euxo pipefail
 
 export SYMCC_NO_SYMBOLIC_INPUT=yes
 
-$BELCARRA_HOME_RS/rustc.sh $BELCARRA_INPUT_FILE "$@"
+$SYMRUSTC_HOME_RS/rustc.sh $SYMRUSTC_INPUT_FILE "$@"

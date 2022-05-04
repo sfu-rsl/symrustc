@@ -5,9 +5,9 @@
 
 set -euxo pipefail
 
-source $BELCARRA_HOME_RS/wait_all.sh
+source $SYMRUSTC_HOME_RS/wait_all.sh
 
-export BELCARRA_TARGET_NAME=belcarra/compiler
+export SYMRUSTC_TARGET_NAME=belcarra/compiler
 
 for dir in "source_0_original_1a_rs true" \
            "source_0_original_1b_rs true" \
@@ -17,22 +17,22 @@ for dir in "source_0_original_1a_rs true" \
 do
     dir=( $dir )
     
-    export BELCARRA_EXAMPLE=$BELCARRA_EXAMPLE0/${dir[0]}
+    export SYMRUSTC_EXAMPLE=$SYMRUSTC_EXAMPLE0/${dir[0]}
 
     if eval ${dir[1]}
        # TODO: at the time of writing, examples having several Rust source files (e.g. comprising build.rs) are not yet implemented
     then
-        export BELCARRA_INPUT_FILE=$BELCARRA_EXAMPLE/src/main.rs
+        export SYMRUSTC_INPUT_FILE=$SYMRUSTC_EXAMPLE/src/main.rs
 
-        CARGO_TARGET_DIR=target_rustc_none_on fork $BELCARRA_HOME_RS/rustc_none.sh -C passes=symcc -lSymRuntime "${dir[@]:2}"
-        CARGO_TARGET_DIR=target_rustc_none_off fork $BELCARRA_HOME_RS/rustc_none.sh "${dir[@]:2}"
-        CARGO_TARGET_DIR=target_rustc_file_on fork $BELCARRA_HOME_RS/rustc_file.sh -C passes=symcc -lSymRuntime "${dir[@]:2}"
-        CARGO_TARGET_DIR=target_rustc_file_off fork $BELCARRA_HOME_RS/rustc_file.sh "${dir[@]:2}"
-        CARGO_TARGET_DIR=target_rustc_stdin_on fork $BELCARRA_HOME_RS/rustc_stdin.sh -C passes=symcc -lSymRuntime "${dir[@]:2}"
-        CARGO_TARGET_DIR=target_rustc_stdin_off fork $BELCARRA_HOME_RS/rustc_stdin.sh "${dir[@]:2}"
+        CARGO_TARGET_DIR=target_rustc_none_on fork $SYMRUSTC_HOME_RS/rustc_none.sh -C passes=symcc -lSymRuntime "${dir[@]:2}"
+        CARGO_TARGET_DIR=target_rustc_none_off fork $SYMRUSTC_HOME_RS/rustc_none.sh "${dir[@]:2}"
+        CARGO_TARGET_DIR=target_rustc_file_on fork $SYMRUSTC_HOME_RS/rustc_file.sh -C passes=symcc -lSymRuntime "${dir[@]:2}"
+        CARGO_TARGET_DIR=target_rustc_file_off fork $SYMRUSTC_HOME_RS/rustc_file.sh "${dir[@]:2}"
+        CARGO_TARGET_DIR=target_rustc_stdin_on fork $SYMRUSTC_HOME_RS/rustc_stdin.sh -C passes=symcc -lSymRuntime "${dir[@]:2}"
+        CARGO_TARGET_DIR=target_rustc_stdin_off fork $SYMRUSTC_HOME_RS/rustc_stdin.sh "${dir[@]:2}"
     fi
 
-    fork $BELCARRA_HOME_RS/cargo.sh rustc --manifest-path $BELCARRA_EXAMPLE/Cargo.toml "${dir[@]:2}"
+    fork $SYMRUSTC_HOME_RS/cargo.sh rustc --manifest-path $SYMRUSTC_EXAMPLE/Cargo.toml "${dir[@]:2}"
 done
 
 wait_all
@@ -55,9 +55,9 @@ do
             for target_pass in on off
             do
                 target=${dir[0]}/${target0}_$target_pass
-                ls $target/$BELCARRA_TARGET_NAME/output | wc -l
-                cat $target/$BELCARRA_TARGET_NAME/hexdump_stdout
-                cat $target/$BELCARRA_TARGET_NAME/hexdump_stderr
+                ls $target/$SYMRUSTC_TARGET_NAME/output | wc -l
+                cat $target/$SYMRUSTC_TARGET_NAME/hexdump_stdout
+                cat $target/$SYMRUSTC_TARGET_NAME/hexdump_stderr
             done
         done
     fi

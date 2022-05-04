@@ -3,7 +3,7 @@
 # SPDX-License-Identifier
 # Copyright (C) 2021-2022 Simon Fraser University (www.sfu.ca)
 
-if [ -v BELCARRA_CI ]; then
+if [ -v SYMRUSTC_CI ]; then
     function fork () {
         "$@"
     }

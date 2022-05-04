@@ -18,7 +18,7 @@ done
 function print_yml () {
     echo '      - name: '"$1"
     echo -n '        run: '
-    echo 'docker build --target '"$2"' -t belcarra_'"$(echo "$2" | cut -d _ -f 2-)"' --build-arg BELCARRA_CI=yes .'
+    echo 'docker build --target '"$2"' -t belcarra_'"$(echo "$2" | cut -d _ -f 2-)"' --build-arg SYMRUSTC_CI=yes .'
     echo
 }
 

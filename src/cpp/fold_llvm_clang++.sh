@@ -11,7 +11,7 @@ do
     mkdir -p generated/llvm/clang++
     
     pushd generated/llvm/clang++
-    clang++-$BELCARRA_LLVM_VERSION -S -emit-llvm "$@" ../../../sample.cpp
+    clang++-$SYMRUSTC_LLVM_VERSION -S -emit-llvm "$@" ../../../sample.cpp
     popd
     
     popd

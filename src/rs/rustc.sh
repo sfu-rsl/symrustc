@@ -7,13 +7,13 @@ set -euxo pipefail
 
 rustc_input_file="$1"; shift
 
-target=$BELCARRA_EXAMPLE/$CARGO_TARGET_DIR
+target=$SYMRUSTC_EXAMPLE/$CARGO_TARGET_DIR
 target_d=$target/debug
 target_d_d=$target_d/deps
 
 #
 
-export SYMCC_OUTPUT_DIR=$target/$BELCARRA_TARGET_NAME/output
+export SYMCC_OUTPUT_DIR=$target/$SYMRUSTC_TARGET_NAME/output
 
 mkdir -p $target_d_d \
          $SYMCC_OUTPUT_DIR
@@ -23,8 +23,8 @@ mkdir -p $target_d_d \
 metadata=b4b070263fc6e28b
 rustc_exit_code=0
 
-CARGO=$BELCARRA_CARGO \
-CARGO_MANIFEST_DIR=$BELCARRA_EXAMPLE \
+CARGO=$SYMRUSTC_CARGO \
+CARGO_MANIFEST_DIR=$SYMRUSTC_EXAMPLE \
 CARGO_PKG_AUTHORS='' \
 CARGO_PKG_DESCRIPTION='' \
 CARGO_PKG_HOMEPAGE='' \
@@ -35,9 +35,9 @@ CARGO_PKG_VERSION_MAJOR=0 \
 CARGO_PKG_VERSION_MINOR=1 \
 CARGO_PKG_VERSION_PATCH=0 \
 CARGO_PKG_VERSION_PRE='' \
-LD_LIBRARY_PATH="$target_d_d:$BELCARRA_LD_LIBRARY_PATH" \
+LD_LIBRARY_PATH="$target_d_d:$SYMRUSTC_LD_LIBRARY_PATH" \
 \
-$BELCARRA_RUSTC \
+$SYMRUSTC_RUSTC \
   --crate-name belcarra \
   --edition=2018 \
   "$rustc_input_file" \
@@ -59,9 +59,9 @@ $BELCARRA_RUSTC \
 
 ln -s $target_d_d/belcarra-$metadata $target_d/belcarra
 
-$BELCARRA_HOME_RS/hexdump.sh $BELCARRA_INPUT_FILE
+$SYMRUSTC_HOME_RS/hexdump.sh $SYMRUSTC_INPUT_FILE
 
-if [[ ! -v BELCARRA_SKIP_FAIL ]] ; then
+if [[ ! -v SYMRUSTC_SKIP_FAIL ]] ; then
     exit $rustc_exit_code
 else
     echo "$target: rustc exit code: $rustc_exit_code" >&2

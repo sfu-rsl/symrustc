@@ -44,11 +44,11 @@ WORKDIR $HOME
 #
 FROM builder_base AS builder_source
 
-ENV BELCARRA_LLVM_VERSION=10
+ENV SYMRUSTC_LLVM_VERSION=10
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        clang-$BELCARRA_LLVM_VERSION \
+        clang-$SYMRUSTC_LLVM_VERSION \
         cmake \
         g++ \
         git \
@@ -57,15 +57,15 @@ RUN sudo apt-get update \
         python3-pip \
     && sudo apt-get clean
 
-ENV BELCARRA_HOME=$HOME/belcarra_source
-ENV BELCARRA_HOME_CPP=$BELCARRA_HOME/src/cpp
-ENV BELCARRA_HOME_RS=$BELCARRA_HOME/src/rs
+ENV SYMRUSTC_HOME=$HOME/belcarra_source
+ENV SYMRUSTC_HOME_CPP=$SYMRUSTC_HOME/src/cpp
+ENV SYMRUSTC_HOME_RS=$SYMRUSTC_HOME/src/rs
 ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
 
 # Download the Rust compiler with SymCC
-ARG BELCARRA_RUST_VERSION
-ENV BELCARRA_RUST_VERSION=${BELCARRA_RUST_VERSION:-symcc_comp_utils/1.46.0}
-RUN git clone -b $BELCARRA_RUST_VERSION --depth 1 https://github.com/sfu-rsl/rust.git rust_source
+ARG SYMRUSTC_RUST_VERSION
+ENV SYMRUSTC_RUST_VERSION=${SYMRUSTC_RUST_VERSION:-symcc_comp_utils/1.46.0}
+RUN git clone -b $SYMRUSTC_RUST_VERSION --depth 1 https://github.com/sfu-rsl/rust.git rust_source
 
 # Init submodules
 RUN if git -C rust_source submodule status | grep "^-">/dev/null ; then \
@@ -97,8 +97,8 @@ FROM builder_source AS builder_depend
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        llvm-$BELCARRA_LLVM_VERSION-dev \
-        llvm-$BELCARRA_LLVM_VERSION-tools \
+        llvm-$SYMRUSTC_LLVM_VERSION-dev \
+        llvm-$SYMRUSTC_LLVM_VERSION-tools \
         python2 \
         zlib1g-dev \
     && sudo apt-get clean
@@ -122,7 +122,7 @@ FROM builder_depend AS builder_symcc_simple
 RUN mkdir symcc_build_simple \
     && cd symcc_build_simple \
     && cmake -G Ninja ~/symcc_source_main \
-        -DLLVM_VERSION_FORCE=$BELCARRA_LLVM_VERSION \
+        -DLLVM_VERSION_FORCE=$SYMRUSTC_LLVM_VERSION \
         -DQSYM_BACKEND=OFF \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DZ3_TRUST_SYSTEM_VERSION=on \
@@ -155,7 +155,7 @@ FROM builder_symcc_libcxx AS builder_symcc_qsym
 RUN mkdir symcc_build \
     && cd symcc_build \
     && cmake -G Ninja ~/symcc_source_main \
-        -DLLVM_VERSION_FORCE=$BELCARRA_LLVM_VERSION \
+        -DLLVM_VERSION_FORCE=$SYMRUSTC_LLVM_VERSION \
         -DQSYM_BACKEND=ON \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DZ3_TRUST_SYSTEM_VERSION=on \
@@ -167,11 +167,11 @@ RUN mkdir symcc_build \
 #
 FROM builder_source AS builder_symllvm
 
-COPY --chown=ubuntu:ubuntu src/llvm/cmake.sh $BELCARRA_HOME/src/llvm/
+COPY --chown=ubuntu:ubuntu src/llvm/cmake.sh $SYMRUSTC_HOME/src/llvm/
 
 RUN mkdir -p rust_source/build/x86_64-unknown-linux-gnu/llvm/build \
   && cd rust_source/build/x86_64-unknown-linux-gnu/llvm/build \
-  && $BELCARRA_HOME/src/llvm/cmake.sh
+  && $SYMRUSTC_HOME/src/llvm/cmake.sh
 
 
 #
@@ -204,16 +204,16 @@ RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
 
 #
 
-ARG BELCARRA_RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
+ARG SYMRUSTC_RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
 
-ENV BELCARRA_CARGO=$BELCARRA_RUST_BUILD/stage0/bin/cargo
-ENV BELCARRA_RUSTC=$BELCARRA_RUST_BUILD/stage2/bin/rustc
-ENV BELCARRA_LD_LIBRARY_PATH=$BELCARRA_RUST_BUILD/stage2/lib
+ENV SYMRUSTC_CARGO=$SYMRUSTC_RUST_BUILD/stage0/bin/cargo
+ENV SYMRUSTC_RUSTC=$SYMRUSTC_RUST_BUILD/stage2/bin/rustc
+ENV SYMRUSTC_LD_LIBRARY_PATH=$SYMRUSTC_RUST_BUILD/stage2/lib
 ENV PATH=$HOME/.cargo/bin:$PATH
 
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_libcxx $SYMCC_LIBCXX_PATH $SYMCC_LIBCXX_PATH
-COPY --chown=ubuntu:ubuntu src/rs/cargo.sh $BELCARRA_HOME_RS/
-COPY --chown=ubuntu:ubuntu src/rs/wait_all.sh $BELCARRA_HOME_RS/
+COPY --chown=ubuntu:ubuntu src/rs/cargo.sh $SYMRUSTC_HOME_RS/
+COPY --chown=ubuntu:ubuntu src/rs/wait_all.sh $SYMRUSTC_HOME_RS/
 
 RUN mkdir symcc_build_clang \
     && ln -s ~/symcc_build/symcc symcc_build_clang/clang \
@@ -225,11 +225,11 @@ RUN mkdir symcc_build_clang \
 #
 FROM builder_symrustc AS builder_addons
 
-ARG BELCARRA_CI
+ARG SYMRUSTC_CI
 
-RUN source $BELCARRA_HOME_RS/wait_all.sh \
-    && export BELCARRA_EXAMPLE=~/symcc_source/util/symcc_fuzzing_helper \
-    && $BELCARRA_HOME_RS/cargo.sh install --path $BELCARRA_EXAMPLE
+RUN source $SYMRUSTC_HOME_RS/wait_all.sh \
+    && export SYMRUSTC_EXAMPLE=~/symcc_source/util/symcc_fuzzing_helper \
+    && $SYMRUSTC_HOME_RS/cargo.sh install --path $SYMRUSTC_EXAMPLE
 
 
 #
@@ -240,7 +240,7 @@ FROM builder_symrustc AS builder_main
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
         build-essential \
-        libllvm$BELCARRA_LLVM_VERSION \
+        libllvm$SYMRUSTC_LLVM_VERSION \
         zlib1g \
     && sudo apt-get clean
 
@@ -251,8 +251,8 @@ COPY --chown=ubuntu:ubuntu --from=builder_addons $HOME/.cargo .cargo
 ENV PATH=$HOME/symcc_build:$PATH
 
 ENV AFL_PATH=$HOME/afl
-ENV AFL_CC=clang-$BELCARRA_LLVM_VERSION
-ENV AFL_CXX=clang++-$BELCARRA_LLVM_VERSION
+ENV AFL_CC=clang-$SYMRUSTC_LLVM_VERSION
+ENV AFL_CXX=clang++-$SYMRUSTC_LLVM_VERSION
 
 
 #
@@ -265,7 +265,7 @@ COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 RUN cd belcarra_source/examples \
     && export SYMCC_REGULAR_LIBCXX=yes \
-    && $BELCARRA_HOME_CPP/main_fold_sym++_simple_z3.sh
+    && $SYMRUSTC_HOME_CPP/main_fold_sym++_simple_z3.sh
 
 
 #
@@ -277,7 +277,7 @@ COPY --chown=ubuntu:ubuntu src/cpp belcarra_source/src/cpp
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 RUN cd belcarra_source/examples \
-    && $BELCARRA_HOME_CPP/main_fold_sym++_simple_z3.sh
+    && $SYMRUSTC_HOME_CPP/main_fold_sym++_simple_z3.sh
 
 
 #
@@ -291,7 +291,7 @@ COPY --chown=ubuntu:ubuntu src/cpp belcarra_source/src/cpp
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 RUN cd belcarra_source/examples \
-    && $BELCARRA_HOME_CPP/main_fold_sym++_qsym.sh
+    && $SYMRUSTC_HOME_CPP/main_fold_sym++_qsym.sh
 
 
 #
@@ -303,7 +303,7 @@ COPY --chown=ubuntu:ubuntu src/cpp belcarra_source/src/cpp
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 RUN cd belcarra_source/examples \
-    && $BELCARRA_HOME_CPP/main_fold_clang++.sh
+    && $SYMRUSTC_HOME_CPP/main_fold_clang++.sh
 
 
 #
@@ -320,17 +320,17 @@ COPY --chown=ubuntu:ubuntu src/rs belcarra_source/src/rs
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 RUN mkdir clang_build \
-    && ln -s $(which clang-$BELCARRA_LLVM_VERSION) clang_build/clang \
-    && ln -s $(which clang++-$BELCARRA_LLVM_VERSION) clang_build/clang++
+    && ln -s $(which clang-$SYMRUSTC_LLVM_VERSION) clang_build/clang \
+    && ln -s $(which clang++-$SYMRUSTC_LLVM_VERSION) clang_build/clang++
 
 #
 
-ARG BELCARRA_CI
-ARG BELCARRA_SKIP_FAIL
-ARG BELCARRA_EXAMPLE0=$HOME/belcarra_source/examples
+ARG SYMRUSTC_CI
+ARG SYMRUSTC_SKIP_FAIL
+ARG SYMRUSTC_EXAMPLE0=$HOME/belcarra_source/examples
 
-RUN cd $BELCARRA_EXAMPLE0 \
-    && $BELCARRA_HOME_RS/fold_own_compiler.sh
+RUN cd $SYMRUSTC_EXAMPLE0 \
+    && $SYMRUSTC_HOME_RS/fold_own_compiler.sh
 
-RUN cd $BELCARRA_EXAMPLE0 \
-    && $BELCARRA_HOME_RS/fold_comp_result.sh
+RUN cd $SYMRUSTC_EXAMPLE0 \
+    && $SYMRUSTC_HOME_RS/fold_comp_result.sh

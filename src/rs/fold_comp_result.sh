@@ -5,21 +5,21 @@
 
 set -euxo pipefail
 
-BELCARRA_TARGET_NAME=belcarra/source
+SYMRUSTC_TARGET_NAME=belcarra/source
 
 function belcarra_exec () {
     declare -i code_expected="$1"; shift
     target="$1"; shift
     input="$@"
     
-    output_dir=$BELCARRA_EXAMPLE0/$target/$BELCARRA_TARGET_NAME
+    output_dir=$SYMRUSTC_EXAMPLE0/$target/$SYMRUSTC_TARGET_NAME
     export SYMCC_OUTPUT_DIR=$output_dir/output
 
     mkdir -p $SYMCC_OUTPUT_DIR
 
     declare -i code_actual=0
     echo $input | $target/debug/belcarra || code_actual=$?
-    echo $input | $BELCARRA_HOME_RS/hexdump.sh /dev/stdin
+    echo $input | $SYMRUSTC_HOME_RS/hexdump.sh /dev/stdin
 
     ls $output_dir/output | wc -l
     cat $output_dir/hexdump_stdout
@@ -27,7 +27,7 @@ function belcarra_exec () {
 
     if (( $code_expected != $code_actual )); then
         echo "$target: Unexpected exit code: $code_actual" >&2
-        if [[ ! -v BELCARRA_SKIP_FAIL ]] ; then
+        if [[ ! -v SYMRUSTC_SKIP_FAIL ]] ; then
             exit 1
         fi
     fi
@@ -51,7 +51,7 @@ do
         belcarra_exec ${dir[1]} ${dir[0]}/${target0}_on "${dir[@]:4}"
         if [ $(ls $SYMCC_OUTPUT_DIR | wc -l) -ne ${dir[3]} ] ; then
             echo "$target: check expected to succeed" >&2
-            if [[ ! -v BELCARRA_SKIP_FAIL ]] ; then
+            if [[ ! -v SYMRUSTC_SKIP_FAIL ]] ; then
                 exit 1
             fi
         fi
@@ -65,7 +65,7 @@ do
                 echo "$target: check not expected to succeed" >&2
                 exit 1
             else
-                echo "warning: $BELCARRA_EXAMPLE0/$target not empty" >&2
+                echo "warning: $SYMRUSTC_EXAMPLE0/$target not empty" >&2
             fi
         fi
     done
