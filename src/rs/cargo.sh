@@ -14,12 +14,12 @@ export RUSTC=$SYMRUSTC_RUSTC
 #
 
 # Note: Changing $PATH is optional. For instance, it can be done for supporting Rust programs using clang or clang++ in their build.
-PATH=~/clang_build:"$PATH" \
+PATH=~/clang_symcc_off:"$PATH" \
 CARGO_TARGET_DIR=$SYMRUSTC_EXAMPLE/target_cargo_off \
     fork $SYMRUSTC_CARGO "$@"
 
 # Note: Same remarks apply for SymRustC programs. However here, we have to use the "concolic SymCC" versions of clang or clang++.
-PATH=~/symcc_build_clang:"$PATH" \
+PATH=~/clang_symcc_on:"$PATH" \
 CARGO_TARGET_DIR=$SYMRUSTC_EXAMPLE/target_cargo_on \
 RUSTFLAGS="$RUSTFLAGS -C passes=symcc -lSymRuntime" \
     fork $SYMRUSTC_CARGO "$@"
