@@ -212,12 +212,17 @@ ENV SYMRUSTC_LD_LIBRARY_PATH=$SYMRUSTC_RUST_BUILD/stage2/lib
 ENV PATH=$HOME/.cargo/bin:$PATH
 
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_libcxx $SYMCC_LIBCXX_PATH $SYMCC_LIBCXX_PATH
-COPY --chown=ubuntu:ubuntu src/rs/cargo.sh $SYMRUSTC_HOME_RS/
 COPY --chown=ubuntu:ubuntu src/rs/wait_all.sh $SYMRUSTC_HOME_RS/
 
-RUN mkdir symcc_build_clang \
-    && ln -s ~/symcc_build/symcc symcc_build_clang/clang \
-    && ln -s ~/symcc_build/sym++ symcc_build_clang/clang++
+RUN mkdir clang_symcc_on \
+    && ln -s ~/symcc_build/symcc clang_symcc_on/clang \
+    && ln -s ~/symcc_build/sym++ clang_symcc_on/clang++
+
+RUN mkdir clang_symcc_off \
+    && ln -s $(which clang-$SYMRUSTC_LLVM_VERSION) clang_symcc_off/clang \
+    && ln -s $(which clang++-$SYMRUSTC_LLVM_VERSION) clang_symcc_off/clang++
+
+COPY --chown=ubuntu:ubuntu src/rs/cargo.sh $SYMRUSTC_HOME_RS/
 
 
 #
@@ -319,14 +324,10 @@ RUN sudo apt-get update \
 COPY --chown=ubuntu:ubuntu src/rs belcarra_source/src/rs
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
-RUN mkdir clang_build \
-    && ln -s $(which clang-$SYMRUSTC_LLVM_VERSION) clang_build/clang \
-    && ln -s $(which clang++-$SYMRUSTC_LLVM_VERSION) clang_build/clang++
-
-#
-
 ARG SYMRUSTC_CI
+
 ARG SYMRUSTC_SKIP_FAIL
+
 ARG SYMRUSTC_EXAMPLE0=$HOME/belcarra_source/examples
 
 RUN cd $SYMRUSTC_EXAMPLE0 \
