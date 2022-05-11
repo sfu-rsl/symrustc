@@ -44,8 +44,7 @@ WORKDIR $HOME
 #
 FROM builder_base AS builder_source
 
-ENV SYMRUSTC_LLVM_VERSION=11
-ENV SYMRUSTC_LLVM_VERSION_LONG=11.1
+ENV SYMRUSTC_LLVM_VERSION=12
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -142,7 +141,7 @@ FROM builder_depend AS builder_symcc_simple
 RUN mkdir symcc_build_simple \
     && cd symcc_build_simple \
     && cmake -G Ninja ~/symcc_source_main \
-        -DLLVM_VERSION_FORCE=$SYMRUSTC_LLVM_VERSION_LONG \
+        -DLLVM_VERSION_FORCE=$SYMRUSTC_LLVM_VERSION \
         -DQSYM_BACKEND=OFF \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DZ3_DIR=~/z3_build/dist/lib/cmake/z3 \
@@ -175,7 +174,7 @@ FROM builder_symcc_libcxx AS builder_symcc_qsym
 RUN mkdir symcc_build \
     && cd symcc_build \
     && cmake -G Ninja ~/symcc_source_main \
-        -DLLVM_VERSION_FORCE=$SYMRUSTC_LLVM_VERSION_LONG \
+        -DLLVM_VERSION_FORCE=$SYMRUSTC_LLVM_VERSION \
         -DQSYM_BACKEND=ON \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DZ3_DIR=~/z3_build/dist/lib/cmake/z3 \
