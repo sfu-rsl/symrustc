@@ -12,7 +12,7 @@ jobs="$(python3 -c 'import os; print(len(os.sched_getaffinity(0)))')"
   "-G" \
   "Ninja" \
   "-DLLVM_ENABLE_ASSERTIONS=OFF" \
-  "-DLLVM_TARGETS_TO_BUILD=AArch64;ARM;Hexagon;MSP430;Mips;NVPTX;PowerPC;RISCV;Sparc;SystemZ;WebAssembly;X86" \
+  "-DLLVM_TARGETS_TO_BUILD=AArch64;ARM;BPF;Hexagon;MSP430;Mips;NVPTX;PowerPC;RISCV;Sparc;SystemZ;WebAssembly;X86" \
   "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=AVR" \
   "-DLLVM_INCLUDE_EXAMPLES=OFF" \
   "-DLLVM_INCLUDE_DOCS=OFF" \
