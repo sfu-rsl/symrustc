@@ -44,7 +44,7 @@ WORKDIR $HOME
 #
 FROM builder_base AS builder_source
 
-ENV SYMRUSTC_LLVM_VERSION=12
+ENV SYMRUSTC_LLVM_VERSION=13
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
