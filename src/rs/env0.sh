@@ -24,7 +24,7 @@ if [[ ! -v SYMRUSTC_SKIP_CONCOLIC_ON ]] ; then
 # Note: Same remarks apply for SymRustC programs. However here, we have to use the "concolic SymCC" versions of clang or clang++.
 PATH=$SYMRUSTC_USER/clang_symcc_on:"$PATH" \
 CARGO_TARGET_DIR=$SYMRUSTC_DIR/target_cargo_on \
-RUSTFLAGS="$RUSTFLAGS -C passes=symcc -lSymRuntime" \
+RUSTFLAGS="$RUSTFLAGS -Z new-llvm-pass-manager=no -C passes=symcc -lSymRuntime" \
     eval fork "$@"
 fi
 
