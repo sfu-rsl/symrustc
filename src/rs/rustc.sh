@@ -49,7 +49,7 @@ $SYMRUSTC_RUSTC \
   --edition=2018 \
   "$rustc_input_file" \
   --error-format=json \
-  --json=diagnostic-rendered-ansi \
+  --json=diagnostic-rendered-ansi,future-incompat \
   --crate-type bin \
   --emit=dep-info,link \
   -C embed-bitcode=no \
