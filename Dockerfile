@@ -219,6 +219,8 @@ RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
     && cd rust_source \
     && sed -i -e 's/is_x86_feature_detected!("sse2")/false \&\& &/' \
         compiler/rustc_span/src/analyze_source_file.rs \
+    && sed -i -e 's/cmd.arg("-C").arg("passes=symcc");/cmd.arg("-Z").arg("new-llvm-pass-manager=no"); &/' \
+        src/bootstrap/bin/rustc.rs \
     && export SYMCC_RUNTIME_DIR=$SYMRUSTC_RUNTIME_DIR \
     && /usr/bin/python3 ./x.py build --stage 2
 
