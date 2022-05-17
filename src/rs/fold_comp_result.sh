@@ -9,10 +9,10 @@ SYMRUSTC_TARGET_NAME=belcarra/source
 
 function belcarra_exec () {
     declare -i code_expected="$1"; shift
-    target="$1"; shift
-    input="$@"
-    
-    output_dir=$SYMRUSTC_EXAMPLE0/$target/$SYMRUSTC_TARGET_NAME
+    local target="$1"; shift
+    local input="$@"
+
+    local output_dir=$SYMRUSTC_EXAMPLE0/$target/$SYMRUSTC_TARGET_NAME
     export SYMCC_OUTPUT_DIR=$output_dir/output
 
     mkdir -p $SYMCC_OUTPUT_DIR
