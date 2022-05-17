@@ -7,7 +7,7 @@ set -euxo pipefail
 
 source $SYMRUSTC_HOME_RS/wait_all.sh
 
-export SYMRUSTC_TARGET_NAME=belcarra/compiler
+export SYMRUSTC_TARGET_NAME=symrustc/build
 export SYMRUSTC_HIDE_RESULT=yes
 
 for dir in "source_0_original_1a_rs true" \

@@ -5,14 +5,14 @@
 
 set -euxo pipefail
 
-SYMRUSTC_TARGET_NAME=belcarra/source
+SYMRUSTC_TARGET_NAME=symrustc/run
 
 SYMRUSTC_EXAMPLE="$1"; shift
 declare -i code_expected=$1; shift
 concolic_rustc=$1; shift
 count_expected=$1; shift
 
-function belcarra_exec () {
+function symrustc_exec () {
     local target="$1"; shift
     local input="$@"
 
@@ -45,7 +45,7 @@ fi
 
 for target0 in ${targets[@]}
 do
-    belcarra_exec ${target0}_on "$@"
+    symrustc_exec ${target0}_on "$@"
     if [ $(ls "$SYMCC_OUTPUT_DIR" | wc -l) -ne $count_expected ] ; then
         echo "$target: check expected to succeed" >&2
         if [[ ! -v SYMRUSTC_SKIP_FAIL ]] ; then
@@ -54,7 +54,7 @@ do
     fi
     
     target=${target0}_off
-    belcarra_exec $target "$@"
+    symrustc_exec $target "$@"
     
     declare -i count_actual=$(ls "$SYMCC_OUTPUT_DIR" | wc -l)
     if (( $count_actual != 0 )); then
