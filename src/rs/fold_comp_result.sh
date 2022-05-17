@@ -12,13 +12,14 @@ function belcarra_exec () {
     local target="$1"; shift
     local input="$@"
 
-    local output_dir=$SYMRUSTC_EXAMPLE0/$target/$SYMRUSTC_TARGET_NAME
+    local target0=$SYMRUSTC_EXAMPLE0/$target
+    local output_dir=$target0/$SYMRUSTC_TARGET_NAME
     export SYMCC_OUTPUT_DIR=$output_dir/output
 
     mkdir -p $SYMCC_OUTPUT_DIR
 
     declare -i code_actual=0
-    echo $input | $target/debug/belcarra || code_actual=$?
+    echo $input | $target0/debug/belcarra || code_actual=$?
     echo $input | $SYMRUSTC_HOME_RS/hexdump.sh /dev/stdin
 
     ls $output_dir/output | wc -l

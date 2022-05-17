@@ -54,7 +54,7 @@ do
         do
             for target_pass in on off
             do
-                target=${dir[0]}/${target0}_$target_pass
+                target=$SYMRUSTC_EXAMPLE0/${dir[0]}/${target0}_$target_pass
                 ls $target/$SYMRUSTC_TARGET_NAME/output | wc -l
                 cat $target/$SYMRUSTC_TARGET_NAME/hexdump_stdout
                 cat $target/$SYMRUSTC_TARGET_NAME/hexdump_stderr

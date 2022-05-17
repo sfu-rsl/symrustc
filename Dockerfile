@@ -330,8 +330,6 @@ ARG SYMRUSTC_SKIP_FAIL
 
 ARG SYMRUSTC_EXAMPLE0=$HOME/belcarra_source/examples
 
-RUN cd $SYMRUSTC_EXAMPLE0 \
-    && $SYMRUSTC_HOME_RS/fold_own_compiler.sh
+RUN $SYMRUSTC_HOME_RS/fold_own_compiler.sh
 
-RUN cd $SYMRUSTC_EXAMPLE0 \
-    && $SYMRUSTC_HOME_RS/fold_comp_result.sh
+RUN $SYMRUSTC_HOME_RS/fold_comp_result.sh
