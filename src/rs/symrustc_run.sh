@@ -45,9 +45,10 @@ fi
 
 for target0 in ${targets[@]}
 do
-    symrustc_exec ${target0}_on "$@"
+    target_on=${target0}_on
+    symrustc_exec $target_on "$@"
     if [ $(ls "$SYMCC_OUTPUT_DIR" | wc -l) -ne $count_expected ] ; then
-        echo "$target: check expected to succeed" >&2
+        echo "$target_on: check expected to succeed" >&2
         if [[ ! -v SYMRUSTC_SKIP_FAIL ]] ; then
             exit 1
         fi
