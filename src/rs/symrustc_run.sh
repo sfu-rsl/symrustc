@@ -9,7 +9,6 @@ SYMRUSTC_TARGET_NAME=symrustc/run
 
 SYMRUSTC_EXAMPLE="$1"; shift
 declare -i code_expected=$1; shift
-concolic_rustc=$1; shift
 count_expected=$1; shift
 
 function symrustc_exec () {
@@ -38,32 +37,32 @@ function symrustc_exec () {
     fi
 }
 
-targets=( target_cargo )
-if eval $concolic_rustc; then
-    targets+=( target_rustc_none target_rustc_file target_rustc_stdin )
-fi
-
-for target0 in ${targets[@]}
+for target0 in target_cargo target_rustc_none target_rustc_file target_rustc_stdin
 do
     target_on=${target0}_on
-    symrustc_exec $target_on "$@"
-    if [ $(ls "$SYMCC_OUTPUT_DIR" | wc -l) -ne $count_expected ] ; then
-        echo "$target_on: check expected to succeed" >&2
-        if [[ ! -v SYMRUSTC_SKIP_FAIL ]] ; then
-            exit 1
+    if [[ -d "$SYMRUSTC_EXAMPLE/$target_on" ]]; then
+        symrustc_exec $target_on "$@"
+
+        if [ $(ls "$SYMCC_OUTPUT_DIR" | wc -l) -ne $count_expected ] ; then
+            echo "$target_on: check expected to succeed" >&2
+            if [[ ! -v SYMRUSTC_SKIP_FAIL ]] ; then
+                exit 1
+            fi
         fi
     fi
-    
+
     target_off=${target0}_off
-    symrustc_exec $target_off "$@"
-    
-    declare -i count_actual=$(ls "$SYMCC_OUTPUT_DIR" | wc -l)
-    if (( $count_actual != 0 )); then
-        if (( $count_actual > $count_expected )); then
-            echo "$target_off: check not expected to succeed" >&2
-            exit 1
-        else
-            echo "warning: $SYMRUSTC_EXAMPLE/$target_off not empty" >&2
+    if [[ -d "$SYMRUSTC_EXAMPLE/$target_off" ]]; then
+        symrustc_exec $target_off "$@"
+
+        declare -i count_actual=$(ls "$SYMCC_OUTPUT_DIR" | wc -l)
+        if (( $count_actual != 0 )); then
+            if (( $count_actual > $count_expected )); then
+                echo "$target_off: check not expected to succeed" >&2
+                exit 1
+            else
+                echo "warning: $SYMRUSTC_EXAMPLE/$target_off not empty" >&2
+            fi
         fi
     fi
 done
