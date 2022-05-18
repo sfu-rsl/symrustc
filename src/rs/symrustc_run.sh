@@ -59,7 +59,7 @@ do
     
     declare -i count_actual=$(ls "$SYMCC_OUTPUT_DIR" | wc -l)
     if (( $count_actual != 0 )); then
-        if (( $count_actual >= $count_expected )); then
+        if (( $count_actual > $count_expected )); then
             echo "$target_off: check not expected to succeed" >&2
             exit 1
         else
