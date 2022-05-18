@@ -53,16 +53,16 @@ do
         fi
     fi
     
-    target=${target0}_off
-    symrustc_exec $target "$@"
+    target_off=${target0}_off
+    symrustc_exec $target_off "$@"
     
     declare -i count_actual=$(ls "$SYMCC_OUTPUT_DIR" | wc -l)
     if (( $count_actual != 0 )); then
         if (( $count_actual >= $count_expected )); then
-            echo "$target: check not expected to succeed" >&2
+            echo "$target_off: check not expected to succeed" >&2
             exit 1
         else
-            echo "warning: $SYMRUSTC_EXAMPLE/$target not empty" >&2
+            echo "warning: $SYMRUSTC_EXAMPLE/$target_off not empty" >&2
         fi
     fi
 done
