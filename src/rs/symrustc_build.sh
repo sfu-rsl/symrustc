@@ -5,15 +5,25 @@
 
 set -euxo pipefail
 
-source $SYMRUSTC_HOME_RS/wait_all.sh
-
 export SYMRUSTC_TARGET_NAME=symrustc/build
-export SYMRUSTC_EXAMPLE="$1"; shift
-concolic_rustc="$1"; shift
+
+if [[ -v SYMRUSTC_DIR ]] ; then
+    export SYMRUSTC_EXAMPLE="$SYMRUSTC_DIR"
+else
+    export SYMRUSTC_EXAMPLE="$PWD"
+fi
+
+if [[ ! -v SYMRUSTC_BUILD_COMP_CONCOLIC ]] ; then
+    SYMRUSTC_BUILD_COMP_CONCOLIC=false
+fi
 
 #
 
-if eval $concolic_rustc
+source $SYMRUSTC_HOME_RS/wait_all.sh
+
+#
+
+if eval $SYMRUSTC_BUILD_COMP_CONCOLIC
    # TODO: at the time of writing, examples having several Rust source files (e.g. comprising build.rs) are not yet implemented
 then
     export SYMRUSTC_INPUT_FILE="$SYMRUSTC_EXAMPLE/src/main.rs"

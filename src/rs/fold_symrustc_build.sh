@@ -18,7 +18,9 @@ for dir in "source_0_original_1a_rs true" \
 do
     dir=( $dir )
     
-    fork $SYMRUSTC_HOME_RS/symrustc_build.sh "$SYMRUSTC_EXAMPLE0/${dir[0]}" "${dir[@]:1}"
+    export SYMRUSTC_DIR="$SYMRUSTC_EXAMPLE0/${dir[0]}"
+    export SYMRUSTC_BUILD_COMP_CONCOLIC=${dir[1]}
+    fork $SYMRUSTC_HOME_RS/symrustc_build.sh "${dir[@]:2}"
 done
 
 wait_all
@@ -34,6 +36,6 @@ do
     dir=( $dir )
     
     SYMRUSTC_EXAMPLE="$SYMRUSTC_EXAMPLE0/${dir[0]}"
-    concolic_rustc=${dir[1]}
+    SYMRUSTC_BUILD_COMP_CONCOLIC=${dir[1]}
     source $SYMRUSTC_HOME_RS/symrustc_build_show.sh
 done

@@ -12,6 +12,9 @@ for dir in "source_0_original_1a_rs 0 17 test" \
            "source_4_symcc_2_rs 0 9 test"
 do
     dir=( $dir )
-    
-    $SYMRUSTC_HOME_RS/symrustc_run.sh "$SYMRUSTC_EXAMPLE0/${dir[0]}" "${dir[@]:1}"
+
+    export SYMRUSTC_DIR="$SYMRUSTC_EXAMPLE0/${dir[0]}"
+    export SYMRUSTC_RUN_EXPECTED_CODE=${dir[1]}
+    export SYMRUSTC_RUN_EXPECTED_COUNT=${dir[2]}
+    $SYMRUSTC_HOME_RS/symrustc_run.sh "${dir[@]:3}"
 done

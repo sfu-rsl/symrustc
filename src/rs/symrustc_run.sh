@@ -7,9 +7,17 @@ set -euxo pipefail
 
 SYMRUSTC_TARGET_NAME=symrustc/run
 
-SYMRUSTC_EXAMPLE="$1"; shift
-declare -i code_expected=$1; shift
-count_expected=$1; shift
+if [[ -v SYMRUSTC_DIR ]] ; then
+    SYMRUSTC_EXAMPLE="$SYMRUSTC_DIR"
+else
+    SYMRUSTC_EXAMPLE="$PWD"
+fi
+
+if [[ -v SYMRUSTC_RUN_EXPECTED_CODE ]] ; then
+    declare -i SYMRUSTC_RUN_EXPECTED_CODE=$SYMRUSTC_RUN_EXPECTED_CODE
+else
+    declare -i SYMRUSTC_RUN_EXPECTED_CODE=0
+fi
 
 function symrustc_exec () {
     local target="$1"; shift
@@ -29,7 +37,7 @@ function symrustc_exec () {
     cat $output_dir/hexdump_stdout
     cat $output_dir/hexdump_stderr
 
-    if (( $code_expected != $code_actual )); then
+    if (( $SYMRUSTC_RUN_EXPECTED_CODE != $code_actual )); then
         echo "$target: Unexpected exit code: $code_actual" >&2
         if [[ ! -v SYMRUSTC_SKIP_FAIL ]] ; then
             exit 1
@@ -43,7 +51,7 @@ do
     if [[ -d "$SYMRUSTC_EXAMPLE/$target_on" ]]; then
         symrustc_exec $target_on "$@"
 
-        if [ $(ls "$SYMCC_OUTPUT_DIR" | wc -l) -ne $count_expected ] ; then
+        if [[ -v SYMRUSTC_RUN_EXPECTED_COUNT ]] && [[ $(ls "$SYMCC_OUTPUT_DIR" | wc -l) -ne $SYMRUSTC_RUN_EXPECTED_COUNT ]] ; then
             echo "$target_on: check expected to succeed" >&2
             if [[ ! -v SYMRUSTC_SKIP_FAIL ]] ; then
                 exit 1
@@ -57,7 +65,7 @@ do
 
         declare -i count_actual=$(ls "$SYMCC_OUTPUT_DIR" | wc -l)
         if (( $count_actual != 0 )); then
-            if (( $count_actual > $count_expected )); then
+            if [[ -v SYMRUSTC_RUN_EXPECTED_COUNT ]] && (( $count_actual > $SYMRUSTC_RUN_EXPECTED_COUNT )); then
                 echo "$target_off: check not expected to succeed" >&2
                 exit 1
             else
