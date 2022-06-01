@@ -68,9 +68,7 @@ ENV SYMRUSTC_RUST_VERSION=${SYMRUSTC_RUST_VERSION:-symcc_comp_utils/1.46.0}
 RUN git clone -b $SYMRUSTC_RUST_VERSION --depth 1 https://github.com/sfu-rsl/rust.git rust_source
 
 # Init submodules
-RUN if git -C rust_source submodule status | grep "^-">/dev/null ; then \
-      git -C rust_source submodule update --init --recursive; \
-    fi
+RUN git -C rust_source submodule update --init --recursive
 
 #
 RUN ln -s ~/rust_source/src/llvm-project llvm_source
