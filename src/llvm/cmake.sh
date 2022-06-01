@@ -8,7 +8,7 @@ set -euxo pipefail
 jobs="$(python3 -c 'import os; print(len(os.sched_getaffinity(0)))')"
 
 "cmake" \
-  "$HOME/rust_source/src/llvm-project/llvm" \
+  "$HOME/belcarra_source0/src/rs/rust_source/src/llvm-project/llvm" \
   "-G" \
   "Ninja" \
   "-DLLVM_ENABLE_ASSERTIONS=OFF" \
@@ -36,7 +36,7 @@ jobs="$(python3 -c 'import os; print(len(os.sched_getaffinity(0)))')"
   "-DCMAKE_CXX_COMPILER=c++" \
   "-DCMAKE_C_FLAGS=-ffunction-sections -fdata-sections -fPIC -m64" \
   "-DCMAKE_CXX_FLAGS=-ffunction-sections -fdata-sections -fPIC -m64" \
-  "-DCMAKE_INSTALL_PREFIX=$HOME/rust_source/build/x86_64-unknown-linux-gnu/llvm" \
+  "-DCMAKE_INSTALL_PREFIX=$HOME/belcarra_source0/src/rs/rust_source/build/x86_64-unknown-linux-gnu/llvm" \
   "-DCMAKE_BUILD_TYPE=Release"
 
 "cmake" "--build" "." "--target" "install" "--config" "Release" "--" "-j" "$jobs"

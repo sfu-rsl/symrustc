@@ -62,13 +62,18 @@ ENV SYMRUSTC_HOME_CPP=$SYMRUSTC_HOME/src/cpp
 ENV SYMRUSTC_HOME_RS=$SYMRUSTC_HOME/src/rs
 ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
 
-# Download the Rust compiler with SymCC
+# Setup Rust compiler source
 ARG SYMRUSTC_RUST_VERSION
-ENV SYMRUSTC_RUST_VERSION=${SYMRUSTC_RUST_VERSION:-symcc_comp_utils/1.46.0}
-RUN git clone -b $SYMRUSTC_RUST_VERSION --depth 1 https://github.com/sfu-rsl/rust.git rust_source
+RUN if [[ -v SYMRUSTC_RUST_VERSION ]] ; then \
+      git clone -b $SYMRUSTC_RUST_VERSION --depth 1 https://github.com/sfu-rsl/rust.git rust_source; \
+    else \
+      git clone -b 1.46.0 --depth 1 https://github.com/sfu-rsl/symrustc.git belcarra_source0; \
+      ln -s ~/belcarra_source0/src/rs/rust_source; \
+    fi
 
 # Init submodules
-RUN git -C rust_source submodule update --init --recursive
+RUN [[ -v SYMRUSTC_RUST_VERSION ]] && dir='rust_source' || dir='belcarra_source0' ; \
+    git -C "$dir" submodule update --init --recursive
 
 #
 RUN ln -s ~/rust_source/src/llvm-project llvm_source
@@ -168,7 +173,7 @@ FROM builder_source AS builder_symllvm
 COPY --chown=ubuntu:ubuntu src/llvm/cmake.sh $SYMRUSTC_HOME/src/llvm/
 
 RUN mkdir -p rust_source/build/x86_64-unknown-linux-gnu/llvm/build \
-  && cd rust_source/build/x86_64-unknown-linux-gnu/llvm/build \
+  && cd -P rust_source/build/x86_64-unknown-linux-gnu/llvm/build \
   && $SYMRUSTC_HOME/src/llvm/cmake.sh
 
 
