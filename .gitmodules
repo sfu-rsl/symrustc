@@ -1,0 +1,3 @@
+[submodule "src/rs/rust_source"]
+	path = src/rs/rust_source
+	url = https://github.com/sfu-rsl/rust.git
