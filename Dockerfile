@@ -69,6 +69,7 @@ ENV SYMRUSTC_HOME_RS=$SYMRUSTC_HOME/src/rs
 ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
 ENV SYMRUSTC_LIBAFL_SOLVING_DIR=$HOME/libafl/fuzzers/libfuzzer_rust_concolic
 ENV SYMRUSTC_LIBAFL_TRACING_DIR=$HOME/libafl/libafl_concolic/test
+ENV SYMRUSTC_QSYM_BACKEND=ON
 
 # Setup Rust compiler source
 ARG SYMRUSTC_RUST_VERSION
@@ -188,21 +189,35 @@ RUN mkdir symcc_build \
 
 
 #
-# Build SymLLVM
+# Build SymLLVM with SymCC simple backend
 #
-FROM builder_source AS builder_symllvm
+FROM builder_depend AS builder_symllvm_simple
 
 COPY --chown=ubuntu:ubuntu src/llvm/cmake.sh $SYMRUSTC_HOME/src/llvm/
 
 RUN mkdir -p rust_source/build/x86_64-unknown-linux-gnu/llvm/build \
   && cd -P rust_source/build/x86_64-unknown-linux-gnu/llvm/build \
+  && SYMRUSTC_QSYM_BACKEND=OFF $SYMRUSTC_HOME/src/llvm/cmake.sh
+
+# TODO: the remaining code should directly refer to the location of the link instead of symbolically using symcc_build
+RUN ln -s ~/rust_source/build/x86_64-unknown-linux-gnu/llvm/build/tools/symcc symcc_build
+
+# TODO: the build of builder_symcc_libcxx should be made based on builder_symllvm_simple
+
+
+#
+# Build SymLLVM with SymCC Qsym backend
+#
+FROM builder_symllvm_simple AS builder_symllvm_qsym
+
+RUN cd -P rust_source/build/x86_64-unknown-linux-gnu/llvm/build \
   && $SYMRUSTC_HOME/src/llvm/cmake.sh
 
 
 #
 # Build SymRustC core
 #
-FROM builder_source AS builder_symrustc
+FROM builder_symllvm_qsym AS builder_symrustc
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -211,17 +226,9 @@ RUN sudo apt-get update \
 
 #
 
-COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/symcc_build_simple symcc_build_simple
-COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/symcc_build symcc_build
-COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/z3_build z3_build
-
-RUN mkdir -p rust_source/build/x86_64-unknown-linux-gnu
-COPY --chown=ubuntu:ubuntu --from=builder_symllvm $HOME/rust_source/build/x86_64-unknown-linux-gnu/llvm rust_source/build/x86_64-unknown-linux-gnu/llvm
-
-#
-
 ENV SYMRUSTC_RUNTIME_DIR=$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build
 
+# TODO: the $SYMCC_RUNTIME_DIR variable should be natively retrieved from rust_source/src/bootstrap side, as we are relying here on our internal SymCC/runtime version (from llvm) and know its location
 RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
     && cd rust_source \
     && sed -e 's/#ninja = false/ninja = true/' \
@@ -230,6 +237,9 @@ RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
         src/librustc_span/analyze_source_file.rs \
     && export SYMCC_RUNTIME_DIR=$SYMRUSTC_RUNTIME_DIR \
     && /usr/bin/python3 ./x.py build
+
+# TODO: we temporarily use the libSymbolize.so of builder_symcc_qsym instead of the one in rust_source/build/x86_64-unknown-linux-gnu/llvm/build/lib/libSymbolize.so which currently produces a runtime error
+COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/symcc_build/libSymbolize.so rust_source/build/x86_64-unknown-linux-gnu/llvm/build/tools/symcc/
 
 #
 
