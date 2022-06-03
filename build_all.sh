@@ -5,7 +5,9 @@
 
 set -euo pipefail
 
-name="$(basename $PWD)_log_$(git log -1 --pretty=format:%H || true)__"
+source git_current_branch.sh
+
+name="$(basename $PWD)_log_${hash}__"
 
 function tee_log () {
     fic="../$name$(date '+%F_%T' | tr -d ':-')"
@@ -19,4 +21,4 @@ function tee_log () {
 
 #
 
-sudo ./build_all_sudo.sh 2>&1 | tee_log
+sudo ./build_all_sudo.sh "$SYMRUSTC_BRANCH" 2>&1 | tee_log

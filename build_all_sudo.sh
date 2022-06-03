@@ -5,6 +5,8 @@
 
 set -euo pipefail
 
+export SYMRUSTC_BRANCH="$1"; shift
+
 unit=G
 size=$(echo $(df -B"$unit" --output=avail $(docker info | grep 'Root' | cut -d ':' -f 2) | tail -n 1))
 
@@ -22,7 +24,7 @@ export -f docker_b0
 #
 
 function docker_b () {
-    docker_b0 --target "builder_$1" -t "belcarra_$1" .
+    docker_b0 --target "builder_$1" -t "belcarra_$1" --build-arg SYMRUSTC_BRANCH="$SYMRUSTC_BRANCH" .
 }
 export -f docker_b
 

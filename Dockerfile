@@ -64,10 +64,11 @@ ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
 
 # Setup Rust compiler source
 ARG SYMRUSTC_RUST_VERSION
+ARG SYMRUSTC_BRANCH
 RUN if [[ -v SYMRUSTC_RUST_VERSION ]] ; then \
       git clone -b $SYMRUSTC_RUST_VERSION --depth 1 https://github.com/sfu-rsl/rust.git rust_source; \
     else \
-      git clone -b 1.46.0 --depth 1 https://github.com/sfu-rsl/symrustc.git belcarra_source0; \
+      git clone -b "$SYMRUSTC_BRANCH" --depth 1 https://github.com/sfu-rsl/symrustc.git belcarra_source0; \
       ln -s ~/belcarra_source0/src/rs/rust_source; \
     fi
 
