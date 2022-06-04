@@ -29,14 +29,17 @@ jobs:
       - name: Build SymLLVM
         run: docker build --target builder_symllvm -t belcarra_symllvm --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
 
-      - name: Build SymRustC
+      - name: Build SymRustC core
         run: docker build --target builder_symrustc -t belcarra_symrustc --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
+
+      - name: Build SymRustC main
+        run: docker build --target builder_symrustc_main -t belcarra_symrustc_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
 
       - name: Build additional tools
         run: docker build --target builder_addons -t belcarra_addons --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
 
-      - name: Build main image
-        run: docker build --target builder_main -t belcarra_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
+      - name: Build extended main
+        run: docker build --target builder_extended_main -t belcarra_extended_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
 
       - name: Build concolic C++ examples - SymCC/Z3, libcxx regular
         run: docker build --target builder_examples_cpp_z3_libcxx_reg -t belcarra_examples_cpp_z3_libcxx_reg --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
