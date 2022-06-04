@@ -35,6 +35,9 @@ jobs:
       - name: Build SymRustC main
         run: docker build --target builder_symrustc_main -t belcarra_symrustc_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
 
+      - name: Build concolic Rust examples
+        run: docker build --target builder_examples_rs -t belcarra_examples_rs --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
+
       - name: Build additional tools
         run: docker build --target builder_addons -t belcarra_addons --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
 
@@ -52,7 +55,4 @@ jobs:
 
       - name: Build concolic C++ examples - Only clang
         run: docker build --target builder_examples_cpp_clang -t belcarra_examples_cpp_clang --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
-
-      - name: Build concolic Rust examples
-        run: docker build --target builder_examples_rs -t belcarra_examples_rs --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
 

@@ -32,6 +32,9 @@ docker_b symrustc
 # Build SymRustC main
 docker_b symrustc_main
 
+# Build concolic Rust examples
+docker_b examples_rs
+
 # Build additional tools
 docker_b addons
 
@@ -49,7 +52,4 @@ docker_b examples_cpp_qsym
 
 # Build concolic C++ examples - Only clang
 docker_b examples_cpp_clang
-
-# Build concolic Rust examples
-docker_b examples_rs
 
