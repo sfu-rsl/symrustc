@@ -179,7 +179,7 @@ RUN mkdir -p rust_source/build/x86_64-unknown-linux-gnu/llvm/build \
 
 
 #
-# Build SymRustC
+# Build SymRustC core
 #
 FROM builder_source AS builder_symrustc
 
@@ -216,7 +216,6 @@ ENV SYMRUSTC_LD_LIBRARY_PATH=$SYMRUSTC_RUST_BUILD/stage2/lib
 ENV PATH=$HOME/.cargo/bin:$PATH
 
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_libcxx $SYMCC_LIBCXX_PATH $SYMCC_LIBCXX_PATH
-COPY --chown=ubuntu:ubuntu src/rs/wait_all.sh $SYMRUSTC_HOME_RS/
 
 RUN mkdir clang_symcc_on \
     && ln -s ~/symcc_build/symcc clang_symcc_on/clang \
@@ -226,7 +225,19 @@ RUN mkdir clang_symcc_off \
     && ln -s $(which clang-$SYMRUSTC_LLVM_VERSION) clang_symcc_off/clang \
     && ln -s $(which clang++-$SYMRUSTC_LLVM_VERSION) clang_symcc_off/clang++
 
-COPY --chown=ubuntu:ubuntu src/rs/cargo.sh $SYMRUSTC_HOME_RS/
+
+#
+# Build SymRustC main
+#
+FROM builder_symrustc AS builder_symrustc_main
+
+RUN sudo apt-get update \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        bsdmainutils \
+    && sudo apt-get clean
+
+COPY --chown=ubuntu:ubuntu src/rs belcarra_source/src/rs
+COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 
 #
@@ -236,15 +247,18 @@ FROM builder_symrustc AS builder_addons
 
 ARG SYMRUSTC_CI
 
+COPY --chown=ubuntu:ubuntu src/rs/wait_all.sh $SYMRUSTC_HOME_RS/
+COPY --chown=ubuntu:ubuntu src/rs/cargo.sh $SYMRUSTC_HOME_RS/
+
 RUN source $SYMRUSTC_HOME_RS/wait_all.sh \
     && export SYMRUSTC_EXAMPLE=~/symcc_source/util/symcc_fuzzing_helper \
     && $SYMRUSTC_HOME_RS/cargo.sh install --path $SYMRUSTC_EXAMPLE
 
 
 #
-# Build main image
+# Build extended main
 #
-FROM builder_symrustc AS builder_main
+FROM builder_symrustc_main AS builder_extended_main
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -318,15 +332,7 @@ RUN cd belcarra_source/examples \
 #
 # Build concolic Rust examples
 #
-FROM builder_symrustc AS builder_examples_rs
-
-RUN sudo apt-get update \
-    && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        bsdmainutils \
-    && sudo apt-get clean
-
-COPY --chown=ubuntu:ubuntu src/rs belcarra_source/src/rs
-COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
+FROM builder_symrustc_main AS builder_examples_rs
 
 ARG SYMRUSTC_CI
 
