@@ -241,6 +241,22 @@ COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 
 #
+# Build concolic Rust examples
+#
+FROM builder_symrustc_main AS builder_examples_rs
+
+ARG SYMRUSTC_CI
+
+ARG SYMRUSTC_SKIP_FAIL
+
+ARG SYMRUSTC_EXAMPLE0=$HOME/belcarra_source/examples
+
+RUN $SYMRUSTC_HOME_RS/fold_symrustc_build.sh
+
+RUN $SYMRUSTC_HOME_RS/fold_symrustc_run.sh
+
+
+#
 # Build additional tools
 #
 FROM builder_symrustc AS builder_addons
@@ -327,19 +343,3 @@ COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 RUN cd belcarra_source/examples \
     && $SYMRUSTC_HOME_CPP/main_fold_clang++.sh
-
-
-#
-# Build concolic Rust examples
-#
-FROM builder_symrustc_main AS builder_examples_rs
-
-ARG SYMRUSTC_CI
-
-ARG SYMRUSTC_SKIP_FAIL
-
-ARG SYMRUSTC_EXAMPLE0=$HOME/belcarra_source/examples
-
-RUN $SYMRUSTC_HOME_RS/fold_symrustc_build.sh
-
-RUN $SYMRUSTC_HOME_RS/fold_symrustc_run.sh
