@@ -6,92 +6,92 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up Ubuntu environment
-        run: docker build --target builder_base -t belcarra_base --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_base -t belcarra_base --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Set up project source
-        run: docker build --target builder_source -t belcarra_source --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_source -t belcarra_source --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Set up project dependencies
-        run: docker build --target builder_depend -t belcarra_depend --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_depend -t belcarra_depend --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build AFL
-        run: docker build --target builder_afl -t belcarra_afl --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_afl -t belcarra_afl --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build SymCC simple backend
-        run: docker build --target builder_symcc_simple -t belcarra_symcc_simple --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_symcc_simple -t belcarra_symcc_simple --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build LLVM libcxx using SymCC simple backend
-        run: docker build --target builder_symcc_libcxx -t belcarra_symcc_libcxx --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_symcc_libcxx -t belcarra_symcc_libcxx --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build SymCC Qsym backend
-        run: docker build --target builder_symcc_qsym -t belcarra_symcc_qsym --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_symcc_qsym -t belcarra_symcc_qsym --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build SymLLVM
-        run: docker build --target builder_symllvm -t belcarra_symllvm --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_symllvm -t belcarra_symllvm --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build SymRustC core
-        run: docker build --target builder_symrustc -t belcarra_symrustc --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_symrustc -t belcarra_symrustc --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build SymRustC main
-        run: docker build --target builder_symrustc_main -t belcarra_symrustc_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_symrustc_main -t belcarra_symrustc_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build concolic Rust examples
-        run: docker build --target builder_examples_rs -t belcarra_examples_rs --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_examples_rs -t belcarra_examples_rs --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Set up Ubuntu/Rust environment
-        run: docker build --target builder_base_rust -t belcarra_base_rust --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_base_rust -t belcarra_base_rust --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build LibAFL tracing runtime
-        run: docker build --target builder_libafl_tracing -t belcarra_libafl_tracing --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_libafl_tracing -t belcarra_libafl_tracing --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build LibAFL tracing runtime main
-        run: docker build --target builder_libafl_tracing_main -t belcarra_libafl_tracing_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_libafl_tracing_main -t belcarra_libafl_tracing_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build concolic Rust examples for LibAFL tracing
-        run: docker build --target builder_libafl_tracing_example -t belcarra_libafl_tracing_example --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_libafl_tracing_example -t belcarra_libafl_tracing_example --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build LibAFL solving runtime
-        run: docker build --target builder_libafl_solving -t belcarra_libafl_solving --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_libafl_solving -t belcarra_libafl_solving --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build LibAFL solving runtime main
-        run: docker build --target builder_libafl_solving_main -t belcarra_libafl_solving_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_libafl_solving_main -t belcarra_libafl_solving_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build end user environment
-        run: docker build --target builder_end_user -t belcarra_end_user --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_end_user -t belcarra_end_user --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build concolic Rust examples for LibAFL solving
-        run: docker build --target builder_libafl_solving_example -t belcarra_libafl_solving_example --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_libafl_solving_example -t belcarra_libafl_solving_example --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build additional tools
-        run: docker build --target builder_addons -t belcarra_addons --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_addons -t belcarra_addons --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build cargo-fuzz
-        run: docker build --target builder_cargo_fuzz -t belcarra_cargo_fuzz --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_cargo_fuzz -t belcarra_cargo_fuzz --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build concolic Rust examples - set up project source - local example - fuzz
-        run: docker build --target builder_examples_rs_source_local_fuzz -t belcarra_examples_rs_source_local_fuzz --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_examples_rs_source_local_fuzz -t belcarra_examples_rs_source_local_fuzz --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build end user environment main
-        run: docker build --target builder_end_user_main -t belcarra_end_user_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_end_user_main -t belcarra_end_user_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build concolic Rust examples - set up project source - coreutils
-        run: docker build --target builder_examples_rs_source_coreutils -t belcarra_examples_rs_source_coreutils --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_examples_rs_source_coreutils -t belcarra_examples_rs_source_coreutils --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build concolic Rust examples - set up project source - coreutils - fuzz
-        run: docker build --target builder_examples_rs_source_coreutils_fuzz -t belcarra_examples_rs_source_coreutils_fuzz --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_examples_rs_source_coreutils_fuzz -t belcarra_examples_rs_source_coreutils_fuzz --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build extended main
-        run: docker build --target builder_extended_main -t belcarra_extended_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_extended_main -t belcarra_extended_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build concolic C++ examples - SymCC/Z3, libcxx regular
-        run: docker build --target builder_examples_cpp_z3_libcxx_reg -t belcarra_examples_cpp_z3_libcxx_reg --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_examples_cpp_z3_libcxx_reg -t belcarra_examples_cpp_z3_libcxx_reg --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build concolic C++ examples - SymCC/Z3, libcxx instrumented
-        run: docker build --target builder_examples_cpp_z3_libcxx_inst -t belcarra_examples_cpp_z3_libcxx_inst --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_examples_cpp_z3_libcxx_inst -t belcarra_examples_cpp_z3_libcxx_inst --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build concolic C++ examples - SymCC/QSYM
-        run: docker build --target builder_examples_cpp_qsym -t belcarra_examples_cpp_qsym --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_examples_cpp_qsym -t belcarra_examples_cpp_qsym --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
       - name: Build concolic C++ examples - Only clang
-        run: docker build --target builder_examples_cpp_clang -t belcarra_examples_cpp_clang --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.50.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
+        run: docker build --target builder_examples_cpp_clang -t belcarra_examples_cpp_clang --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.51.0' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes .
 
