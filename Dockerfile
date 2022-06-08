@@ -451,6 +451,29 @@ RUN $SYMRUSTC_HOME_RS/symcc_fuzzing_helper.sh
 
 
 #
+# Build concolic Rust examples - set up project source
+#
+FROM builder_symrustc_main AS builder_examples_rs_source
+
+RUN git clone --depth 1 https://github.com/uutils/coreutils.git
+
+
+#
+# Build concolic Rust examples - coreutils
+#
+FROM builder_examples_rs_source AS builder_examples_rs_coreutils
+
+RUN cd coreutils \
+    && $SYMRUSTC_HOME_RS/env.sh $SYMRUSTC_CARGO install coreutils || echo "error exit code: $?"
+
+RUN cd coreutils/src/uu/cat \
+    && $SYMRUSTC_HOME_RS/symrustc_build.sh
+
+RUN cd coreutils/src/uu/cat \
+    && $SYMRUSTC_HOME_RS/symrustc_run.sh test
+
+
+#
 # Build extended main
 #
 FROM builder_symrustc_main AS builder_extended_main
