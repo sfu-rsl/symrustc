@@ -559,6 +559,18 @@ RUN cd $SYMRUSTC_FUZZ_DIR \
 
 
 #
+# Build concolic Rust examples - coreutils
+#
+FROM builder_examples_rs_source_coreutils AS builder_examples_rs_coreutils
+
+RUN cd coreutils \
+    && $SYMRUSTC_HOME_RS/env.sh $SYMRUSTC_CARGO install coreutils || echo "error exit code: $?"
+
+RUN cd coreutils/src/uu/cat \
+    && $SYMRUSTC_HOME_RS/symrustc.sh test
+
+
+#
 # Build extended main
 #
 FROM builder_symrustc_main AS builder_extended_main
