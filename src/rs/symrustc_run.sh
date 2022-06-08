@@ -30,7 +30,7 @@ function symrustc_exec () {
     mkdir -p "$SYMCC_OUTPUT_DIR"
 
     declare -i code_actual=0
-    echo $input | "$target0/debug/belcarra" || code_actual=$?
+    echo $input | "$(find -L "$target0/debug" -maxdepth 1 -type f -executable | grep . -m 1)" || code_actual=$?
     echo $input | $SYMRUSTC_HOME_RS/hexdump.sh /dev/stdin
 
     ls $output_dir/output | wc -l
