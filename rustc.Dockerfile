@@ -17,3 +17,12 @@ RUN cd rust_source \
     && sed -e 's/#ninja = false/ninja = true/' \
         config.toml.example > config.toml \
     && /usr/bin/python3 ./x.py build
+
+ARG SYMRUSTC_RUST_BUILD=$HOME/rust_source/build/x86_64-unknown-linux-gnu
+ARG SYMRUSTC_RUST_BUILD_STAGE=$SYMRUSTC_RUST_BUILD/stage1
+
+ENV SYMRUSTC_CARGO=$SYMRUSTC_RUST_BUILD/stage0/bin/cargo
+ENV SYMRUSTC_RUSTC=$SYMRUSTC_RUST_BUILD_STAGE/bin/rustc
+ENV SYMRUSTC_LD_LIBRARY_PATH=$SYMRUSTC_RUST_BUILD_STAGE/lib
+ENV PATH=$HOME/.cargo/bin:$PATH
+
