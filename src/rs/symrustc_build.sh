@@ -36,7 +36,7 @@ then
     CARGO_TARGET_DIR=target_rustc_stdin_off fork $SYMRUSTC_HOME_RS/rustc_stdin.sh "$@"
 fi
 
-fork $SYMRUSTC_HOME_RS/env.sh $SYMRUSTC_CARGO rustc --manifest-path "$SYMRUSTC_EXAMPLE/Cargo.toml" "$@"
+fork $SYMRUSTC_HOME_RS/env0.sh $SYMRUSTC_CARGO rustc --manifest-path "$SYMRUSTC_EXAMPLE/Cargo.toml" "$@"
 
 wait_all
 

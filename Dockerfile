@@ -264,12 +264,12 @@ FROM builder_symrustc AS builder_addons
 
 ARG SYMRUSTC_CI
 
-COPY --chown=ubuntu:ubuntu src/rs/cargo.sh $SYMRUSTC_HOME_RS/
+COPY --chown=ubuntu:ubuntu src/rs/env0.sh $SYMRUSTC_HOME_RS/
 COPY --chown=ubuntu:ubuntu src/rs/env.sh $SYMRUSTC_HOME_RS/
 COPY --chown=ubuntu:ubuntu src/rs/wait_all.sh $SYMRUSTC_HOME_RS/
 
 RUN cd ~/symcc_source/util/symcc_fuzzing_helper \
-    && $SYMRUSTC_HOME_RS/cargo.sh install --path $PWD
+    && $SYMRUSTC_HOME_RS/env.sh $SYMRUSTC_CARGO install --path $PWD
 
 
 #
