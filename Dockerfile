@@ -66,9 +66,9 @@ ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
 ARG SYMRUSTC_RUST_VERSION
 ARG SYMRUSTC_BRANCH
 RUN if [[ -v SYMRUSTC_RUST_VERSION ]] ; then \
-      git clone -b $SYMRUSTC_RUST_VERSION --depth 1 https://github.com/sfu-rsl/rust.git rust_source; \
+      git clone --depth 1 -b $SYMRUSTC_RUST_VERSION https://github.com/sfu-rsl/rust.git rust_source; \
     else \
-      git clone -b "$SYMRUSTC_BRANCH" --depth 1 https://github.com/sfu-rsl/symrustc.git belcarra_source0; \
+      git clone --depth 1 -b "$SYMRUSTC_BRANCH" https://github.com/sfu-rsl/symrustc.git belcarra_source0; \
       ln -s ~/belcarra_source0/src/rs/rust_source; \
     fi
 
@@ -91,7 +91,7 @@ RUN if [ -d symcc_source ] ; then \
     fi
 
 # Download AFL
-RUN git clone -b v2.56b https://github.com/google/AFL.git afl
+RUN git clone --depth 1 -b v2.56b https://github.com/google/AFL.git afl
 
 
 #
