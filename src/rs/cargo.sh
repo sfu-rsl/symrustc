@@ -13,4 +13,4 @@ fi
 
 source $SYMRUSTC_HOME_RS/wait_all.sh
 
-exec $SYMRUSTC_HOME_RS/cargo0.sh "$@"
+exec $SYMRUSTC_HOME_RS/env.sh $SYMRUSTC_CARGO "$@"
