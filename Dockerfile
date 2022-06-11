@@ -455,7 +455,54 @@ RUN $SYMRUSTC_HOME_RS/symcc_fuzzing_helper.sh
 #
 FROM builder_symrustc_main AS builder_examples_rs_source
 
+RUN sudo apt-get update \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+# https://github.com/ClangBuiltLinux/dockerimage.git
+# SPDX-License-Identifier: Apache-2.0
+        bc \
+        binutils \
+        binutils-aarch64-linux-gnu \
+        binutils-arm-linux-gnueabi \
+        binutils-mips-linux-gnu \
+        binutils-mipsel-linux-gnu \
+        binutils-powerpc-linux-gnu \
+        binutils-powerpc64-linux-gnu \
+        binutils-powerpc64le-linux-gnu \
+        binutils-riscv64-linux-gnu \
+        binutils-s390x-linux-gnu \
+        bison \
+        ca-certificates \
+        ccache \
+        clang-$SYMRUSTC_LLVM_VERSION \
+        cpio \
+        curl \
+        expect \
+        flex \
+        git \
+        gnupg \
+        libelf-dev \
+        libssl-dev \
+        lld-$SYMRUSTC_LLVM_VERSION \
+        llvm-$SYMRUSTC_LLVM_VERSION \
+        lz4 \
+        make \
+        opensbi \
+        openssl \
+        ovmf \
+        qemu-efi-aarch64 \
+        qemu-system-arm \
+        qemu-system-mips \
+        qemu-system-misc \
+        qemu-system-ppc \
+        qemu-system-x86 \
+        u-boot-tools \
+        xz-utils \
+        zstd \
+    && sudo apt-get clean
+
 RUN git clone --depth 1 https://github.com/uutils/coreutils.git
+RUN git clone --depth 1 https://github.com/Rust-for-Linux/linux.git
+RUN git clone --depth 1 https://github.com/Rust-for-Linux/rust-out-of-tree-module.git
 
 
 #
@@ -471,6 +518,31 @@ RUN cd coreutils/src/uu/cat \
 
 RUN cd coreutils/src/uu/cat \
     && $SYMRUSTC_HOME_RS/symrustc_run.sh test
+
+
+#
+# Build concolic Rust examples - linux
+#
+FROM builder_examples_rs_source AS builder_examples_rs_linux
+
+COPY --chown=ubuntu:ubuntu generated/linux/.config linux/
+
+RUN cd linux \
+    && $SYMRUSTC_HOME_RS/env.sh $SYMRUSTC_CARGO install --locked --version $(scripts/min-tool-version.sh bindgen) bindgen
+
+# FIXME: this option is on to avoid the link of vmlinux to fail (see linux/scripts/link-vmlinux.sh)
+ARG SYMRUSTC_SKIP_CONCOLIC_ON=yes
+
+ARG SYMRUSTC_MAKE='make CARGO="'$SYMRUSTC_CARGO'" HOSTRUSTC="$RUSTC" RUSTC="$RUSTC" SYMRUSTC_RUSTFLAGS="$RUSTFLAGS" LLVM_SUFFIX="-'$SYMRUSTC_LLVM_VERSION'" LLVM=1'
+
+RUN cd linux \
+    && sed -i -e 's/export rust_common_flags/SYMRUSTC_RUSTFLAGS =\n&/' \
+              -e 's/-Wclippy::dbg_macro/& $(SYMRUSTC_RUSTFLAGS)/' \
+        Makefile \
+    && $SYMRUSTC_HOME_RS/env.sh "$SYMRUSTC_MAKE"
+
+RUN cd rust-out-of-tree-module \
+    && $SYMRUSTC_HOME_RS/env.sh "$SYMRUSTC_MAKE KDIR=$HOME/linux"
 
 
 #
