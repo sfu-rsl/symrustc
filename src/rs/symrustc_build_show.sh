@@ -8,10 +8,10 @@ if eval $SYMRUSTC_BUILD_COMP_CONCOLIC; then
     do
         for target_pass in on off
         do
-            target=$SYMRUSTC_EXAMPLE/${target0}_$target_pass
-            ls $target/$SYMRUSTC_TARGET_NAME/output | wc -l
-            cat $target/$SYMRUSTC_TARGET_NAME/hexdump_stdout
-            cat $target/$SYMRUSTC_TARGET_NAME/hexdump_stderr
+            target="$SYMRUSTC_DIR/${target0}_$target_pass"
+            ls "$target/$SYMRUSTC_TARGET_NAME/output" | wc -l
+            cat "$target/$SYMRUSTC_TARGET_NAME/hexdump_stdout"
+            cat "$target/$SYMRUSTC_TARGET_NAME/hexdump_stderr"
         done
     done
 fi

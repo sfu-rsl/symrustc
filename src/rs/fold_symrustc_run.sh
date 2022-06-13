@@ -5,6 +5,10 @@
 
 set -euxo pipefail
 
+source $SYMRUSTC_HOME_RS/parse_args.sh
+
+SYMRUSTC_DIR0="$SYMRUSTC_DIR"
+
 for dir in "source_0_original_1a_rs 0 17 test" \
            "source_0_original_1b_rs 0 40 test" \
            "source_2_base_1a_rs 1 0" \
@@ -13,7 +17,7 @@ for dir in "source_0_original_1a_rs 0 17 test" \
 do
     dir=( $dir )
 
-    export SYMRUSTC_DIR="$SYMRUSTC_EXAMPLE0/${dir[0]}"
+    export SYMRUSTC_DIR="$SYMRUSTC_DIR0/${dir[0]}"
     export SYMRUSTC_RUN_EXPECTED_CODE=${dir[1]}
     export SYMRUSTC_RUN_EXPECTED_COUNT=${dir[2]}
     $SYMRUSTC_HOME_RS/symrustc_run.sh "${dir[@]:3}"

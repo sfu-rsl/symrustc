@@ -5,11 +5,7 @@
 
 set -euxo pipefail
 
-if [[ -v SYMRUSTC_DIR ]] ; then
-    export SYMRUSTC_EXAMPLE="$SYMRUSTC_DIR"
-else
-    export SYMRUSTC_EXAMPLE="$PWD"
-fi
+source $SYMRUSTC_HOME_RS/parse_args.sh
 
 source $SYMRUSTC_HOME_RS/wait_all.sh
 

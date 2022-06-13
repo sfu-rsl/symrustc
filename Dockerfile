@@ -250,11 +250,11 @@ ARG SYMRUSTC_CI
 
 ARG SYMRUSTC_SKIP_FAIL
 
-ARG SYMRUSTC_EXAMPLE0=$HOME/belcarra_source/examples
+RUN cd belcarra_source/examples \
+    && $SYMRUSTC_HOME_RS/fold_symrustc_build.sh
 
-RUN $SYMRUSTC_HOME_RS/fold_symrustc_build.sh
-
-RUN $SYMRUSTC_HOME_RS/fold_symrustc_run.sh
+RUN cd belcarra_source/examples \
+    && $SYMRUSTC_HOME_RS/fold_symrustc_run.sh
 
 
 #
@@ -266,6 +266,7 @@ ARG SYMRUSTC_CI
 
 COPY --chown=ubuntu:ubuntu src/rs/env0.sh $SYMRUSTC_HOME_RS/
 COPY --chown=ubuntu:ubuntu src/rs/env.sh $SYMRUSTC_HOME_RS/
+COPY --chown=ubuntu:ubuntu src/rs/parse_args.sh $SYMRUSTC_HOME_RS/
 COPY --chown=ubuntu:ubuntu src/rs/wait_all.sh $SYMRUSTC_HOME_RS/
 
 RUN cd ~/symcc_source/util/symcc_fuzzing_helper \

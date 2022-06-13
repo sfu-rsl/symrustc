@@ -5,13 +5,7 @@
 
 set -euxo pipefail
 
-SYMRUSTC_TARGET_NAME=symrustc/run
-
-if [[ -v SYMRUSTC_DIR ]] ; then
-    SYMRUSTC_EXAMPLE="$SYMRUSTC_DIR"
-else
-    SYMRUSTC_EXAMPLE="$PWD"
-fi
+source $SYMRUSTC_HOME_RS/parse_args.sh
 
 if [[ -v SYMRUSTC_RUN_EXPECTED_CODE ]] ; then
     declare -i SYMRUSTC_RUN_EXPECTED_CODE=$SYMRUSTC_RUN_EXPECTED_CODE
@@ -19,11 +13,15 @@ else
     declare -i SYMRUSTC_RUN_EXPECTED_CODE=0
 fi
 
+#
+
+SYMRUSTC_TARGET_NAME=symrustc/run
+
 function symrustc_exec () {
     local target="$1"; shift
     local input="$@"
 
-    local target0="$SYMRUSTC_EXAMPLE/$target"
+    local target0="$SYMRUSTC_DIR/$target"
     local output_dir="$target0/$SYMRUSTC_TARGET_NAME"
     export SYMCC_OUTPUT_DIR="$output_dir/output"
 
@@ -48,7 +46,7 @@ function symrustc_exec () {
 for target0 in target_cargo target_rustc_none target_rustc_file target_rustc_stdin
 do
     target_on=${target0}_on
-    if [[ -d "$SYMRUSTC_EXAMPLE/$target_on" ]]; then
+    if [[ -d "$SYMRUSTC_DIR/$target_on" ]]; then
         symrustc_exec $target_on "$@"
 
         if [[ -v SYMRUSTC_RUN_EXPECTED_COUNT ]] && [[ $(ls "$SYMCC_OUTPUT_DIR" | wc -l) -ne $SYMRUSTC_RUN_EXPECTED_COUNT ]] ; then
@@ -60,7 +58,7 @@ do
     fi
 
     target_off=${target0}_off
-    if [[ -d "$SYMRUSTC_EXAMPLE/$target_off" ]]; then
+    if [[ -d "$SYMRUSTC_DIR/$target_off" ]]; then
         symrustc_exec $target_off "$@"
 
         declare -i count_actual=$(ls "$SYMCC_OUTPUT_DIR" | wc -l)
@@ -69,7 +67,7 @@ do
                 echo "$target_off: check not expected to succeed" >&2
                 exit 1
             else
-                echo "warning: $SYMRUSTC_EXAMPLE/$target_off not empty" >&2
+                echo "warning: $SYMRUSTC_DIR/$target_off not empty" >&2
             fi
         fi
     fi
