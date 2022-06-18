@@ -451,9 +451,32 @@ RUN $SYMRUSTC_HOME_RS/symcc_fuzzing_helper.sh
 
 
 #
-# Build concolic Rust examples - set up project source
+# Build concolic Rust examples - set up project source - coreutils
 #
-FROM builder_symrustc_main AS builder_examples_rs_source
+FROM builder_symrustc_main AS builder_examples_rs_source_coreutils
+
+RUN git clone --depth 1 https://github.com/uutils/coreutils.git
+
+
+#
+# Build concolic Rust examples - coreutils
+#
+FROM builder_examples_rs_source_coreutils AS builder_examples_rs_coreutils
+
+RUN cd coreutils \
+    && $SYMRUSTC_HOME_RS/env.sh $SYMRUSTC_CARGO install coreutils || echo "error exit code: $?"
+
+RUN cd coreutils/src/uu/cat \
+    && $SYMRUSTC_HOME_RS/symrustc_build.sh
+
+RUN cd coreutils/src/uu/cat \
+    && $SYMRUSTC_HOME_RS/symrustc_run.sh test
+
+
+#
+# Build concolic Rust examples - set up project source - linux
+#
+FROM builder_symrustc_main AS builder_examples_rs_source_linux
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -500,30 +523,14 @@ RUN sudo apt-get update \
         zstd \
     && sudo apt-get clean
 
-RUN git clone --depth 1 https://github.com/uutils/coreutils.git
 RUN git clone --depth 1 https://github.com/Rust-for-Linux/linux.git
 RUN git clone --depth 1 https://github.com/Rust-for-Linux/rust-out-of-tree-module.git
 
 
 #
-# Build concolic Rust examples - coreutils
-#
-FROM builder_examples_rs_source AS builder_examples_rs_coreutils
-
-RUN cd coreutils \
-    && $SYMRUSTC_HOME_RS/env.sh $SYMRUSTC_CARGO install coreutils || echo "error exit code: $?"
-
-RUN cd coreutils/src/uu/cat \
-    && $SYMRUSTC_HOME_RS/symrustc_build.sh
-
-RUN cd coreutils/src/uu/cat \
-    && $SYMRUSTC_HOME_RS/symrustc_run.sh test
-
-
-#
 # Build concolic Rust examples - linux
 #
-FROM builder_examples_rs_source AS builder_examples_rs_linux
+FROM builder_examples_rs_source_linux AS builder_examples_rs_linux
 
 COPY --chown=ubuntu:ubuntu generated/linux/.config linux/
 
