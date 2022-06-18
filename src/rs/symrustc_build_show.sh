@@ -13,5 +13,5 @@ if eval $SYMRUSTC_BUILD_COMP_CONCOLIC; then
             cat "$target/$SYMRUSTC_TARGET_NAME/hexdump_stdout"
             cat "$target/$SYMRUSTC_TARGET_NAME/hexdump_stderr"
         done
-    done
+    done >&2
 fi
