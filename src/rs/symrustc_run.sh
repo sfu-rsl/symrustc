@@ -13,6 +13,10 @@ else
     declare -i SYMRUSTC_RUN_EXPECTED_CODE=0
 fi
 
+if [[ ! -v SYMRUSTC_BIN_ARGS ]] ; then
+    SYMRUSTC_BIN_ARGS=''
+fi
+
 #
 
 SYMRUSTC_TARGET_NAME=symrustc/run
@@ -28,7 +32,7 @@ function symrustc_exec () {
     mkdir -p "$SYMCC_OUTPUT_DIR"
 
     declare -i code_actual=0
-    echo $input | "$(find -L "$target0/debug" -maxdepth 1 -type f -executable | grep . -m 1)" || code_actual=$?
+    echo $input | eval "$(find -L "$target0/debug" -maxdepth 1 -type f -executable | grep . -m 1)" "$SYMRUSTC_BIN_ARGS" || code_actual=$?
     echo $input | $SYMRUSTC_HOME_RS/hexdump.sh /dev/stdin
 
     ls $output_dir/output | wc -l >&2
