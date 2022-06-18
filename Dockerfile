@@ -476,7 +476,7 @@ RUN cd coreutils/src/uu/cat \
 #
 # Build concolic Rust examples - set up project source - linux
 #
-FROM builder_symrustc_main AS builder_examples_rs_source_linux
+FROM builder_symrustc AS builder_examples_rs_source_linux
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -525,6 +525,12 @@ RUN sudo apt-get update \
 
 RUN git clone --depth 1 https://github.com/Rust-for-Linux/linux.git
 RUN git clone --depth 1 https://github.com/Rust-for-Linux/rust-out-of-tree-module.git
+
+COPY --chown=ubuntu:ubuntu src/rs/env0.sh $SYMRUSTC_HOME_RS/
+COPY --chown=ubuntu:ubuntu src/rs/env.sh $SYMRUSTC_HOME_RS/
+COPY --chown=ubuntu:ubuntu src/rs/parse_args0.sh $SYMRUSTC_HOME_RS/
+COPY --chown=ubuntu:ubuntu src/rs/parse_args.sh $SYMRUSTC_HOME_RS/
+COPY --chown=ubuntu:ubuntu src/rs/wait_all.sh $SYMRUSTC_HOME_RS/
 
 
 #
