@@ -569,6 +569,12 @@ RUN cd coreutils \
 RUN cd coreutils/src/uu/cat \
     && $SYMRUSTC_HOME_RS/symrustc.sh test
 
+RUN cd coreutils/src/uu/echo \
+    && $SYMRUSTC_HOME_RS/symrustc_build.sh
+
+RUN cd coreutils/src/uu/echo \
+    && SYMRUSTC_BIN_ARGS='$(cat /dev/stdin)' $SYMRUSTC_HOME_RS/symrustc_run.sh test
+
 
 #
 # Build concolic Rust examples - set up project source - linux
