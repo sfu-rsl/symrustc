@@ -21,6 +21,8 @@ fi
 
 SYMRUSTC_TARGET_NAME=symrustc/run
 
+SYMRUSTC_DIR0="$(basename "$SYMRUSTC_DIR")"
+
 function symrustc_exec () {
     local target="$1"; shift
     local input="$@"
@@ -35,9 +37,9 @@ function symrustc_exec () {
     echo $input | eval "$(find -L "$target0/debug" -maxdepth 1 -type f -executable | grep . -m 1)" "$SYMRUSTC_BIN_ARGS" || code_actual=$?
     echo $input | $SYMRUSTC_HOME_RS/hexdump.sh /dev/stdin
 
-    ls $output_dir/output | wc -l >&2
-    cat $output_dir/hexdump_stdout >&2
-    cat $output_dir/hexdump_stderr >&2
+    echo "Total number of testcases: $(ls "$output_dir/output" | wc -l) in ${SYMRUSTC_DIR0}/${target}" >&2
+    cat "$output_dir/hexdump_stdout" >&2
+    cat "$output_dir/hexdump_stderr" >&2
 
     if (( $SYMRUSTC_RUN_EXPECTED_CODE != $code_actual )); then
         echo "$target: Unexpected exit code: $code_actual" >&2

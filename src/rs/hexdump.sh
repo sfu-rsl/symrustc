@@ -12,7 +12,7 @@ output_dir=$SYMCC_OUTPUT_DIR/..
 
 $hexdump "$1" > $output_dir/hexdump_stdin
 
-(ls $SYMCC_OUTPUT_DIR/* || true) | while read i
+(ls $SYMCC_OUTPUT_DIR/* 2>/dev/null || true) | while read i
 do
     echo -e "=============================\n$i"
     $hexdump "$i" | (git diff --color-words --no-index $output_dir/hexdump_stdin - || true) | tail -n +5
