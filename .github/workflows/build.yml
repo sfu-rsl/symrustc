@@ -83,6 +83,9 @@ jobs:
       - name: Build concolic Rust examples - coreutils
         run: docker build --target builder_examples_rs_coreutils -t belcarra_examples_rs_coreutils --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples/1.66.1' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
 
+      - name: Build concolic Rust examples - set up project source - linux
+        run: docker build --target builder_examples_rs_source_linux -t belcarra_examples_rs_source_linux --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples/1.66.1' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
+
       - name: Build concolic Rust examples - linux
         run: docker build --target builder_examples_rs_linux -t belcarra_examples_rs_linux --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples/1.66.1' --build-arg SYMRUSTC_DIR_COPY='examples' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
 

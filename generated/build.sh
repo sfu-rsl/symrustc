@@ -80,6 +80,9 @@ docker_b examples_rs_source_coreutils_fuzz
 # Build concolic Rust examples - coreutils
 docker_b examples_rs_coreutils
 
+# Build concolic Rust examples - set up project source - linux
+docker_b examples_rs_source_linux
+
 # Build concolic Rust examples - linux
 docker_b examples_rs_linux
 
