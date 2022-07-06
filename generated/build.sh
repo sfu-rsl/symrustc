@@ -59,6 +59,12 @@ docker_b libafl_solving_example
 # Build additional tools
 docker_b addons
 
+# Build concolic Rust examples - set up project source
+docker_b examples_rs_source
+
+# Build concolic Rust examples - coreutils
+docker_b examples_rs_coreutils
+
 # Build extended main
 docker_b extended_main
 
