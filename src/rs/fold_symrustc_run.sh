@@ -9,11 +9,11 @@ source $SYMRUSTC_HOME_RS/parse_args.sh
 
 SYMRUSTC_DIR0="$SYMRUSTC_DIR"
 
-for dir in "source_0_original_1a_rs 0 17 test" \
-           "source_0_original_1b_rs 0 40 test" \
+for dir in "source_0_original_1a_rs 0 11 test" \
+           "source_0_original_1b_rs 0 16 test" \
            "source_2_base_1a_rs 1 0" \
            "source_4_symcc_1_rs 0 3 -ne \x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x03" \
-           "source_4_symcc_2_rs 0 9 test"
+           "source_4_symcc_2_rs 0 6 test"
 do
     dir=( $dir )
 
