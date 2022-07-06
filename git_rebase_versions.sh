@@ -67,6 +67,7 @@ done
 
 git push --force-with-lease "$remote" $version0
 git_rebase_push2 $version0 full_runtime/1.46.0
+git_rebase_push2 $version0 verbose/1.46.0
 
 br1=$version0
 for br2 in "${versions[@]}"
