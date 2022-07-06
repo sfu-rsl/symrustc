@@ -52,7 +52,8 @@ versions=( 1.47.0 \
            1.59.0 \
            1.60.0 \
            1.61.0 \
-           extended_examples/1.61.0 )
+           1.62.0 \
+           extended_examples/1.62.0 )
 
 #
 
