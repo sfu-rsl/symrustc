@@ -20,7 +20,7 @@ done
 function print_yml () {
     echo '      - name: '"$1"
     echo -n '        run: '
-    echo 'docker build --target '"$2"' -t belcarra_'"$(echo "$2" | cut -d _ -f 2-)"' --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='"'""$SYMRUSTC_BRANCH""'"' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING=yes .'
+    echo 'docker build --target '"$2"' -t belcarra_'"$(echo "$2" | cut -d _ -f 2-)"' --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='"'""$SYMRUSTC_BRANCH""'"' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING=yes .'
     echo
 }
 
