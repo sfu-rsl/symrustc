@@ -85,7 +85,7 @@ RUN if [ -d symcc_source ] ; then \
       cd symcc_source \
       && current=$(git log -1 --pretty=format:%H) \
 # Note: Ideally, all submodules must also follow the change of version happening in the super-root project.
-      && git checkout origin/main/$(git branch -r --contains "$current" | tr '/' '\n' | tail -n 1) \
+      && git checkout origin/main/$(git branch -r --contains "$current" | cut -d '/' -f 3-) \
       && cp -a . ~/symcc_source_main \
       && git checkout "$current"; \
     fi
