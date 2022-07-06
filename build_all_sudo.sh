@@ -24,7 +24,7 @@ export -f docker_b0
 #
 
 function docker_b () {
-    docker_b0 --target "builder_$1" -t "belcarra_$1" --build-arg SYMRUSTC_BRANCH="$SYMRUSTC_BRANCH" --build-arg SYMRUSTC_SKIP_FAIL=yes .
+    docker_b0 --target "builder_$1" -t "belcarra_$1" --build-arg SYMRUSTC_BRANCH="$SYMRUSTC_BRANCH" --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
 }
 export -f docker_b
 
