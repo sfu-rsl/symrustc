@@ -96,7 +96,8 @@ RUN if [ -d symcc_source ] ; then \
 # Note: Ideally, all submodules must also follow the change of version happening in the super-root project.
       && git checkout origin/main/$(git branch -r --contains "$current" | cut -d '/' -f 3-) \
       && cp -a . ~/symcc_source_main \
-      && git checkout "$current"; \
+      && git checkout "$current" \
+      && sed -i 's|#define DEBUG_SITE_ID|// &|' compiler/SymbolicCompilerSymbolizer.h ~/symcc_source_main/compiler/Symbolizer.h; \
     fi
 
 # Download AFL
