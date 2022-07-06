@@ -38,11 +38,14 @@ docker_b examples_rs
 # Build additional tools
 docker_b addons
 
-# Build concolic Rust examples - set up project source
-docker_b examples_rs_source
+# Build concolic Rust examples - set up project source - coreutils
+docker_b examples_rs_source_coreutils
 
 # Build concolic Rust examples - coreutils
 docker_b examples_rs_coreutils
+
+# Build concolic Rust examples - set up project source - linux
+docker_b examples_rs_source_linux
 
 # Build concolic Rust examples - linux
 docker_b examples_rs_linux
