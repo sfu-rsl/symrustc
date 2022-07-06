@@ -77,6 +77,9 @@ docker_b examples_rs_source_coreutils
 # Build concolic Rust examples - set up project source - coreutils - fuzz
 docker_b examples_rs_source_coreutils_fuzz
 
+# Build concolic Rust examples - coreutils
+docker_b examples_rs_coreutils
+
 # Build extended main
 docker_b extended_main
 
