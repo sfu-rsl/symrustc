@@ -467,15 +467,11 @@ RUN cd coreutils \
     && $SYMRUSTC_HOME_RS/env.sh $SYMRUSTC_CARGO install coreutils || echo "error exit code: $?"
 
 RUN cd coreutils/src/uu/cat \
-    && $SYMRUSTC_HOME_RS/symrustc_build.sh
-
-RUN cd coreutils/src/uu/cat \
+    && $SYMRUSTC_HOME_RS/symrustc_build.sh \
     && $SYMRUSTC_HOME_RS/symrustc_run.sh test
 
 RUN cd coreutils/src/uu/echo \
-    && $SYMRUSTC_HOME_RS/symrustc_build.sh
-
-RUN cd coreutils/src/uu/echo \
+    && $SYMRUSTC_HOME_RS/symrustc_build.sh \
     && SYMRUSTC_BIN_ARGS='$(cat /dev/stdin)' $SYMRUSTC_HOME_RS/symrustc_run.sh test
 
 
