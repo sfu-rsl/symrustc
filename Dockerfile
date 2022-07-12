@@ -566,11 +566,25 @@ FROM builder_examples_rs_source_coreutils AS builder_examples_rs_coreutils
 RUN cd coreutils \
     && $SYMRUSTC_HOME_RS/env.sh $SYMRUSTC_CARGO install coreutils || echo "error exit code: $?"
 
+# OK
+RUN cd coreutils/src/uu/base32 \
+    && $SYMRUSTC_HOME_RS/symrustc.sh test
+
+# PB: libc "splice" not yet implemented
 RUN cd coreutils/src/uu/cat \
     && $SYMRUSTC_HOME_RS/symrustc.sh test
 
+# OK
+RUN cd coreutils/src/uu/cut \
+    && SYMRUSTC_BIN_ARGS='-d a -f 3-' $SYMRUSTC_HOME_RS/symrustc.sh a0a1a2
+
+# PB: program not implemented to read its concolic argument from stdin nor file
 RUN cd coreutils/src/uu/echo \
     && SYMRUSTC_BIN_ARGS='$(cat /dev/stdin)' $SYMRUSTC_HOME_RS/symrustc.sh test
+
+# OK
+RUN cd coreutils/src/uu/expand \
+    && SYMRUSTC_BIN_ARGS='-t 3' $SYMRUSTC_HOME_RS/symrustc.sh -e 'a\t\t\tb'
 
 
 #
