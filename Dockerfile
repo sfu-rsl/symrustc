@@ -250,6 +250,8 @@ ARG SYMRUSTC_CI
 
 ARG SYMRUSTC_SKIP_FAIL
 
+ARG SYMRUSTC_VERBOSE
+
 RUN cd belcarra_source/examples \
     && $SYMRUSTC_HOME_RS/fold_symrustc_build.sh
 
