@@ -77,3 +77,5 @@ do
     git_count=("${git_count[@]:1}")
     br1=${br2}
 done
+
+git checkout $version0
