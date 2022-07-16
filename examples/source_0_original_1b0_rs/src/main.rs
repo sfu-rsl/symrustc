@@ -6,6 +6,19 @@
 use std::io::{self, BufReader};
 use std::io::prelude::*;
 
+fn cmd_root() {
+    println!("What is your command?")
+}
+
+fn cmd_default(buf: Vec<u8>) {
+    print!("Hello, (");
+    for c in &buf {
+        print!(" {:#04x}", c)
+    }
+    println!(" ) {:?}!", String::from_utf8_lossy(&buf));
+    println!("CMD CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC {:?}", buf); 
+}
+
 fn main() -> Result<(), io::Error> {
     let mut buf = vec![];
     let delim = b"\n";
