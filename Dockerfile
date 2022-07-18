@@ -190,6 +190,7 @@ RUN sudo apt-get update \
 
 #
 
+COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/symcc_build_simple symcc_build_simple
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/symcc_build symcc_build
 
 RUN mkdir -p rust_source/build/x86_64-unknown-linux-gnu
