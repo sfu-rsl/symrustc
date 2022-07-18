@@ -8,9 +8,7 @@ set -euo pipefail
 source $SYMRUSTC_HOME_RS/parse_args0.sh
 
 export SYMCC_NO_SYMBOLIC_INPUT=yes
-
-SYMCC_RUNTIME_DIR=~/symcc_build/SymRuntime-prefix/src/SymRuntime-build
-export RUSTFLAGS="-L${SYMCC_RUNTIME_DIR} -Clink-arg=-Wl,-rpath,${SYMCC_RUNTIME_DIR}"
+export RUSTFLAGS="-L${SYMRUSTC_RUNTIME_DIR} -Clink-arg=-Wl,-rpath,${SYMRUSTC_RUNTIME_DIR}"
 export RUSTC=$SYMRUSTC_RUSTC
 
 #

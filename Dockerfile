@@ -197,13 +197,15 @@ COPY --chown=ubuntu:ubuntu --from=builder_symllvm $HOME/rust_source/build/x86_64
 
 #
 
+ENV SYMRUSTC_RUNTIME_DIR=$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build
+
 RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
     && cd rust_source \
     && sed -e 's/#ninja = false/ninja = true/' \
         config.toml.example > config.toml \
     && sed -i -e 's/is_x86_feature_detected!("sse2")/false \&\& &/' \
         src/librustc_span/analyze_source_file.rs \
-    && export SYMCC_RUNTIME_DIR=~/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
+    && export SYMCC_RUNTIME_DIR=$SYMRUSTC_RUNTIME_DIR \
     && /usr/bin/python3 ./x.py build
 
 #

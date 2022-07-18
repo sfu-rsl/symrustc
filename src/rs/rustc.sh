@@ -54,8 +54,8 @@ $SYMRUSTC_RUSTC \
   --out-dir "$target_d_d" \
   -C incremental="$target_d/incremental" \
   -L dependency="$target_d_d" \
-  -L$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
-  -Clink-arg=-Wl,-rpath,$HOME/symcc_build/SymRuntime-prefix/src/SymRuntime-build \
+  -L$SYMRUSTC_RUNTIME_DIR \
+  -Clink-arg=-Wl,-rpath,$SYMRUSTC_RUNTIME_DIR \
   "$@" \
 || rustc_exit_code=$?
 
