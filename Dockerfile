@@ -276,7 +276,7 @@ COPY --chown=ubuntu:ubuntu src/rs/parse_args.sh $SYMRUSTC_HOME_RS/
 COPY --chown=ubuntu:ubuntu src/rs/wait_all.sh $SYMRUSTC_HOME_RS/
 
 RUN cd ~/symcc_source/util/symcc_fuzzing_helper \
-    && $SYMRUSTC_HOME_RS/env.sh $SYMRUSTC_CARGO install --path $PWD
+    && $SYMRUSTC_HOME_RS/env.sh $SYMRUSTC_CARGO install --path $PWD --locked
 
 
 #
