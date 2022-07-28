@@ -28,18 +28,41 @@ fn main() -> Result<(), io::Error> {
     match BufReader::new(io::stdin()).read_until(delim[0], &mut buf) {
         Ok(_) => {
             let buf_len = buf.len();
-            if buf_len >= root_len
-                && buf[0 .. root_len] == *root
-                && if buf_len == root_len { true }
-                   else if buf_len == root_len + 1 { buf.ends_with(delim) }
-                   else { false } {
-                println!("What is your command?")
-            } else {
-                print!("Hello, (");
-                for c in &buf {
-                    print!(" {:#04x}", c)
-                }
-                println!(" ) {:?}!", String::from_utf8_lossy(&buf))
+            let r = buf_len >= root_len; 
+            println!("ASSI 00000000000000000000000000000000000000000000000000 {:?}", buf); 
+            if r { 
+                let r = buf[0 .. root_len] == *root; 
+                println!("ASSI 11111111111111111111111111111111111111111111111111 {:?}", buf); 
+                if r { 
+                    let r = buf_len == root_len; 
+                    println!("ASSI 22222222222222222222222222222222222222222222222222 {:?}", buf); 
+                    if r { 
+                        cmd_root(); 
+                    } else { 
+                    println!("ELSE 33333333333333333333333333333333333333333333333333 {:?}", buf); 
+                        let r = buf_len == root_len + 1; 
+                        println!("ASSI 44444444444444444444444444444444444444444444444444 {:?}", buf); 
+                        if r { 
+                            let r = buf.ends_with(delim); 
+                            println!("ASSI 55555555555555555555555555555555555555555555555555 {:?}", buf); 
+                            if r { 
+                                cmd_root(); 
+                            } else { 
+                            println!("ELSE 66666666666666666666666666666666666666666666666666 {:?}", buf); 
+                                cmd_default(buf); 
+                            } 
+                        } else { 
+                        println!("ELSE 77777777777777777777777777777777777777777777777777 {:?}", buf); 
+                            cmd_default(buf); 
+                        } 
+                    } 
+                } else { 
+                println!("ELSE 88888888888888888888888888888888888888888888888888 {:?}", buf); 
+                    cmd_default(buf); 
+                } 
+            } else { 
+            println!("ELSE 99999999999999999999999999999999999999999999999999 {:?}", buf); 
+                cmd_default(buf); 
             }
             Ok(())
         }
