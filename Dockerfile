@@ -80,17 +80,12 @@ RUN [[ -v SYMRUSTC_RUST_VERSION ]] && dir='rust_source' || dir='belcarra_source0
 
 #
 RUN ln -s ~/rust_source/src/llvm-project llvm_source
-RUN git clone -b rust_runtime/20221214 https://github.com/sfu-rsl/LibAFL.git libafl
+RUN ln -s ~/rust_source/src/tools/libafl libafl
 RUN ln -s ~/llvm_source/symcc symcc_source
 
 # Note: Depending on the commit revision, the Rust compiler source may not have yet a SymCC directory. In this docker stage, we treat such case as a "non-aborting failure" (subsequent stages may raise different errors).
 RUN if [ -d symcc_source ] ; then \
-      cd symcc_source \
-      && current=$(git log -1 --pretty=format:%H) \
-# Note: Ideally, all submodules must also follow the change of version happening in the super-root project.
-      && git checkout origin/main/$(git branch -r --contains "$current" | cut -d '/' -f 3-) \
-      && cp -a . ~/symcc_source_main \
-      && git checkout "$current"; \
+      ln -s ~/libafl/libafl_concolic/symcc_runtime/symcc symcc_source_main; \
     fi
 
 # Download AFL
