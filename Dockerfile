@@ -67,6 +67,8 @@ ENV SYMRUSTC_HOME=$HOME/belcarra_source
 ENV SYMRUSTC_HOME_CPP=$SYMRUSTC_HOME/src/cpp
 ENV SYMRUSTC_HOME_RS=$SYMRUSTC_HOME/src/rs
 ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
+ENV SYMRUSTC_LIBAFL_SOLVING_DIR=$HOME/libafl/fuzzers/libfuzzer_rust_concolic
+ENV SYMRUSTC_LIBAFL_TRACING_DIR=$HOME/libafl/libafl_concolic/test
 
 # Setup Rust compiler source
 ARG SYMRUSTC_RUST_VERSION
@@ -84,6 +86,7 @@ RUN [[ -v SYMRUSTC_RUST_VERSION ]] && dir='rust_source' || dir='belcarra_source0
 
 #
 RUN ln -s ~/rust_source/src/llvm-project llvm_source
+RUN git clone -b rust_runtime/11 https://github.com/sfu-rsl/LibAFL.git libafl
 RUN ln -s ~/llvm_source/symcc symcc_source
 
 # Note: Depending on the commit revision, the Rust compiler source may not have yet a SymCC directory. In this docker stage, we treat such case as a "non-aborting failure" (subsequent stages may raise different errors).
@@ -266,6 +269,125 @@ RUN cd belcarra_source/examples \
 
 RUN cd belcarra_source/examples \
     && $SYMRUSTC_HOME_RS/fold_symrustc_run.sh
+
+
+#
+# Set up Ubuntu/Rust environment
+#
+FROM builder_symrustc AS builder_base_rust
+
+ENV RUSTUP_HOME=$HOME/rustup \
+    CARGO_HOME=$HOME/cargo \
+    PATH=$HOME/cargo/bin:$PATH \
+    RUST_VERSION=1.62.1
+
+# https://github.com/rust-lang/docker-rust/blob/8a5c9907090efde7e259bc0c51f951b7383c62e6/1.62.1/bullseye/Dockerfile
+RUN set -eux; \
+    dpkgArch="$(dpkg --print-architecture)"; \
+    case "${dpkgArch##*-}" in \
+        amd64) rustArch='x86_64-unknown-linux-gnu'; rustupSha256='3dc5ef50861ee18657f9db2eeb7392f9c2a6c95c90ab41e45ab4ca71476b4338' ;; \
+        armhf) rustArch='armv7-unknown-linux-gnueabihf'; rustupSha256='67777ac3bc17277102f2ed73fd5f14c51f4ca5963adadf7f174adf4ebc38747b' ;; \
+        arm64) rustArch='aarch64-unknown-linux-gnu'; rustupSha256='32a1532f7cef072a667bac53f1a5542c99666c4071af0c9549795bbdb2069ec1' ;; \
+        i386) rustArch='i686-unknown-linux-gnu'; rustupSha256='e50d1deb99048bc5782a0200aa33e4eea70747d49dffdc9d06812fd22a372515' ;; \
+        *) echo >&2 "unsupported architecture: ${dpkgArch}"; exit 1 ;; \
+    esac; \
+    url="https://static.rust-lang.org/rustup/archive/1.24.3/${rustArch}/rustup-init"; \
+    curl -O "$url"; \
+    echo "${rustupSha256} *rustup-init" | sha256sum -c -; \
+    chmod +x rustup-init; \
+    ./rustup-init -y --no-modify-path --profile minimal --default-toolchain $RUST_VERSION --default-host ${rustArch}
+
+RUN rustup component add rustfmt
+
+
+#
+# Build LibAFL tracing runtime
+#
+FROM builder_base_rust AS builder_libafl_tracing
+
+RUN cd $SYMRUSTC_LIBAFL_TRACING_DIR \
+    && cargo build -p runtime_test \
+    && cargo build -p dump_constraints
+
+
+#
+# Build LibAFL tracing runtime main
+#
+FROM builder_symrustc_main AS builder_libafl_tracing_main
+
+COPY --chown=ubuntu:ubuntu --from=builder_libafl_tracing $HOME/libafl/target $HOME/libafl/target
+
+# Pointing to the Rust runtime back-end
+RUN cd -P $SYMRUSTC_RUNTIME_DIR/.. \
+    && ln -s ~/libafl/target/debug "$(basename $SYMRUSTC_RUNTIME_DIR)0"
+
+RUN source $SYMRUSTC_HOME_RS/libafl_swap.sh \
+    && swap
+
+
+#
+# Build concolic Rust examples for LibAFL tracing
+#
+FROM builder_libafl_tracing_main AS builder_libafl_tracing_example
+
+ARG SYMRUSTC_LIBAFL_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1c_rs
+
+RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
+    && $SYMRUSTC_HOME_RS/libafl_tracing_build.sh
+
+RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
+# Note: target_cargo_off can be kept but its printed trace would be less informative than the one of target_cargo_on, and by default, only the first trace seems to be printed.
+    && rm -rf target_cargo_off \
+    && $SYMRUSTC_HOME_RS/libafl_tracing_run.sh test
+
+
+#
+# Build LibAFL solving runtime
+#
+FROM builder_base_rust AS builder_libafl_solving
+
+RUN cargo install cargo-make
+
+# Building the client-server main fuzzing loop
+RUN cd $SYMRUSTC_LIBAFL_SOLVING_DIR \
+    && PATH=~/clang_symcc_off:"$PATH" cargo make test
+
+
+#
+# Build LibAFL solving runtime main
+#
+FROM builder_symrustc_main AS builder_libafl_solving_main
+
+RUN sudo apt-get update \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+# Installing "nc" to later check if a given port is opened or closed
+        netcat-openbsd \
+        psmisc \
+    && sudo apt-get clean
+
+COPY --chown=ubuntu:ubuntu --from=builder_libafl_solving $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/target $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/target
+COPY --chown=ubuntu:ubuntu --from=builder_libafl_solving $SYMRUSTC_LIBAFL_SOLVING_DIR/runtime/target $SYMRUSTC_LIBAFL_SOLVING_DIR/runtime/target
+
+# Pointing to the Rust runtime back-end
+RUN cd -P $SYMRUSTC_RUNTIME_DIR/.. \
+    && ln -s $SYMRUSTC_LIBAFL_SOLVING_DIR/runtime/target/release "$(basename $SYMRUSTC_RUNTIME_DIR)0"
+
+# TODO: file name to be generalized
+RUN ln -s $SYMRUSTC_HOME_RS/libafl_solving_bin.sh $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/target_symcc0.out
+
+
+#
+# Build concolic Rust examples for LibAFL solving
+#
+FROM builder_libafl_solving_main AS builder_libafl_solving_example
+
+ARG SYMRUSTC_LIBAFL_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1c_rs
+
+RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
+    && $SYMRUSTC_HOME_RS/symrustc_build.sh
+
+RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
+    && $SYMRUSTC_HOME_RS/libafl_solving_run.sh test
 
 
 #
