@@ -46,6 +46,12 @@ FROM builder_base AS builder_source
 
 ENV SYMRUSTC_LLVM_VERSION=10
 
+# error: failed to get `cc` as a dependency of package `bootstrap v0.0.0 (/home/ubuntu/belcarra_source0/src/rs/rust_source/src/bootstrap)`
+# Caused by: failed to fetch `https://github.com/rust-lang/crates.io-index`
+# Caused by: error reading from the zlib stream; class=Zlib (5)
+# See: https://github.com/rust-lang/cargo/issues/10303#issuecomment-1015007926
+ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
+
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
         clang-$SYMRUSTC_LLVM_VERSION \
