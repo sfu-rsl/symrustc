@@ -38,6 +38,27 @@ jobs:
       - name: Build concolic Rust examples
         run: docker build --target builder_examples_rs -t belcarra_examples_rs --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
 
+      - name: Set up Ubuntu/Rust environment
+        run: docker build --target builder_base_rust -t belcarra_base_rust --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
+
+      - name: Build LibAFL tracing runtime
+        run: docker build --target builder_libafl_tracing -t belcarra_libafl_tracing --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
+
+      - name: Build LibAFL tracing runtime main
+        run: docker build --target builder_libafl_tracing_main -t belcarra_libafl_tracing_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
+
+      - name: Build concolic Rust examples for LibAFL tracing
+        run: docker build --target builder_libafl_tracing_example -t belcarra_libafl_tracing_example --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
+
+      - name: Build LibAFL solving runtime
+        run: docker build --target builder_libafl_solving -t belcarra_libafl_solving --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
+
+      - name: Build LibAFL solving runtime main
+        run: docker build --target builder_libafl_solving_main -t belcarra_libafl_solving_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
+
+      - name: Build concolic Rust examples for LibAFL solving
+        run: docker build --target builder_libafl_solving_example -t belcarra_libafl_solving_example --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
+
       - name: Build additional tools
         run: docker build --target builder_addons -t belcarra_addons --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_BRANCH='1.46.0' .
 

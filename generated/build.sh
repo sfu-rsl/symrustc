@@ -35,6 +35,27 @@ docker_b symrustc_main
 # Build concolic Rust examples
 docker_b examples_rs
 
+# Set up Ubuntu/Rust environment
+docker_b base_rust
+
+# Build LibAFL tracing runtime
+docker_b libafl_tracing
+
+# Build LibAFL tracing runtime main
+docker_b libafl_tracing_main
+
+# Build concolic Rust examples for LibAFL tracing
+docker_b libafl_tracing_example
+
+# Build LibAFL solving runtime
+docker_b libafl_solving
+
+# Build LibAFL solving runtime main
+docker_b libafl_solving_main
+
+# Build concolic Rust examples for LibAFL solving
+docker_b libafl_solving_example
+
 # Build additional tools
 docker_b addons
 
