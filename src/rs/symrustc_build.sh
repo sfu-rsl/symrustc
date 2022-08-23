@@ -24,11 +24,11 @@ if eval $SYMRUSTC_BUILD_COMP_CONCOLIC
 then
     export SYMRUSTC_INPUT_FILE="$SYMRUSTC_DIR/src/main.rs"
 
-    CARGO_TARGET_DIR=target_rustc_none_on fork $SYMRUSTC_HOME_RS/rustc_none.sh -Z new-llvm-pass-manager=no -C passes=symcc -lSymRuntime "$@"
+    CARGO_TARGET_DIR=target_rustc_none_on fork $SYMRUSTC_HOME_RS/rustc_none.sh -C "passes=symcc-module symcc-function" -lSymRuntime "$@"
     CARGO_TARGET_DIR=target_rustc_none_off fork $SYMRUSTC_HOME_RS/rustc_none.sh "$@"
-    CARGO_TARGET_DIR=target_rustc_file_on fork $SYMRUSTC_HOME_RS/rustc_file.sh -Z new-llvm-pass-manager=no -C passes=symcc -lSymRuntime "$@"
+    CARGO_TARGET_DIR=target_rustc_file_on fork $SYMRUSTC_HOME_RS/rustc_file.sh -C "passes=symcc-module symcc-function" -lSymRuntime "$@"
     CARGO_TARGET_DIR=target_rustc_file_off fork $SYMRUSTC_HOME_RS/rustc_file.sh "$@"
-    CARGO_TARGET_DIR=target_rustc_stdin_on fork $SYMRUSTC_HOME_RS/rustc_stdin.sh -Z new-llvm-pass-manager=no -C passes=symcc -lSymRuntime "$@"
+    CARGO_TARGET_DIR=target_rustc_stdin_on fork $SYMRUSTC_HOME_RS/rustc_stdin.sh -C "passes=symcc-module symcc-function" -lSymRuntime "$@"
     CARGO_TARGET_DIR=target_rustc_stdin_off fork $SYMRUSTC_HOME_RS/rustc_stdin.sh "$@"
 fi
 
