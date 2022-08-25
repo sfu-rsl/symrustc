@@ -44,12 +44,6 @@ function git_rebase_push () {
     git push --force-with-lease "$remote" ${br2}
 }
 
-function git_rebase_push2 () {
-    local br1=$1; shift
-    local br2=$1; shift
-    git_rebase_push ${br1} ${br2} $(git rev-list --count ^"$remote/$br1" "$remote/$br2")
-}
-
 declare -a git_count=()
 
 version0=1.46.0
@@ -78,6 +72,9 @@ versions=( 1.47.0 \
 
 #
 
+git_count+=("$(git rev-list --count ^"$remote/$version0" "$remote/full_runtime/1.46.0")")
+git_count+=("$(git rev-list --count ^"$remote/$version0" "$remote/verbose/1.46.0")")
+
 br1=$version0
 for br2 in "${versions[@]}"
 do
@@ -90,22 +87,20 @@ git_count+=("$(git rev-list --count ^"$remote/$version1b" "$remote/$version2b")"
 #
 
 git push --force-with-lease "$remote" $version0
-git_rebase_push2 $version0 full_runtime/1.46.0
-git_rebase_push2 $version0 verbose/1.46.0
 
 #
+
+git_rebase_push $version0 full_runtime/1.46.0 "${git_count[0]}"; git_count=("${git_count[@]:1}")
+git_rebase_push $version0 verbose/1.46.0 "${git_count[0]}"; git_count=("${git_count[@]:1}")
 
 br1=$version0
 for br2 in "${versions[@]}"
 do
-    git_rebase_push $br1 $br2 "${git_count[0]}"
-    git_count=("${git_count[@]:1}")
+    git_rebase_push $br1 $br2 "${git_count[0]}"; git_count=("${git_count[@]:1}")
     br1=${br2}
 done
-git_rebase_push $version1a $version2a "${git_count[0]}"
-git_count=("${git_count[@]:1}")
-git_rebase_push $version1b $version2b "${git_count[0]}"
-git_count=("${git_count[@]:1}")
+git_rebase_push $version1a $version2a "${git_count[0]}"; git_count=("${git_count[@]:1}")
+git_rebase_push $version1b $version2b "${git_count[0]}"; git_count=("${git_count[@]:1}")
 
 #
 
