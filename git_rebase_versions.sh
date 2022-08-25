@@ -34,7 +34,7 @@ function git_rebase_push () {
     if [[ -v SYMRUSTC_GENERATE ]] || [[ -v SYMRUSTC_GENERATE_INTERACTIVE ]] ; then
         git checkout ${br2}
         if [[ -v SYMRUSTC_GENERATE_INTERACTIVE ]] ; then
-            if zenity --info --title 'bool' --text "Update the generated files?" ; then
+            if zenity --info --title 'bool' --text "${br2}: update the generated files?" ; then
                 generate
             fi
         else
