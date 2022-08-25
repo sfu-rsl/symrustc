@@ -331,9 +331,16 @@ RUN source $SYMRUSTC_HOME_RS/libafl_swap.sh \
 FROM builder_libafl_tracing_main AS builder_libafl_tracing_example
 
 ARG SYMRUSTC_LIBAFL_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1c_rs
+ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING
 
 RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
-    && $SYMRUSTC_HOME_RS/libafl_tracing_build.sh
+    && err=0; \
+       $SYMRUSTC_HOME_RS/libafl_tracing_build.sh || err=$?; \
+       if [[ -v SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING ]] ; then \
+         echo "exit code: $err"; \
+       else \
+         exit $err; \
+       fi
 
 RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
 # Note: target_cargo_off can be kept but its printed trace would be less informative than the one of target_cargo_on, and by default, only the first trace seems to be printed.
