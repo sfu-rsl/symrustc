@@ -18,7 +18,7 @@ popd >/dev/null
 
 if [[ -v SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING ]] ; then
     if ((err != 0)); then
-        echo "exit code: $err"
+        echo "error exit code: $err" >&2
     fi
 else
     exit $err
