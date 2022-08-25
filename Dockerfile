@@ -382,9 +382,17 @@ RUN ln -s $SYMRUSTC_HOME_RS/libafl_solving_bin.sh $SYMRUSTC_LIBAFL_SOLVING_DIR/f
 FROM builder_libafl_solving_main AS builder_libafl_solving_example
 
 ARG SYMRUSTC_LIBAFL_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1c_rs
+ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING
 
 RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
-    && $SYMRUSTC_HOME_RS/symrustc_build.sh
+    && if [[ -v SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING ]] ; then \
+         mkdir -p target_cargo_on/debug; \
+         curl -LO 'https://github.com/sfu-rsl/symrustc/raw/1.46.0_binary/'"$(echo $SYMRUSTC_LIBAFL_EXAMPLE | rev | cut -d / -f 1-2 | rev)"'/belcarra'; \
+         chmod +x belcarra; \
+         mv -i belcarra target_cargo_on/debug; \
+       else \
+         $SYMRUSTC_HOME_RS/symrustc_build.sh; \
+       fi
 
 RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
     && $SYMRUSTC_HOME_RS/libafl_solving_run.sh test
