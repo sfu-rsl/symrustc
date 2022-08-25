@@ -37,8 +37,10 @@ function git_rebase_push2 () {
 declare -a git_count=()
 
 version0=1.46.0
-version1=1.55.0
-version2=rust_runtime/1.55.0
+version1a=1.55.0
+version2a=rust_runtime/1.55.0
+version1b=1.62.1
+version2b=extended_examples/1.62.1
 versions=( 1.47.0 \
            1.48.0 \
            1.49.0 \
@@ -47,15 +49,16 @@ versions=( 1.47.0 \
            1.52.1 \
            1.53.0 \
            1.54.0 \
-           $version1 \
+           $version1a \
            1.56.1 \
            1.57.0 \
            1.58.1 \
            1.59.0 \
            1.60.0 \
            1.61.0 \
-           1.62.0 \
-           extended_examples/1.62.0 )
+           $version1b \
+           1.63.0 \
+           extended_examples/1.63.0 )
 
 #
 
@@ -65,7 +68,8 @@ do
     git_count+=("$(git rev-list --count ^"$remote/$br1" "$remote/$br2")")
     br1=${br2}
 done
-git_count+=("$(git rev-list --count ^"$remote/$version1" "$remote/$version2")")
+git_count+=("$(git rev-list --count ^"$remote/$version1a" "$remote/$version2a")")
+git_count+=("$(git rev-list --count ^"$remote/$version1b" "$remote/$version2b")")
 
 #
 
@@ -82,7 +86,9 @@ do
     git_count=("${git_count[@]:1}")
     br1=${br2}
 done
-git_rebase_push $version1 $version2 "${git_count[0]}"
+git_rebase_push $version1a $version2a "${git_count[0]}"
+git_count=("${git_count[@]:1}")
+git_rebase_push $version1b $version2b "${git_count[0]}"
 git_count=("${git_count[@]:1}")
 
 #
