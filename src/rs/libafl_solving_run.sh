@@ -48,9 +48,9 @@ proc_client=$!
 grep -q 'objectives: 2' $fic_server
 
 # terminating the client first, then any remaining forked processes not yet terminated
-kill $proc_client || echo "error: kill ($?)"
-wait $proc_client || echo "error: wait ($?)"
-killall $fuzz_bin || echo "error: killall ($?)"
+kill $proc_client || echo "error: kill ($?)" >&2
+wait $proc_client || echo "error: wait ($?)" >&2
+killall $fuzz_bin || echo "error: killall ($?)" >&2
 wait_all
 
 # cleaning
