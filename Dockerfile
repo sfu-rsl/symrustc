@@ -334,13 +334,7 @@ ARG SYMRUSTC_LIBAFL_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1c_
 ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING
 
 RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
-    && err=0; \
-       $SYMRUSTC_HOME_RS/libafl_tracing_build.sh || err=$?; \
-       if [[ -v SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING ]] ; then \
-         echo "exit code: $err"; \
-       else \
-         exit $err; \
-       fi
+    && $SYMRUSTC_HOME_RS/libafl_tracing_build.sh
 
 RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
 # Note: target_cargo_off can be kept but its printed trace would be less informative than the one of target_cargo_on, and by default, only the first trace seems to be printed.
@@ -392,14 +386,7 @@ ARG SYMRUSTC_LIBAFL_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1c_
 ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING
 
 RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
-    && if [[ -v SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING ]] ; then \
-         mkdir -p target_cargo_on/debug; \
-         curl -LO 'https://github.com/sfu-rsl/symrustc/raw/1.46.0_binary/'"$(echo $SYMRUSTC_LIBAFL_EXAMPLE | rev | cut -d / -f 1-2 | rev)"'/belcarra'; \
-         chmod +x belcarra; \
-         mv -i belcarra target_cargo_on/debug; \
-       else \
-         $SYMRUSTC_HOME_RS/symrustc_build.sh; \
-       fi
+    && $SYMRUSTC_HOME_RS/libafl_solving_build.sh
 
 RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
     && $SYMRUSTC_HOME_RS/libafl_solving_run.sh test
