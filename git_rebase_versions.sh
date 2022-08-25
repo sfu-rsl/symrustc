@@ -24,6 +24,22 @@ function git_rebase_push () {
     if (( err )); then
         echo_read "Error: rebase ($err). Conflict resolved? If yes, continue? "
     fi
+    if [[ -v SYMRUSTC_GENERATE ]] || [[ -v SYMRUSTC_GENERATE_INTERACTIVE ]] ; then
+        git checkout ${br2}
+        function generate () {
+            ./make_build.sh
+            git add .github/workflows/build.yml generated/build.sh
+            git commit --fixup HEAD
+            git rebase -i --autosquash --autostash HEAD~2
+        }
+        if [[ -v SYMRUSTC_GENERATE_INTERACTIVE ]] ; then
+            if zenity --info --title 'bool' --text "Update the generated files?" ; then
+                generate
+            fi
+        else
+            generate
+        fi
+    fi
     
     git push --force-with-lease "$remote" ${br2}
 }
