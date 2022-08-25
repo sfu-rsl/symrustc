@@ -9,7 +9,17 @@ export SYMRUSTC_DIR=$PWD
 
 pushd $SYMRUSTC_LIBAFL_TRACING_DIR >/dev/null
 
+declare -i err=0
 ../../target/debug/dump_constraints --plain-text --output output_build.txt -- \
-    $SYMRUSTC_HOME_RS/symrustc_build.sh
+    $SYMRUSTC_HOME_RS/symrustc_build.sh \
+|| err=$?
 
 popd >/dev/null
+
+if [[ -v SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING ]] ; then
+    if ((err != 0)); then
+        echo "exit code: $err"
+    fi
+else
+    exit $err
+fi
