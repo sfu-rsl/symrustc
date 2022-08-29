@@ -459,6 +459,14 @@ RUN git clone --depth 1 https://github.com/uutils/coreutils.git
 
 
 #
+# Build concolic Rust examples - set up project source - coreutils - libafl
+#
+FROM builder_libafl_solving_main AS builder_examples_rs_source_coreutils_libafl
+
+COPY --chown=ubuntu:ubuntu --from=builder_examples_rs_source_coreutils $HOME/coreutils coreutils
+
+
+#
 # Build concolic Rust examples - coreutils
 #
 FROM builder_examples_rs_source_coreutils AS builder_examples_rs_coreutils
@@ -490,6 +498,35 @@ RUN cd coreutils/src/uu/echo \
 RUN cd coreutils/src/uu/expand \
     && $SYMRUSTC_HOME_RS/symrustc_build.sh \
     && SYMRUSTC_BIN_ARGS='-t 3' $SYMRUSTC_HOME_RS/symrustc_run.sh -e 'a\t\t\tb'
+
+# OK
+RUN cd coreutils/src/uu/sort \
+    && $SYMRUSTC_HOME_RS/symrustc_build.sh \
+    && $SYMRUSTC_HOME_RS/symrustc_run.sh -ne 'b\nd\nc\na'
+
+
+#
+# Build concolic Rust examples - coreutils - libafl
+#
+FROM builder_examples_rs_source_coreutils_libafl AS builder_examples_rs_coreutils_libafl
+
+ARG SYMRUSTC_CI
+ARG SYMRUSTC_LIBAFL_EXAMPLE=$HOME/coreutils/src/uu/sort
+ARG SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE=yes
+
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_EXAMPLE \
+      && $SYMRUSTC_HOME_RS/libafl_solving_build.sh; \
+    fi
+
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_EXAMPLE \
+      && $SYMRUSTC_HOME_RS/libafl_solving_run.sh -ne 'b\nd\nc\na'; \
+    fi
 
 
 #
