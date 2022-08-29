@@ -586,6 +586,10 @@ RUN cd coreutils/src/uu/echo \
 RUN cd coreutils/src/uu/expand \
     && SYMRUSTC_BIN_ARGS='-t 3' $SYMRUSTC_HOME_RS/symrustc.sh -e 'a\t\t\tb'
 
+# OK
+RUN cd coreutils/src/uu/sort \
+    && $SYMRUSTC_HOME_RS/symrustc.sh -ne 'b\nd\nc\na'
+
 
 #
 # Build concolic Rust examples - set up project source - linux
