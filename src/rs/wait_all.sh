@@ -18,7 +18,9 @@ function wait_all () {
     declare -i err=0 werr=0
     
     while wait -fn || werr=$?; ((werr != 127)); do
-        err=$werr
+        if ((err == 0)); then
+            err=$werr
+        fi
     done
 
     if ((err != 0)); then
