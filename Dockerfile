@@ -305,9 +305,15 @@ RUN rustup component add rustfmt
 #
 FROM builder_base_rust AS builder_libafl_tracing
 
-RUN cd $SYMRUSTC_LIBAFL_TRACING_DIR \
-    && cargo build -p runtime_test \
-    && cargo build -p dump_constraints
+ARG SYMRUSTC_CI
+
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      mkdir ~/libafl/target; \
+    else \
+      cd $SYMRUSTC_LIBAFL_TRACING_DIR \
+      && cargo build -p runtime_test \
+      && cargo build -p dump_constraints; \
+    fi
 
 
 #
@@ -330,16 +336,25 @@ RUN source $SYMRUSTC_HOME_RS/libafl_swap.sh \
 #
 FROM builder_libafl_tracing_main AS builder_libafl_tracing_example
 
+ARG SYMRUSTC_CI
 ARG SYMRUSTC_LIBAFL_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1c_rs
 ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING
 
-RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
-    && $SYMRUSTC_HOME_RS/libafl_tracing_build.sh
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_EXAMPLE \
+      && $SYMRUSTC_HOME_RS/libafl_tracing_build.sh; \
+    fi
 
-RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_EXAMPLE \
 # Note: target_cargo_off can be kept but its printed trace would be less informative than the one of target_cargo_on, and by default, only the first trace seems to be printed.
-    && rm -rf target_cargo_off \
-    && $SYMRUSTC_HOME_RS/libafl_tracing_run.sh test
+      && rm -rf target_cargo_off \
+      && $SYMRUSTC_HOME_RS/libafl_tracing_run.sh test; \
+    fi
 
 
 #
@@ -347,11 +362,22 @@ RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
 #
 FROM builder_base_rust AS builder_libafl_solving
 
-RUN cargo install cargo-make
+ARG SYMRUSTC_CI
+
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cargo install cargo-make; \
+    fi
 
 # Building the client-server main fuzzing loop
-RUN cd $SYMRUSTC_LIBAFL_SOLVING_DIR \
-    && PATH=~/clang_symcc_off:"$PATH" cargo make test
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      mkdir $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/target $SYMRUSTC_LIBAFL_SOLVING_DIR/runtime/target; \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_SOLVING_DIR \
+      && PATH=~/clang_symcc_off:"$PATH" cargo make test; \
+    fi
 
 
 #
@@ -382,14 +408,23 @@ RUN ln -s $SYMRUSTC_HOME_RS/libafl_solving_bin.sh $SYMRUSTC_LIBAFL_SOLVING_DIR/f
 #
 FROM builder_libafl_solving_main AS builder_libafl_solving_example
 
+ARG SYMRUSTC_CI
 ARG SYMRUSTC_LIBAFL_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1c_rs
 ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING
 
-RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
-    && $SYMRUSTC_HOME_RS/libafl_solving_build.sh
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_EXAMPLE \
+      && $SYMRUSTC_HOME_RS/libafl_solving_build.sh; \
+    fi
 
-RUN cd $SYMRUSTC_LIBAFL_EXAMPLE \
-    && $SYMRUSTC_HOME_RS/libafl_solving_run.sh test
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_EXAMPLE \
+      && $SYMRUSTC_HOME_RS/libafl_solving_run.sh test; \
+    fi
 
 
 #
