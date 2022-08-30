@@ -44,8 +44,14 @@ done
 $fuzz_bin --concolic &
 proc_client=$!
 
-# waiting for a specific message from the server before proceeding further
-grep -q 'objectives: 2' $fic_server
+# waiting
+if [[ -v SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE ]] ; then
+    # waiting for a specific message from the server before proceeding further
+    grep -q 'objectives: 2' $fic_server
+else
+    echo "Only executing during a finite period of time, irrespective of objective search" >&2
+    sleep 5
+fi
 
 # terminating the client first, then any remaining forked processes not yet terminated
 kill $proc_client || echo "error: kill ($?)" >&2

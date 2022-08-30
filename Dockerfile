@@ -411,6 +411,7 @@ FROM builder_libafl_solving_main AS builder_libafl_solving_example
 ARG SYMRUSTC_CI
 ARG SYMRUSTC_LIBAFL_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1c_rs
 ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING
+ARG SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE=yes
 
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
