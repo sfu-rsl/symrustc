@@ -259,10 +259,9 @@ COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 FROM builder_symrustc_main AS builder_examples_rs
 
 ARG SYMRUSTC_CI
-
 ARG SYMRUSTC_SKIP_FAIL
-
 ARG SYMRUSTC_VERBOSE
+ARG SYMRUSTC_EXEC_CONCOLIC_OFF=yes
 
 RUN cd belcarra_source/examples \
     && $SYMRUSTC_HOME_RS/fold_symrustc_build.sh

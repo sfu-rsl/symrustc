@@ -13,7 +13,7 @@ export RUSTC=$SYMRUSTC_RUSTC
 
 #
 
-if [[ ! -v SYMRUSTC_SKIP_CONCOLIC_OFF ]] ; then
+if [[ -v SYMRUSTC_EXEC_CONCOLIC_OFF ]] ; then
 # Note: Changing $PATH is optional. For instance, it can be done for supporting Rust programs using clang or clang++ in their build.
 PATH=~/clang_symcc_off:"$PATH" \
 CARGO_TARGET_DIR=$SYMRUSTC_DIR/target_cargo_off \
