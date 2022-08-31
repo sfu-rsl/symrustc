@@ -52,7 +52,8 @@ version1a=1.55.0
 version2a=rust_runtime/1.55.0
 version1b=1.62.1
 version2b=extended_examples/1.62.1
-versions=( 1.47.0 \
+versions=( ubuntu_20_04/1.47.0 \
+           1.47.0 \
            1.48.0 \
            1.49.0 \
            1.50.0 \
