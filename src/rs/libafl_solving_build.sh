@@ -18,5 +18,5 @@ if [[ -v SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING ]] ; then
     chmod +x belcarra
     mv belcarra target_cargo_on/debug
 else
-    $SYMRUSTC_HOME_RS/symrustc_build.sh
+    $SYMRUSTC_HOME_RS/symrustc_build.sh "$@"
 fi
