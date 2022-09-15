@@ -15,7 +15,7 @@ pushd $SYMRUSTC_LIBAFL_TRACING_DIR >/dev/null
 
 declare -i err=0
 ../../target/debug/dump_constraints --plain-text --output output_build.txt -- \
-    $SYMRUSTC_HOME_RS/symrustc_build.sh \
+    $SYMRUSTC_HOME_RS/symrustc_build.sh "$@" \
 || err=$?
 
 popd >/dev/null
