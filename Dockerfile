@@ -22,7 +22,7 @@
 #
 # Set up Ubuntu environment
 #
-FROM ubuntu:22.04 AS builder_base
+FROM debian:sid AS builder_base
 
 SHELL ["/bin/bash", "-c"]
 
@@ -90,6 +90,7 @@ RUN if [ -d symcc_source ] ; then \
 # Note: Ideally, all submodules must also follow the change of version happening in the super-root project.
       && git checkout origin/main/$(git branch -r --contains "$current" | cut -d '/' -f 3-) \
       && cp -a . ~/symcc_source_main \
+      && sed -i 's/-Werror//' ~/symcc_source_main/runtime/simple_backend/CMakeLists.txt \
       && git checkout "$current"; \
     fi
 
@@ -304,7 +305,9 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       mkdir ~/libafl/target; \
     else \
       cd $SYMRUSTC_LIBAFL_TRACING_DIR \
-      && cargo build -p runtime_test \
+      && echo -e '#!/bin/bash\nset -euxo pipefail\n/usr/bin/git "$@"\nif [ ! -z ${1+x} ] && [ "$1" = '"'"'checkout'"'"' ] ; then sed -i '"'"'s/-Werror//'"'"' ~/libafl/target/debug/build/symcc_runtime-*/out/libafl_symcc_src/runtime/rust_backend/CMakeLists.txt ; fi' > git \
+      && chmod +x git \
+      && PATH=$PWD:"$PATH" cargo build -p runtime_test \
       && cargo build -p dump_constraints; \
     fi
 
@@ -369,7 +372,9 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_SOLVING_DIR \
-      && PATH=~/clang_symcc_off:"$PATH" cargo make test; \
+      && echo -e '#!/bin/bash\nset -euxo pipefail\n/usr/bin/git "$@"\nif [ ! -z ${1+x} ] && [ "$1" = '"'"'checkout'"'"' ] ; then sed -i '"'"'s/-Werror//'"'"' ~/libafl/fuzzers/libfuzzer_rust_concolic/runtime/target/release/build/symcc_runtime-*/out/libafl_symcc_src/runtime/rust_backend/CMakeLists.txt || echo "error sed: $?" >&2 ; sed -i '"'"'s/-Werror//'"'"' ~/libafl/fuzzers/libfuzzer_rust_concolic/fuzzer/target/release/build/libfuzzer_rust_concolic-*/out/libafl_symcc_src/runtime/simple_backend/CMakeLists.txt || echo "error sed: $?" >&2 ; fi' > git \
+      && chmod +x git \
+      && PATH=~/clang_symcc_off:$PWD:"$PATH" cargo make test; \
     fi
 
 
