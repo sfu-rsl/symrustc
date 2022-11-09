@@ -58,7 +58,6 @@ RUN sudo apt-get update \
         cmake \
         g++ \
         git \
-        libz3-dev \
         ninja-build \
         python3-pip \
     && sudo apt-get clean
@@ -102,6 +101,9 @@ RUN if [ -d symcc_source ] ; then \
 # Download AFL
 RUN git clone --depth 1 -b v2.56b https://github.com/google/AFL.git afl
 
+# Download Z3
+RUN git clone --depth 1 -b z3-4.11.2 https://github.com/Z3Prover/z3.git
+
 
 #
 # Set up project dependencies
@@ -117,6 +119,15 @@ RUN sudo apt-get update \
     && sudo apt-get clean
 RUN pip3 install lit
 ENV PATH=$HOME/.local/bin:$PATH
+
+# https://github.com/season-lab/SymFusion/blob/main/docker/Dockerfile
+RUN mkdir z3_build \
+    && cd z3_build \
+    && cmake ~/z3 \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=`pwd`/dist \
+    && make -j `nproc` \
+    && make install
 
 
 #
@@ -138,7 +149,7 @@ RUN mkdir symcc_build_simple \
         -DLLVM_VERSION_FORCE=$SYMRUSTC_LLVM_VERSION \
         -DQSYM_BACKEND=OFF \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        -DZ3_TRUST_SYSTEM_VERSION=on \
+        -DZ3_DIR=~/z3_build/dist/lib/cmake/z3 \
     && ninja check
 
 
@@ -171,7 +182,7 @@ RUN mkdir symcc_build \
         -DLLVM_VERSION_FORCE=$SYMRUSTC_LLVM_VERSION \
         -DQSYM_BACKEND=ON \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        -DZ3_TRUST_SYSTEM_VERSION=on \
+        -DZ3_DIR=~/z3_build/dist/lib/cmake/z3 \
     && ninja check
 
 
@@ -201,6 +212,7 @@ RUN sudo apt-get update \
 
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/symcc_build_simple symcc_build_simple
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/symcc_build symcc_build
+COPY --chown=ubuntu:ubuntu --from=builder_symcc_qsym $HOME/z3_build z3_build
 
 RUN mkdir -p rust_source/build/x86_64-unknown-linux-gnu
 COPY --chown=ubuntu:ubuntu --from=builder_symllvm $HOME/rust_source/build/x86_64-unknown-linux-gnu/llvm rust_source/build/x86_64-unknown-linux-gnu/llvm
