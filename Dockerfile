@@ -259,6 +259,30 @@ COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 
 
 #
+# Build SymRustC tools
+#
+FROM builder_symrustc_main AS builder_symrustc_tools
+
+RUN sudo apt-get update \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        libssl-dev \
+        pkg-config \
+    && sudo apt-get clean
+
+RUN export SYMCC_NO_SYMBOLIC_INPUT=yes \
+    && cd rust_source \
+    && export SYMCC_RUNTIME_DIR=$SYMRUSTC_RUNTIME_DIR \
+    && /usr/bin/python3 ./x.py build \
+                                     cargo \
+                                     miri \
+                                     rls \
+                                     rust-analyzer \
+                                     rust-installer \
+                                     rustdoc \
+                                     rustfmt
+
+
+#
 # Build concolic Rust examples
 #
 FROM builder_symrustc_main AS builder_examples_rs
