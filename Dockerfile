@@ -445,15 +445,16 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
 FROM builder_symrustc AS builder_addons
 
 ARG SYMRUSTC_CI
+ARG SYMRUSTC_SKIP_FAIL
 
 COPY --chown=ubuntu:ubuntu src/rs/env0.sh $SYMRUSTC_HOME_RS/
 COPY --chown=ubuntu:ubuntu src/rs/env.sh $SYMRUSTC_HOME_RS/
 COPY --chown=ubuntu:ubuntu src/rs/parse_args0.sh $SYMRUSTC_HOME_RS/
 COPY --chown=ubuntu:ubuntu src/rs/parse_args.sh $SYMRUSTC_HOME_RS/
+COPY --chown=ubuntu:ubuntu src/rs/symcc_fuzzing_helper.sh $SYMRUSTC_HOME_RS/
 COPY --chown=ubuntu:ubuntu src/rs/wait_all.sh $SYMRUSTC_HOME_RS/
 
-RUN cd ~/symcc_source/util/symcc_fuzzing_helper \
-    && $SYMRUSTC_HOME_RS/env.sh $SYMRUSTC_CARGO install --path $PWD --locked
+RUN $SYMRUSTC_HOME_RS/symcc_fuzzing_helper.sh
 
 
 #
