@@ -27,6 +27,7 @@ jobs="$(python3 -c 'import os; print(len(os.sched_getaffinity(0)))')"
   "-DLLVM_TARGET_ARCH=x86_64" \
   "-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-unknown-linux-gnu" \
   "-DLLVM_INSTALL_UTILS=ON" \
+  "-DLLVM_ENABLE_ZSTD=OFF" \
   "-DLLVM_ENABLE_ZLIB=ON" \
   "-DLLVM_ENABLE_LIBXML2=OFF" \
   "-DLLVM_VERSION_SUFFIX=-rust-dev" \

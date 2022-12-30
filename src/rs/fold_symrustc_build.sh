@@ -14,11 +14,12 @@ export SYMRUSTC_HIDE_RESULT=yes
 
 SYMRUSTC_DIR0="$SYMRUSTC_DIR"
 
+# FIXME: https://github.com/llvm/llvm-project/issues/57104
+#          "source_4_symcc_2_rs false -- -Clinker=clang++" # Semantically: should symlink to sym++ to enable concolic annotation.
 for dir in "source_0_original_1a_rs true" \
            "source_0_original_1b_rs true" \
            "source_2_base_1a_rs true" \
-           "source_4_symcc_1_rs false" \
-           "source_4_symcc_2_rs false -- -Clinker=clang++" # Semantically: should symlink to sym++ to enable concolic annotation.
+           "source_4_symcc_1_rs false"
 do
     dir=( $dir )
     
@@ -31,11 +32,12 @@ wait_all
 
 #
 
+# FIXME: https://github.com/llvm/llvm-project/issues/57104
+#          "source_4_symcc_2_rs false"
 for dir in "source_0_original_1a_rs true" \
            "source_0_original_1b_rs true" \
            "source_2_base_1a_rs true" \
-           "source_4_symcc_1_rs false" \
-           "source_4_symcc_2_rs false"
+           "source_4_symcc_1_rs false"
 do
     dir=( $dir )
     
