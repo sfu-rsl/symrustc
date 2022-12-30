@@ -44,11 +44,13 @@ WORKDIR $HOME
 #
 FROM builder_base AS builder_source
 
-ENV SYMRUSTC_LLVM_VERSION=14
+ENV SYMRUSTC_LLVM_VERSION=15
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        clang-$SYMRUSTC_LLVM_VERSION \
+        clang-tools-$SYMRUSTC_LLVM_VERSION \
+        mlir-$SYMRUSTC_LLVM_VERSION-tools \
+        libmlir-$SYMRUSTC_LLVM_VERSION-dev \
         cmake \
         g++ \
         git \
