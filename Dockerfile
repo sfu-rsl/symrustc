@@ -22,7 +22,7 @@
 #
 # Set up Ubuntu environment
 #
-FROM ubuntu:22.04 AS builder_base
+FROM ubuntu:22.10 AS builder_base
 
 SHELL ["/bin/bash", "-c"]
 
