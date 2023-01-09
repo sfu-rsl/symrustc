@@ -48,29 +48,34 @@ function git_rebase_push () {
 declare -a git_count=()
 
 version0=1.46.0
-version1a=1.55.0
+version1a=no_insert/1.55.0
 version2a=rust_runtime/1.55.0
-version1b=1.62.1
+version1b=no_insert/1.62.1
 version2b=extended_examples/1.62.1
+version1c=no_insert/1.63.0
+version2c=extended_examples/1.63.0
 versions=( ubuntu_20_04/1.47.0 \
            1.47.0 \
-           1.48.0 \
-           1.49.0 \
-           1.50.0 \
-           1.51.0 \
-           1.52.1 \
-           1.53.0 \
-           1.54.0 \
+           no_insert/1.48.0 \
+           no_insert/1.49.0 \
+           no_insert/1.50.0 \
+           no_insert/1.51.0 \
+           no_insert/1.52.1 \
+           no_insert/1.53.0 \
+           no_insert/1.54.0 \
            $version1a \
-           1.56.1 \
-           1.57.0 \
-           1.58.1 \
-           1.59.0 \
-           1.60.0 \
-           1.61.0 \
+           no_insert/1.56.1 \
+           no_insert/1.57.0 \
+           no_insert/1.58.1 \
+           no_insert/1.59.0 \
+           no_insert/1.60.0 \
+           no_insert/1.61.0 \
            $version1b \
-           1.63.0 \
-           extended_examples/1.63.0 )
+           $version1c \
+           no_insert/1.64.0 \
+           no_insert/ubuntu_20_10/1.64.0 \
+           no_insert/1.65.0 \
+           no_insert/1.66.0 )
 
 #
 
@@ -85,6 +90,7 @@ do
 done
 git_count+=("$(git rev-list --count ^"$remote/$version1a" "$remote/$version2a")")
 git_count+=("$(git rev-list --count ^"$remote/$version1b" "$remote/$version2b")")
+git_count+=("$(git rev-list --count ^"$remote/$version1c" "$remote/$version2c")")
 
 #
 
@@ -103,6 +109,7 @@ do
 done
 git_rebase_push $version1a $version2a "${git_count[0]}"; git_count=("${git_count[@]:1}")
 git_rebase_push $version1b $version2b "${git_count[0]}"; git_count=("${git_count[@]:1}")
+git_rebase_push $version1c $version2c "${git_count[0]}"; git_count=("${git_count[@]:1}")
 
 #
 
