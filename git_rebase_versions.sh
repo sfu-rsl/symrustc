@@ -50,8 +50,10 @@ declare -a git_count=()
 version1z=1.46.0
 version2z=full_runtime/1.46.0
 version3z=verbose/1.46.0
+version4z=hybrid/1.46.0
 version1a=1.55.0
 version2a=rust_runtime/1.55.0
+version3a=symrustc_tools/1.55.0
 version1b=1.62.1
 version2b=extended_examples/1.62.1
 version1c=1.63.0
@@ -84,6 +86,7 @@ versions1=( 1.48.0 \
 
 git_count+=("$(git rev-list --count ^"$remote/$version1z" "$remote/$version2z")")
 git_count+=("$(git rev-list --count ^"$remote/$version1z" "$remote/$version3z")")
+git_count+=("$(git rev-list --count ^"$remote/$version1z" "$remote/$version4z")")
 
 br1=$version1z
 for br2 in "${versions0[@]}"
@@ -99,6 +102,7 @@ do
     br1=${br2}
 done
 git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1a" "$remote/$version2a")")
+git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1a" "$remote/$version3a")")
 git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1b" "$remote/$version2b")")
 git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1c" "$remote/$version2c")")
 
@@ -117,6 +121,7 @@ git push --force-with-lease "$remote" $version1z
 
 git_rebase_push $version1z $version2z "${git_count[0]}"; git_count=("${git_count[@]:1}")
 git_rebase_push $version1z $version3z "${git_count[0]}"; git_count=("${git_count[@]:1}")
+git_rebase_push $version1z $version4z "${git_count[0]}"; git_count=("${git_count[@]:1}")
 
 br1=$version1z
 for br2 in "${versions0[@]}"
@@ -132,6 +137,7 @@ do
     br1=${br2}
 done
 git_rebase_push no_insert/$version1a $version2a "${git_count[0]}"; git_count=("${git_count[@]:1}")
+git_rebase_push no_insert/$version1a $version3a "${git_count[0]}"; git_count=("${git_count[@]:1}")
 git_rebase_push no_insert/$version1b $version2b "${git_count[0]}"; git_count=("${git_count[@]:1}")
 git_rebase_push no_insert/$version1c $version2c "${git_count[0]}"; git_count=("${git_count[@]:1}")
 
