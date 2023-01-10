@@ -47,7 +47,9 @@ function git_rebase_push () {
 
 declare -a git_count=()
 
-version0=1.46.0
+version1z=1.46.0
+version2z=full_runtime/1.46.0
+version3z=verbose/1.46.0
 version1a=1.55.0
 version2a=rust_runtime/1.55.0
 version1b=1.62.1
@@ -80,10 +82,10 @@ versions1=( 1.48.0 \
 
 #
 
-git_count+=("$(git rev-list --count ^"$remote/$version0" "$remote/full_runtime/1.46.0")")
-git_count+=("$(git rev-list --count ^"$remote/$version0" "$remote/verbose/1.46.0")")
+git_count+=("$(git rev-list --count ^"$remote/$version1z" "$remote/$version2z")")
+git_count+=("$(git rev-list --count ^"$remote/$version1z" "$remote/$version3z")")
 
-br1=$version0
+br1=$version1z
 for br2 in "${versions0[@]}"
 do
     git_count+=("$(git rev-list --count ^"$remote/$br1" "$remote/$br2")")
@@ -109,14 +111,14 @@ done
 
 #
 
-git push --force-with-lease "$remote" $version0
+git push --force-with-lease "$remote" $version1z
 
 #
 
-git_rebase_push $version0 full_runtime/1.46.0 "${git_count[0]}"; git_count=("${git_count[@]:1}")
-git_rebase_push $version0 verbose/1.46.0 "${git_count[0]}"; git_count=("${git_count[@]:1}")
+git_rebase_push $version1z $version2z "${git_count[0]}"; git_count=("${git_count[@]:1}")
+git_rebase_push $version1z $version3z "${git_count[0]}"; git_count=("${git_count[@]:1}")
 
-br1=$version0
+br1=$version1z
 for br2 in "${versions0[@]}"
 do
     git_rebase_push $br1 $br2 "${git_count[0]}"; git_count=("${git_count[@]:1}")
@@ -142,4 +144,4 @@ done
 
 #
 
-git checkout $version0
+git checkout $version1z
