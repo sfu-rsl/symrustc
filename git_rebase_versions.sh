@@ -97,6 +97,12 @@ done
 br0=${br1}
 for br2 in "${versions1[@]}"
 do
+    git_count+=("$(git rev-list --count ^"$remote/$br1" "$remote/$br2")")
+    br1=${br2}
+done
+br1=${br0}
+for br2 in "${versions1[@]}"
+do
     br2="no_insert/${br2}"
     git_count+=("$(git rev-list --count ^"$remote/$br1" "$remote/$br2")")
     br1=${br2}
@@ -105,13 +111,6 @@ git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1a" "$remote/$ve
 git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1a" "$remote/$version3a")")
 git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1b" "$remote/$version2b")")
 git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1c" "$remote/$version2c")")
-
-br1=${br0}
-for br2 in "${versions1[@]}"
-do
-    git_count+=("$(git rev-list --count ^"$remote/$br1" "$remote/$br2")")
-    br1=${br2}
-done
 
 #
 
@@ -132,6 +131,12 @@ done
 br0=${br1}
 for br2 in "${versions1[@]}"
 do
+    git_rebase_push $br1 $br2 "${git_count[0]}"; git_count=("${git_count[@]:1}")
+    br1=${br2}
+done
+br1=${br0}
+for br2 in "${versions1[@]}"
+do
     br2="no_insert/${br2}"
     git_rebase_push $br1 $br2 "${git_count[0]}"; git_count=("${git_count[@]:1}")
     br1=${br2}
@@ -140,13 +145,6 @@ git_rebase_push no_insert/$version1a $version2a "${git_count[0]}"; git_count=("$
 git_rebase_push no_insert/$version1a $version3a "${git_count[0]}"; git_count=("${git_count[@]:1}")
 git_rebase_push no_insert/$version1b $version2b "${git_count[0]}"; git_count=("${git_count[@]:1}")
 git_rebase_push no_insert/$version1c $version2c "${git_count[0]}"; git_count=("${git_count[@]:1}")
-
-br1=${br0}
-for br2 in "${versions1[@]}"
-do
-    git_rebase_push $br1 $br2 "${git_count[0]}"; git_count=("${git_count[@]:1}")
-    br1=${br2}
-done
 
 #
 
