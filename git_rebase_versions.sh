@@ -54,10 +54,8 @@ version4z=hybrid/1.46.0
 version1a=1.55.0
 version2a=rust_runtime/1.55.0
 version3a=symrustc_tools/1.55.0
-version1b=1.62.1
-version2b=extended_examples/1.62.1
-version1c=1.63.0
-version2c=extended_examples/1.63.0
+version1b=1.66.0
+version2b=extended_examples/1.66.0
 
 versions0=( ubuntu_20_04/1.47.0 \
             1.47.0 )
@@ -75,12 +73,12 @@ versions1=( 1.48.0 \
             1.59.0 \
             1.60.0 \
             1.61.0 \
-            $version1b \
-            $version1c \
+            1.62.1 \
+            1.63.0 \
             1.64.0 \
             ubuntu_20_10/1.64.0 \
             1.65.0 \
-            1.66.0 )
+            $version1b )
 
 #
 
@@ -110,7 +108,6 @@ done
 git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1a" "$remote/$version2a")")
 git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1a" "$remote/$version3a")")
 git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1b" "$remote/$version2b")")
-git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1c" "$remote/$version2c")")
 
 #
 
@@ -144,7 +141,6 @@ done
 git_rebase_push no_insert/$version1a $version2a "${git_count[0]}"; git_count=("${git_count[@]:1}")
 git_rebase_push no_insert/$version1a $version3a "${git_count[0]}"; git_count=("${git_count[@]:1}")
 git_rebase_push no_insert/$version1b $version2b "${git_count[0]}"; git_count=("${git_count[@]:1}")
-git_rebase_push no_insert/$version1c $version2c "${git_count[0]}"; git_count=("${git_count[@]:1}")
 
 #
 
