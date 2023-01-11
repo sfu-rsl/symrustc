@@ -54,8 +54,8 @@ version4z=hybrid/1.46.0
 version1a=1.55.0
 version2a=rust_runtime/1.55.0
 version3a=symrustc_tools/1.55.0
-version1b=1.66.0
-version2b=extended_examples/1.66.0
+version1b=1.66.1
+version2b=extended_examples/1.66.1
 
 versions0=( ubuntu_20_04/1.47.0 \
             1.47.0 )
