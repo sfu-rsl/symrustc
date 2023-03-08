@@ -63,6 +63,7 @@ ENV SYMRUSTC_HOME_CPP=$SYMRUSTC_HOME/src/cpp
 ENV SYMRUSTC_HOME_RS=$SYMRUSTC_HOME/src/rs
 ENV SYMCC_LIBCXX_PATH=$HOME/libcxx_symcc_install
 ENV SYMRUSTC_LIBAFL_SOLVING_DIR=$HOME/libafl/fuzzers/libfuzzer_rust_concolic
+ENV SYMRUSTC_LIBAFL_EX_IMAGE_DIR=$HOME/libafl/fuzzers/libfuzzer_stb_image_concolic
 ENV SYMRUSTC_LIBAFL_TRACING_DIR=$HOME/libafl/libafl_concolic/test
 
 # Setup Rust compiler source
@@ -429,6 +430,63 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
     else \
       cd $SYMRUSTC_LIBAFL_EXAMPLE \
       && $SYMRUSTC_HOME_RS/libafl_solving_run.sh test; \
+    fi
+
+
+#
+# Build LibAFL ex image runtime
+#
+FROM builder_base_rust AS builder_libafl_ex_image
+
+ARG SYMRUSTC_CI
+
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cargo install cargo-make; \
+    fi
+
+# Building the client-server main fuzzing loop
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      mkdir $SYMRUSTC_LIBAFL_EX_IMAGE_DIR/fuzzer/target $SYMRUSTC_LIBAFL_EX_IMAGE_DIR/runtime/target; \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_EX_IMAGE_DIR \
+      && PATH=~/clang_symcc_off:"$PATH" cargo make test; \
+    fi
+
+
+#
+# Build LibAFL ex image runtime main
+#
+FROM builder_symrustc_main AS builder_libafl_ex_image_main
+
+RUN sudo apt-get update \
+    && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+# Installing "nc" to later check if a given port is opened or closed
+        netcat-openbsd \
+        psmisc \
+    && sudo apt-get clean
+
+COPY --chown=ubuntu:ubuntu --from=builder_libafl_ex_image $SYMRUSTC_LIBAFL_EX_IMAGE_DIR/target $SYMRUSTC_LIBAFL_EX_IMAGE_DIR/target
+COPY --chown=ubuntu:ubuntu --from=builder_libafl_ex_image $SYMRUSTC_LIBAFL_EX_IMAGE_DIR/fuzzer/target_symcc.out $SYMRUSTC_LIBAFL_EX_IMAGE_DIR/fuzzer/target_symcc.out
+
+
+#
+# Build concolic Rust examples for LibAFL ex image
+#
+FROM builder_libafl_ex_image_main AS builder_libafl_ex_image_example
+
+ARG SYMRUSTC_CI
+ARG SYMRUSTC_LIBAFL_EXAMPLE=$SYMRUSTC_LIBAFL_EX_IMAGE_DIR
+ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING
+ARG SYMRUSTC_LIBAFL_EX_IMAGE_OBJECTIVE=yes
+
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_EXAMPLE \
+      && $SYMRUSTC_HOME_RS/libafl_ex_image_run.sh test; \
     fi
 
 
