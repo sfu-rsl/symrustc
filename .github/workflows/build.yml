@@ -53,11 +53,20 @@ jobs:
       - name: Build LibAFL solving runtime
         run: docker build --target builder_libafl_solving -t belcarra_libafl_solving --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples_verbose/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
 
+      - name: Build LibAFL solving instance runtime
+        run: docker build --target builder_libafl_solving_inst -t belcarra_libafl_solving_inst --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples_verbose/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
+
       - name: Build LibAFL solving runtime main
         run: docker build --target builder_libafl_solving_main -t belcarra_libafl_solving_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples_verbose/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
 
+      - name: Build LibAFL solving instance runtime main
+        run: docker build --target builder_libafl_solving_inst_main -t belcarra_libafl_solving_inst_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples_verbose/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
+
       - name: Build concolic Rust examples for LibAFL solving
         run: docker build --target builder_libafl_solving_example -t belcarra_libafl_solving_example --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples_verbose/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
+
+      - name: Build concolic Rust examples for LibAFL solving instance
+        run: docker build --target builder_libafl_solving_inst_example -t belcarra_libafl_solving_inst_example --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples_verbose/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
 
       - name: Build LibAFL ex image runtime
         run: docker build --target builder_libafl_ex_image -t belcarra_libafl_ex_image --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples_verbose/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .

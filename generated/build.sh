@@ -50,11 +50,20 @@ docker_b libafl_tracing_example
 # Build LibAFL solving runtime
 docker_b libafl_solving
 
+# Build LibAFL solving instance runtime
+docker_b libafl_solving_inst
+
 # Build LibAFL solving runtime main
 docker_b libafl_solving_main
 
+# Build LibAFL solving instance runtime main
+docker_b libafl_solving_inst_main
+
 # Build concolic Rust examples for LibAFL solving
 docker_b libafl_solving_example
+
+# Build concolic Rust examples for LibAFL solving instance
+docker_b libafl_solving_inst_example
 
 # Build LibAFL ex image runtime
 docker_b libafl_ex_image
