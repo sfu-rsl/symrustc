@@ -420,7 +420,7 @@ RUN ln -s $SYMRUSTC_HOME_RS/libafl_solving_bin.sh $SYMRUSTC_LIBAFL_SOLVING_DIR/f
 FROM builder_libafl_solving_main AS builder_libafl_solving_example
 
 ARG SYMRUSTC_CI
-ARG SYMRUSTC_LIBAFL_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1c_rs
+ARG SYMRUSTC_LIBAFL_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1c0_rs
 ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING
 ARG SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE=yes
 
