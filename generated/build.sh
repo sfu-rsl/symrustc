@@ -56,6 +56,15 @@ docker_b libafl_solving_main
 # Build concolic Rust examples for LibAFL solving
 docker_b libafl_solving_example
 
+# Build LibAFL ex image runtime
+docker_b libafl_ex_image
+
+# Build LibAFL ex image runtime main
+docker_b libafl_ex_image_main
+
+# Build concolic Rust examples for LibAFL ex image
+docker_b libafl_ex_image_example
+
 # Build additional tools
 docker_b addons
 
