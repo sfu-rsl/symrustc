@@ -22,12 +22,6 @@ if [[ ! -v SYMRUSTC_TIMEOUT ]] ; then
     SYMRUSTC_TIMEOUT=$SYMRUSTC_TIMEOUT_DEFAULT
 fi
 
-if [[ -v SYMRUSTC_LIBAFL_CONCOLIC ]] ; then
-    SYMRUSTC_LOG_PREFIX="${SYMRUSTC_LOG_PREFIX:-}_symrustc"
-else
-    SYMRUSTC_LOG_PREFIX="${SYMRUSTC_LOG_PREFIX:-}_libafl_fuzz"
-fi
-
 date_now="$(date '+%F_%T' | tr -d ':-')"
 
 log_server_grep=log_server
