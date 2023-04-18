@@ -412,6 +412,23 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       && PATH=~/clang_symcc_off:"$PATH" cargo make test; \
     fi
 
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_SOLVING_INST_DIR/fuzzer \
+      && rustc --crate-name libfuzzer_rust_concolic_instance --edition=2021 src/main.rs \
+           --crate-type bin --emit=dep-info,link \
+           -C llvm-args=--sanitizer-coverage-level=3 -C passes=sancov-module \
+           -C opt-level=3 -C lto -C codegen-units=1 -C debuginfo=2 --cfg 'feature="default"' --cfg 'feature="std"' --cfg 'feature="wait-timeout"' -C metadata=ee74f336c30ae06e -C extra-filename=-ee74f336c30ae06e --out-dir /home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/deps -L dependency=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/deps --extern clap=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/deps/libclap-a5abf3dc86b99893.rlib --extern libafl=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/deps/liblibafl-b2908c92ad35b464.rlib --extern libafl_targets=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/deps/liblibafl_targets-94868084aa9fb764.rlib --extern mimalloc=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/deps/libmimalloc-af6824ffd57e2751.rlib --extern wait_timeout=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/deps/libwait_timeout-ba80385d96548911.rlib -L native=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/build/libfuzzer_rust_concolic_instance-9d779ca9462735a9/out -L native=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/build/z3-sys-21e6220aa44348c4/out/lib -L native=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/build/libafl_targets-eb1119d716b73218/out -L native=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/build/libafl_targets-eb1119d716b73218/out -L native=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/build/libafl_targets-eb1119d716b73218/out -L native=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/build/libafl_targets-eb1119d716b73218/out -L native=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/build/libafl_targets-eb1119d716b73218/out -L native=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/build/libafl_targets-eb1119d716b73218/out -L native=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/build/libafl_targets-eb1119d716b73218/out -L native=/home/ubuntu/libafl/fuzzers/libfuzzer_rust_concolic_instance/target/release/build/libmimalloc-sys-a58c4880ca69361e/out ; \
+    fi
+
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_SOLVING_INST_DIR/target/release \
+      && cp -p deps/libfuzzer_rust_concolic_instance-ee74f336c30ae06e libfuzzer_rust_concolic_instance; \
+    fi
+
 
 #
 # Build LibAFL solving runtime main

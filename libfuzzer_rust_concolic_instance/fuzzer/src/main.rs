@@ -106,14 +106,6 @@ fn eprint_input_exit<I: Input + HasTargetBytes>(input: &I) {
     eprint!(", exit ");
 }
 
-/// Coverage map with explicit assignments due to the lack of instrumentation
-static mut SIGNALS: [u8; 16] = [0; 16];
-
-/// Assign a signal to the signals map
-fn signals_set(idx: usize) {
-    unsafe { SIGNALS[idx] = 1 };
-}
-
 /// The actual fuzzer
 fn fuzz(
     corpus_dirs: &[PathBuf],
@@ -143,9 +135,6 @@ fn fuzz(
     let edges = unsafe { &mut EDGES_MAP[0..MAX_EDGES_NUM] };
     let edges_observer = StdMapObserver::new("edges", edges);
 
-    // Create an observation channel using the signals map
-    let observer = StdMapObserver::new("signals", unsafe { &mut SIGNALS });
-
     // Create an observation channel to keep track of the execution time
     let time_observer = TimeObserver::new("time");
 
@@ -155,8 +144,8 @@ fn fuzz(
     // Feedback to rate the interestingness of an input
     // This one is composed by two Feedbacks in OR
     let mut feedback = feedback_or!(
-        // New maximization map feedback
-        MaxMapFeedback::new_tracking(&observer, true, false),
+        // New maximization map feedback linked to the edges observer and the feedback state
+        MaxMapFeedback::new_tracking(&edges_observer, true, false),
         // Time feedback, this one does not need a feedback state
         TimeFeedback::new_with_observer(&time_observer)
     );
@@ -214,13 +203,13 @@ fn fuzz(
             let root3b_len = root3b.len();
             let root4b = b"road";
             let root4b_len = root4b.len();
-        signals_set(0);
+        //signals_set(0);
             if buf_len > root1_len && buf[0 .. root1_len] == *root1 {
-        signals_set(1);
+        //signals_set(1);
                 if buf_len > root2_len && buf[0 .. root2_len] == *root2 {
-        signals_set(2);
+        //signals_set(2);
                     if buf_len > root3a_len && buf[0 .. root3a_len] == *root3a {
-        signals_set(3);
+        //signals_set(3);
                         if buf[0 .. root4a_len] == *root4a
                             && if buf_len == root4a_len { true }
                                else if buf_len == root4a_len + 1 { buf.ends_with(delim) }
@@ -243,9 +232,9 @@ fn fuzz(
         ExitKind::Ok
                         }
                     } else {
-        signals_set(6);
+        //signals_set(6);
                         if buf_len > root3b_len && buf[0 .. root3b_len] == *root3b {
-        signals_set(7);
+        //signals_set(7);
                             if buf[0 .. root4b_len] == *root4b
                                 && if buf_len == root4b_len { true }
                                    else if buf_len == root4b_len + 1 { buf.ends_with(delim) }
@@ -268,7 +257,7 @@ fn fuzz(
         ExitKind::Ok
                             }
                         } else {
-        signals_set(10);
+        //signals_set(10);
                             print!("Hello 3, (");
                             for c in buf {
                                 print!(" {:#04x}", c)
@@ -278,7 +267,7 @@ fn fuzz(
                         }
                     }
                 } else {
-        signals_set(11);
+        //signals_set(11);
                     print!("Hello 2, (");
                     for c in buf {
                         print!(" {:#04x}", c)
@@ -287,7 +276,7 @@ fn fuzz(
         ExitKind::Ok
                 }
             } else {
-        signals_set(12);
+        //signals_set(12);
                 print!("Hello 1, (");
                 for c in buf {
                     print!(" {:#04x}", c)
@@ -301,7 +290,7 @@ fn fuzz(
     let mut executor = ShadowExecutor::new(
         InProcessExecutor::new(
             &mut harness,
-            tuple_list!(observer, time_observer),
+            tuple_list!(edges_observer, time_observer),
             &mut fuzzer,
             &mut state,
             &mut restarting_mgr,
