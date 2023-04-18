@@ -400,6 +400,9 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       cargo install cargo-make; \
     fi
 
+RUN rm -rf $SYMRUSTC_LIBAFL_SOLVING_INST_DIR
+COPY --chown=ubuntu:ubuntu libfuzzer_rust_concolic_instance $SYMRUSTC_LIBAFL_SOLVING_INST_DIR
+
 # Building the client-server main fuzzing loop
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       mkdir $SYMRUSTC_LIBAFL_SOLVING_INST_DIR/target; \
