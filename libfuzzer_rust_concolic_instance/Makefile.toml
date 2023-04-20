@@ -29,7 +29,7 @@ dependencies = ["runtime"]
 script_runner = "@shell"
 script = '''
 cd fuzzer
-cargo build -v --release
+cargo build --release
 '''
 
 [tasks.test]
