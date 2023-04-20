@@ -234,6 +234,7 @@ ARG SYMRUSTC_RUST_BUILD_STAGE=$SYMRUSTC_RUST_BUILD/stage2
 ENV SYMRUSTC_CARGO=$SYMRUSTC_RUST_BUILD/stage0/bin/cargo
 ENV SYMRUSTC_RUSTC=$SYMRUSTC_RUST_BUILD_STAGE/bin/rustc
 ENV SYMRUSTC_LD_LIBRARY_PATH=$SYMRUSTC_RUST_BUILD_STAGE/lib
+ENV SYMRUSTC_LIBAFL_EXAMPLE0=$HOME/belcarra_source/examples/source_0_original_1c0_rs
 ENV PATH=$HOME/.cargo/bin:$PATH
 
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_libcxx $SYMCC_LIBCXX_PATH $SYMCC_LIBCXX_PATH
@@ -418,13 +419,27 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       && mv $fic1 $fic0; \
     fi
 
-# Building the client-server main fuzzing loop as a sanitized bin
+COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
+ARG SYMRUSTC_LIBAFL_EXAMPLE=$SYMRUSTC_LIBAFL_EXAMPLE0
+
+# Preparing to build the harness as a sanitized rlib
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_SOLVING_INST_DIR/fuzzer \
+      && rm -rf harness \
+      && ln -s $SYMRUSTC_LIBAFL_EXAMPLE harness; \
+    fi
+
+# Building the client-server main fuzzing loop
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       mkdir $SYMRUSTC_LIBAFL_SOLVING_INST_DIR/target; \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_SOLVING_INST_DIR/fuzzer \
-      && cargo rustc --release --target-dir ../target -- -C llvm-args=--sanitizer-coverage-level=3 -C passes=sancov-module; \
+      && cargo rustc --release --package belcarra --lib -- -C llvm-args=--sanitizer-coverage-level=3 -C passes=sancov-module \
+      && cp -p target/release/deps/*rlib ../target/release/deps \
+      && cargo rustc --release --target-dir ../target; \
     fi
 
 
@@ -503,7 +518,7 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
 FROM builder_libafl_solving_inst_main AS builder_libafl_solving_inst_example
 
 ARG SYMRUSTC_CI
-ARG SYMRUSTC_LIBAFL_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1c0_rs
+ARG SYMRUSTC_LIBAFL_EXAMPLE=$SYMRUSTC_LIBAFL_EXAMPLE0
 ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING
 ARG SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE=yes
 

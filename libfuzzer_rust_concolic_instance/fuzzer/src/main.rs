@@ -52,6 +52,7 @@ use libafl_targets::{
     libfuzzer_initialize, CmpLogObserver, CMPLOG_MAP, EDGES_MAP,
     MAX_EDGES_NUM,
 };
+use bel::{main0};
 
 #[cfg(all(feature = "std", unix))]
 use std::time::Duration;
@@ -187,103 +188,10 @@ fn fuzz(
         use libafl::inputs::HasBytesVec;
         
         println!("ZZZZZZZZZZZZZZZZZZZZZZZ");
-        let buf = input.bytes();
-            let buf_len = buf.len();
-            let delim = b"\n";
-            println!("What's your name?");
-            let root1 = b"r";
-            let root1_len = root1.len();
-            let root2 = b"ro";
-            let root2_len = root2.len();
-            let root3a = b"roo";
-            let root3a_len = root3a.len();
-            let root4a = b"root";
-            let root4a_len = root4a.len();
-            let root3b = b"roa";
-            let root3b_len = root3b.len();
-            let root4b = b"road";
-            let root4b_len = root4b.len();
-        //signals_set(0);
-            if buf_len > root1_len && buf[0 .. root1_len] == *root1 {
-        //signals_set(1);
-                if buf_len > root2_len && buf[0 .. root2_len] == *root2 {
-        //signals_set(2);
-                    if buf_len > root3a_len && buf[0 .. root3a_len] == *root3a {
-        //signals_set(3);
-                        if buf[0 .. root4a_len] == *root4a
-                            && if buf_len == root4a_len { true }
-                               else if buf_len == root4a_len + 1 { buf.ends_with(delim) }
-                               else { false } {
-        //signals_set(4);
-                            print!("What is your command (A)? (");
-                            for c in buf {
-                                print!(" {:#04x}", c)
-                            }
-                            println!(" )");
-                            //panic!("Artificial bug (A)")
-        ExitKind::Crash
-                        } else {
-        //signals_set(5);
-                            print!("Hello 4a, (");
-                            for c in buf {
-                                print!(" {:#04x}", c)
-                            }
-                            println!(" ) {:?}!", String::from_utf8_lossy(&buf));
-        ExitKind::Ok
-                        }
-                    } else {
-        //signals_set(6);
-                        if buf_len > root3b_len && buf[0 .. root3b_len] == *root3b {
-        //signals_set(7);
-                            if buf[0 .. root4b_len] == *root4b
-                                && if buf_len == root4b_len { true }
-                                   else if buf_len == root4b_len + 1 { buf.ends_with(delim) }
-                                   else { false } {
-        //signals_set(8);
-                                print!("What is your command (B)? (");
-                                for c in buf {
-                                    print!(" {:#04x}", c)
-                                }
-                                println!(" )");
-                                //panic!("Artificial bug (B)")
-        ExitKind::Crash
-                            } else {
-        //signals_set(9);
-                                print!("Hello 4b, (");
-                                for c in buf {
-                                    print!(" {:#04x}", c)
-                                }
-                                println!(" ) {:?}!", String::from_utf8_lossy(&buf));
-        ExitKind::Ok
-                            }
-                        } else {
-        //signals_set(10);
-                            print!("Hello 3, (");
-                            for c in buf {
-                                print!(" {:#04x}", c)
-                            }
-                            println!(" ) {:?}!", String::from_utf8_lossy(&buf));
-        ExitKind::Ok
-                        }
-                    }
-                } else {
-        //signals_set(11);
-                    print!("Hello 2, (");
-                    for c in buf {
-                        print!(" {:#04x}", c)
-                    }
-                    println!(" ) {:?}!", String::from_utf8_lossy(&buf));
-        ExitKind::Ok
-                }
-            } else {
-        //signals_set(12);
-                print!("Hello 1, (");
-                for c in buf {
-                    print!(" {:#04x}", c)
-                }
-                println!(" ) {:?}!", String::from_utf8_lossy(&buf));
-        ExitKind::Ok
-            }
+        match main0(input.bytes().to_vec()) {
+           Some(_) => ExitKind::Ok,
+           None => ExitKind::Crash
+        }
     };
 
     // Create the executor for an in-process function with just one observer for edge coverage

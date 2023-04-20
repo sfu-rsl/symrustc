@@ -4,14 +4,8 @@
 */
 
 use std::io;
-use std::env;
-use std::fs;
 
-pub fn main0() -> Result<(), io::Error> {
-    let args: Vec<String> = env::args().collect();
-    match args.get(1) {
-        Some(file) => {
-            let buf = fs::read(file).expect("Error reading the file");
+pub fn main0(buf : Vec<u8>) -> Option<()> {
             let buf_len = buf.len();
             let delim = b"\n";
             println!("What's your name?");
@@ -39,13 +33,15 @@ pub fn main0() -> Result<(), io::Error> {
                                 print!(" {:#04x}", c)
                             }
                             println!(" )");
-                            panic!("Artificial bug (A)")
+                            //panic!("Artificial bug (A)") // TODO: panic::catch_unwind?
+        None
                         } else {
                             print!("Hello 4a, (");
                             for c in &buf {
                                 print!(" {:#04x}", c)
                             }
-                            println!(" ) {:?}!", String::from_utf8_lossy(&buf))
+                            println!(" ) {:?}!", String::from_utf8_lossy(&buf));
+        Some(())
                         }
                     } else {
                         if buf_len > root3b_len && buf[0 .. root3b_len] == *root3b {
@@ -58,20 +54,23 @@ pub fn main0() -> Result<(), io::Error> {
                                     print!(" {:#04x}", c)
                                 }
                                 println!(" )");
-                                panic!("Artificial bug (B)")
+                                //panic!("Artificial bug (B)") // TODO: panic::catch_unwind?
+        None
                             } else {
                                 print!("Hello 4b, (");
                                 for c in &buf {
                                     print!(" {:#04x}", c)
                                 }
-                                println!(" ) {:?}!", String::from_utf8_lossy(&buf))
+                                println!(" ) {:?}!", String::from_utf8_lossy(&buf));
+        Some(())
                             }
                         } else {
                             print!("Hello 3, (");
                             for c in &buf {
                                 print!(" {:#04x}", c)
                             }
-                            println!(" ) {:?}!", String::from_utf8_lossy(&buf))
+                            println!(" ) {:?}!", String::from_utf8_lossy(&buf));
+        Some(())
                         }
                     }
                 } else {
@@ -79,17 +78,15 @@ pub fn main0() -> Result<(), io::Error> {
                     for c in &buf {
                         print!(" {:#04x}", c)
                     }
-                    println!(" ) {:?}!", String::from_utf8_lossy(&buf))
+                    println!(" ) {:?}!", String::from_utf8_lossy(&buf));
+        Some(())
                 }
             } else {
                 print!("Hello 1, (");
                 for c in &buf {
                     print!(" {:#04x}", c)
                 }
-                println!(" ) {:?}!", String::from_utf8_lossy(&buf))
+                println!(" ) {:?}!", String::from_utf8_lossy(&buf));
+        Some(())
             }
-            Ok(())
-        }
-        None => Ok(())
-    }
 }

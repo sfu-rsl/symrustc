@@ -21,6 +21,7 @@ libafl_targets = { path = "../../../libafl_targets/", features = ["sancov_pcguar
 clap = { version = "4.0", features = ["derive"]}
 mimalloc = { version = "*", default-features = false }
 wait-timeout = { version = "0.2", optional = true } # used by CommandExecutor to wait for child process
+belcarra = { path = "harness" }
 
 [build-dependencies]
 cc = { version = "1.0", features = ["parallel"] }
