@@ -238,6 +238,7 @@ ARG SYMRUSTC_RUST_BUILD_STAGE=$SYMRUSTC_RUST_BUILD/stage2
 ENV SYMRUSTC_CARGO=$SYMRUSTC_RUST_BUILD/stage0/bin/cargo
 ENV SYMRUSTC_RUSTC=$SYMRUSTC_RUST_BUILD_STAGE/bin/rustc
 ENV SYMRUSTC_LD_LIBRARY_PATH=$SYMRUSTC_RUST_BUILD_STAGE/lib
+ENV SYMRUSTC_LIBAFL_EXAMPLE0=$HOME/belcarra_source/examples/source_0_original_1c0_rs
 ENV PATH=$HOME/.cargo/bin:$PATH
 
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_libcxx $SYMCC_LIBCXX_PATH $SYMCC_LIBCXX_PATH
@@ -381,13 +382,42 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       cargo install cargo-make; \
     fi
 
-# Building the client-server main fuzzing loop
+# Building the client-server main fuzzing loop dependencies
+# https://github.com/rust-lang/cargo/issues/2644#issuecomment-1497583478
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       mkdir $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/target $SYMRUSTC_LIBAFL_SOLVING_DIR/runtime/target; \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_SOLVING_DIR \
-      && PATH=~/clang_symcc_off:"$PATH" cargo make test; \
+      && fic0=$SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/src/main.rs \
+      && fic1=$SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/src/main.rs0 \
+      && mv -i $fic0 $fic1 \
+      && echo 'fn main() {}' > $fic0 \
+      && PATH=~/clang_symcc_off:"$PATH" cargo make test \
+      && mv $fic1 $fic0; \
+    fi
+
+COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
+ARG SYMRUSTC_LIBAFL_EXAMPLE=$SYMRUSTC_LIBAFL_EXAMPLE0
+
+# Preparing to build the harness as a sanitized rlib
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer \
+      && rm -rf harness \
+      && ln -s $SYMRUSTC_LIBAFL_EXAMPLE harness; \
+    fi
+
+# Building the client-server main fuzzing loop
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      mkdir $SYMRUSTC_LIBAFL_SOLVING_DIR/target; \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer \
+      && cargo rustc --release --package belcarra --lib -- -C llvm-args=--sanitizer-coverage-level=3 -C passes=sancov-module \
+      && cp -p target/release/deps/*rlib ../target/release/deps \
+      && cargo rustc --release --target-dir ../target; \
     fi
 
 
@@ -410,9 +440,6 @@ COPY --chown=ubuntu:ubuntu --from=builder_libafl_solving $SYMRUSTC_LIBAFL_SOLVIN
 RUN cd -P $SYMRUSTC_RUNTIME_DIR/.. \
     && ln -s $SYMRUSTC_LIBAFL_SOLVING_DIR/runtime/target/release "$(basename $SYMRUSTC_RUNTIME_DIR)0"
 
-# TODO: file name to be generalized
-RUN ln -s $SYMRUSTC_HOME_RS/libafl_solving_bin.sh $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/target_symcc0.out
-
 
 #
 # Build concolic Rust examples for LibAFL solving
@@ -420,7 +447,7 @@ RUN ln -s $SYMRUSTC_HOME_RS/libafl_solving_bin.sh $SYMRUSTC_LIBAFL_SOLVING_DIR/f
 FROM builder_libafl_solving_main AS builder_libafl_solving_example
 
 ARG SYMRUSTC_CI
-ARG SYMRUSTC_LIBAFL_EXAMPLE=$HOME/belcarra_source/examples/source_0_original_1c0_rs
+ARG SYMRUSTC_LIBAFL_EXAMPLE=$SYMRUSTC_LIBAFL_EXAMPLE0
 ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING
 ARG SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE=yes
 
