@@ -404,6 +404,9 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
 RUN rm -rf $SYMRUSTC_LIBAFL_SOLVING_INST_DIR
 COPY --chown=ubuntu:ubuntu libfuzzer_rust_concolic_instance $SYMRUSTC_LIBAFL_SOLVING_INST_DIR
 
+RUN sed -i '/rand_core =/a rand = "0.8.5"' ~/libafl/libafl/Cargo.toml \
+    && sed -i 's|if let Some(mutations) = mutations {|use rand::prelude::*; if let Some(mut mutations) = mutations { let mut rng = rand::thread_rng(); mutations.shuffle(\&mut rng);|' ~/libafl/libafl/src/stages/concolic.rs
+
 # Building the client-server main fuzzing loop dependencies
 # https://github.com/rust-lang/cargo/issues/2644#issuecomment-1497583478
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
