@@ -33,15 +33,13 @@ pub fn main0(buf : Vec<u8>) -> Option<()> {
                                 print!(" {:#04x}", c)
                             }
                             println!(" )");
-                            //panic!("Artificial bug (A)") // TODO: panic::catch_unwind?
-        None
+                            panic!("Artificial bug (A)")
                         } else {
                             print!("Hello 4a, (");
                             for c in &buf {
                                 print!(" {:#04x}", c)
                             }
-                            println!(" ) {:?}!", String::from_utf8_lossy(&buf));
-        Some(())
+                            println!(" ) {:?}!", String::from_utf8_lossy(&buf))
                         }
                     } else {
                         if buf_len > root3b_len && buf[0 .. root3b_len] == *root3b {
@@ -54,23 +52,20 @@ pub fn main0(buf : Vec<u8>) -> Option<()> {
                                     print!(" {:#04x}", c)
                                 }
                                 println!(" )");
-                                //panic!("Artificial bug (B)") // TODO: panic::catch_unwind?
-        None
+                                panic!("Artificial bug (B)")
                             } else {
                                 print!("Hello 4b, (");
                                 for c in &buf {
                                     print!(" {:#04x}", c)
                                 }
-                                println!(" ) {:?}!", String::from_utf8_lossy(&buf));
-        Some(())
+                                println!(" ) {:?}!", String::from_utf8_lossy(&buf))
                             }
                         } else {
                             print!("Hello 3, (");
                             for c in &buf {
                                 print!(" {:#04x}", c)
                             }
-                            println!(" ) {:?}!", String::from_utf8_lossy(&buf));
-        Some(())
+                            println!(" ) {:?}!", String::from_utf8_lossy(&buf))
                         }
                     }
                 } else {
@@ -78,15 +73,14 @@ pub fn main0(buf : Vec<u8>) -> Option<()> {
                     for c in &buf {
                         print!(" {:#04x}", c)
                     }
-                    println!(" ) {:?}!", String::from_utf8_lossy(&buf));
-        Some(())
+                    println!(" ) {:?}!", String::from_utf8_lossy(&buf))
                 }
             } else {
                 print!("Hello 1, (");
                 for c in &buf {
                     print!(" {:#04x}", c)
                 }
-                println!(" ) {:?}!", String::from_utf8_lossy(&buf));
-        Some(())
+                println!(" ) {:?}!", String::from_utf8_lossy(&buf))
             }
+    Some(())
 }
