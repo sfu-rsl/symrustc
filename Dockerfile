@@ -439,7 +439,10 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       cd $SYMRUSTC_LIBAFL_SOLVING_INST_DIR/fuzzer \
       && cargo rustc --release --package belcarra --lib -- -C llvm-args=--sanitizer-coverage-level=3 -C passes=sancov-module \
       && cp -p target/release/deps/*rlib ../target/release/deps \
-      && cargo rustc --release --target-dir ../target; \
+      && cargo rustc --release --target-dir ../target \
+      && ls target/release/deps/*rlib | while read i ; do \
+           cmp "$i" "../$i" >&2 || (echo 'cargo recompiled the copied rlib' >&2 ; exit 1) ; \
+         done ; \
     fi
 
 
