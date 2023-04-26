@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-cargo rustc --release --package belcarra --lib -- -C llvm-args=--sanitizer-coverage-level=3 -C passes=sancov-module
+RUSTFLAGS='-C llvm-args=--sanitizer-coverage-level=3 -C passes=sancov-module' cargo rustc --release --package belcarra --lib
 
 cp -p target/release/deps/*rlib ../target/release/deps
 
