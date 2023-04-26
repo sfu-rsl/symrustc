@@ -394,7 +394,8 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       && mv -i $fic0 $fic1 \
       && echo 'fn main() {}' > $fic0 \
       && PATH=~/clang_symcc_off:"$PATH" cargo make test \
-      && mv $fic1 $fic0; \
+      && mv $fic1 $fic0 \
+      && touch $fic0; \
     fi
 
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
