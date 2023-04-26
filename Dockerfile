@@ -376,36 +376,29 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       cargo install cargo-make; \
     fi
 
-# Building the client-server main fuzzing loop dependencies
-# https://github.com/rust-lang/cargo/issues/2644#issuecomment-1497583478
-RUN if [[ -v SYMRUSTC_CI ]] ; then \
-      mkdir $SYMRUSTC_LIBAFL_SOLVING_DIR/target; \
-      echo "Ignoring the execution" >&2; \
-    else \
-      cd $SYMRUSTC_LIBAFL_SOLVING_DIR \
-      && fic0=$SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/src/main.rs \
-      && fic1=$SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/src/main.rs0 \
-      && mv -i $fic0 $fic1 \
-      && echo 'fn main() {}' > $fic0 \
-      && PATH=~/clang_symcc_off:"$PATH" cargo make test \
-      && mv $fic1 $fic0 \
-      && touch $fic0; \
-    fi
-
 COPY --chown=ubuntu:ubuntu src/rs belcarra_source/src/rs
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 ARG SYMRUSTC_LIBAFL_EXAMPLE=$SYMRUSTC_LIBAFL_EXAMPLE0
 
-# Preparing to build the harness as a sanitized rlib
+# Updating the harness
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer \
       && rm -rf harness \
-      && ln -s $SYMRUSTC_LIBAFL_EXAMPLE harness; \
+      && cp -R $SYMRUSTC_LIBAFL_EXAMPLE harness; \
     fi
 
 # Building the client-server main fuzzing loop
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      mkdir $SYMRUSTC_LIBAFL_SOLVING_DIR/target; \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_SOLVING_DIR \
+      && PATH=~/clang_symcc_off:"$PATH" cargo make test; \
+    fi
+
+# Building the client-server main fuzzing loop with the harness as sanitized
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       mkdir $SYMRUSTC_LIBAFL_SOLVING_DIR/target; \
       echo "Ignoring the execution" >&2; \
