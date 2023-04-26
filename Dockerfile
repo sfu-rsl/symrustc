@@ -392,6 +392,7 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       && touch $fic0; \
     fi
 
+COPY --chown=ubuntu:ubuntu src/rs belcarra_source/src/rs
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 ARG SYMRUSTC_LIBAFL_EXAMPLE=$SYMRUSTC_LIBAFL_EXAMPLE0
 
@@ -410,12 +411,7 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer \
-      && cargo rustc --release --package belcarra --lib -- -C llvm-args=--sanitizer-coverage-level=3 -C passes=sancov-module \
-      && cp -p target/release/deps/*rlib ../target/release/deps \
-      && cargo rustc --release --target-dir ../target \
-      && ls target/release/deps/*rlib | while read i ; do \
-           cmp "$i" "../$i" >&2 || (echo 'cargo recompiled the copied rlib' >&2 ; exit 1) ; \
-         done ; \
+      && $SYMRUSTC_HOME_RS/libafl_cargo.sh; \
     fi
 
 
