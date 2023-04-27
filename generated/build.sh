@@ -11,9 +11,6 @@ docker_b source
 # Set up project dependencies
 docker_b depend
 
-# Build AFL
-docker_b afl
-
 # Build SymCC simple backend
 docker_b symcc_simple
 

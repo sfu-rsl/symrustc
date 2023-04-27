@@ -14,9 +14,6 @@ jobs:
       - name: Set up project dependencies
         run: docker build --target builder_depend -t belcarra_depend --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples_verbose/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
 
-      - name: Build AFL
-        run: docker build --target builder_afl -t belcarra_afl --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples_verbose/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
-
       - name: Build SymCC simple backend
         run: docker build --target builder_symcc_simple -t belcarra_symcc_simple --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples_verbose/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
 

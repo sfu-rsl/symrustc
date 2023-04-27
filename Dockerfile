@@ -96,9 +96,6 @@ RUN if [ -d symcc_source ] ; then \
       && git checkout "$current"; \
     fi
 
-# Download AFL
-RUN git clone --depth 1 -b v2.56b https://github.com/google/AFL.git afl
-
 # Download Z3
 RUN git clone --depth 1 -b z3-4.11.2 https://github.com/Z3Prover/z3.git
 
@@ -126,16 +123,6 @@ RUN mkdir z3_build \
         -DCMAKE_INSTALL_PREFIX=`pwd`/dist \
     && make -j `nproc` \
     && make install
-
-
-#
-# Build AFL
-#
-FROM builder_source AS builder_afl
-
-RUN cd afl \
-    && make
-
 
 #
 # Build SymCC simple backend
@@ -795,15 +782,9 @@ RUN sudo apt-get update \
     && sudo apt-get clean
 
 RUN ln -s ~/symcc_source/util/pure_concolic_execution.sh symcc_build
-COPY --chown=ubuntu:ubuntu --from=builder_afl $HOME/afl afl
 COPY --chown=ubuntu:ubuntu --from=builder_addons $HOME/.cargo .cargo
 
 ENV PATH=$HOME/symcc_build:$PATH
-
-ENV AFL_PATH=$HOME/afl
-ENV AFL_CC=clang-$SYMRUSTC_LLVM_VERSION
-ENV AFL_CXX=clang++-$SYMRUSTC_LLVM_VERSION
-
 
 #
 # Build concolic C++ examples - SymCC/Z3, libcxx regular
