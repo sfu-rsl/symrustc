@@ -1,17 +1,11 @@
-use std::io;
-use std::env;
-use std::fs;
 use bel;
+use std::env;
+use std::io::Error;
 
-fn main() -> Result<(), io::Error> {
+fn main() -> Result<(), Error> {
     let args: Vec<String> = env::args().collect();
     match args.get(1) {
-        Some(file) => {
-            match bel::main0(fs::read(file).expect("Error reading the file")) {
-                Some(_) => Ok(()),
-                None => panic!("Artificial bug")
-            }
-        }
+        Some(file) => bel::main0(vec!["".into(), file.into()]),
         None => Ok(())
     }
 }
