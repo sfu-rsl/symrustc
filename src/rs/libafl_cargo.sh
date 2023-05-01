@@ -5,12 +5,22 @@
 
 set -euo pipefail
 
-RUSTFLAGS='-C llvm-args=--sanitizer-coverage-level=3 -C passes=sancov-module' cargo rustc --release --package belcarra --lib
+cat > libsancov.cpp <<EOF
+#include <stdint.h>
 
-cp -p target/release/deps/*rlib ../target/release/deps
+extern "C" void __sanitizer_cov_trace_pc_guard_init(uint32_t *,
+                                                    uint32_t *) {
+  return;
+}
 
-cargo rustc --release --target-dir ../target
+extern "C" void __sanitizer_cov_trace_pc_guard(uint32_t *) {
+  return;
+}
+EOF
 
-ls target/release/deps/*rlib | while read i ; do
-    cmp "$i" "../$i" >&2 || (echo 'cargo recompiled the copied rlib' >&2 ; exit 1)
-done
+export PATH=~/clang_symcc_off:"$PATH"
+
+clang++ -c -o libsancov.o libsancov.cpp
+clang++ -shared -o libsancov.so libsancov.o
+
+cargo make test
