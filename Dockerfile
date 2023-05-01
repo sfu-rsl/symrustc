@@ -395,21 +395,12 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       && cp -R $SYMRUSTC_LIBAFL_EXAMPLE harness; \
     fi
 
-# Building the client-server main fuzzing loop
+# Building the client-server main fuzzing loop completely sanitized
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       mkdir $SYMRUSTC_LIBAFL_SOLVING_DIR/target; \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_SOLVING_DIR \
-      && PATH=~/clang_symcc_off:"$PATH" cargo make test; \
-    fi
-
-# Building the client-server main fuzzing loop with the harness as sanitized
-RUN if [[ -v SYMRUSTC_CI ]] ; then \
-      mkdir $SYMRUSTC_LIBAFL_SOLVING_DIR/target; \
-      echo "Ignoring the execution" >&2; \
-    else \
-      cd $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer \
       && $SYMRUSTC_HOME_RS/libafl_cargo.sh; \
     fi
 
