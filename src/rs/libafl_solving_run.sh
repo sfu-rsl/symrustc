@@ -42,7 +42,10 @@ done
 
 # starting the client
 $fuzz_bin --concolic &
-proc_client=$!
+proc_client1=$!
+
+$fuzz_bin >~/libafl_client 2>&1 &
+proc_client2=$!
 
 # waiting
 if [[ -v SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE ]] ; then
@@ -54,8 +57,10 @@ else
 fi
 
 # terminating the client first, then any remaining forked processes not yet terminated
-kill $proc_client || echo "error: kill ($?)" >&2
-wait $proc_client || echo "error: wait ($?)" >&2
+kill $proc_client1 || echo "error: kill ($?)" >&2
+wait $proc_client1 || echo "error: wait ($?)" >&2
+kill $proc_client2 || echo "error: kill ($?)" >&2
+wait $proc_client2 || echo "error: wait ($?)" >&2
 killall $fuzz_bin || echo "error: killall ($?)" >&2
 wait_all
 
