@@ -33,7 +33,7 @@ fuzz_bin=$(find -L $SYMRUSTC_LIBAFL_SOLVING_DIR/target/release -maxdepth 1 -type
 mkfifo $fic_server
 
 # starting the server
-$fuzz_bin | tee $fic_server &
+$fuzz_bin | tee ~/libafl_server | tee $fic_server &
 
 # waiting for the server to listen to new clients
 while ! nc -zv localhost 1337 ; do
@@ -41,10 +41,10 @@ while ! nc -zv localhost 1337 ; do
 done
 
 # starting the client
-$fuzz_bin --concolic &
+$fuzz_bin --concolic >~/libafl_client1 2>&1 &
 proc_client1=$!
 
-$fuzz_bin >~/libafl_client 2>&1 &
+$fuzz_bin >~/libafl_client2 2>&1 &
 proc_client2=$!
 
 # waiting
@@ -53,7 +53,7 @@ if [[ -v SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE ]] ; then
     grep -q 'objectives: 2' $fic_server
 else
     echo "Only executing during a finite period of time, irrespective of objective search" >&2
-    sleep 5
+    sleep 300
 fi
 
 # terminating the client first, then any remaining forked processes not yet terminated
