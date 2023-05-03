@@ -12,7 +12,7 @@ fic=$HOME/libafl_solving_run.txt
 fic_thy0=sha
 fic_thy=${fic_thy0}.thy
 
-$SYMRUSTC_HOME_RS/libafl_solving_run0.sh "$@" | tee $fic
+$SYMRUSTC_HOME_RS/libafl_solving_run0.sh "$@" 2>&1 | tee $fic
 
 mkdir $dir
 pushd $dir >/dev/null
