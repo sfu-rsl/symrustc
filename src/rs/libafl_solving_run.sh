@@ -30,10 +30,13 @@ ln -s $(find -L $SYMRUSTC_DIR/target_cargo_on/debug -maxdepth 1 -type f -executa
 
 fuzz_bin=$(find -L $SYMRUSTC_LIBAFL_SOLVING_DIR/target/release -maxdepth 1 -type f -executable | grep -v '\.so' -m 1)
 
-mkfifo $fic_server
-
 # starting the server
-$fuzz_bin | tee ~/libafl_server | tee $fic_server &
+if [[ -v SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE ]] ; then
+    mkfifo $fic_server
+    $fuzz_bin | tee ~/libafl_server | tee $fic_server &
+else
+    $fuzz_bin | tee ~/libafl_server &
+fi
 
 # waiting for the server to listen to new clients
 while ! nc -zv localhost 1337 ; do
@@ -65,7 +68,9 @@ killall $fuzz_bin || echo "error: killall ($?)" >&2
 wait_all
 
 # cleaning
-rm $fic_server
+if [[ -v SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE ]] ; then
+    rm $fic_server
+fi
 rm $fic_corpus
 rm target_symcc.out
 
