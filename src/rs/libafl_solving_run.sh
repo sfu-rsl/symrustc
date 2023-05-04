@@ -8,16 +8,15 @@ set -euo pipefail
 #
 
 dir=libafl_stats
-fic=$HOME/libafl_solving_run.txt
 fic_thy0=sha
 fic_thy=${fic_thy0}.thy
 
-$SYMRUSTC_HOME_RS/libafl_solving_run0.sh "$@" 2>&1 | tee $fic
+$SYMRUSTC_HOME_RS/libafl_solving_run0.sh "$@"
 
 mkdir $dir
 pushd $dir >/dev/null
 
-grep 'Hello\|command\|BBBB\|0000000000000000 A\|0000000000000000 1' $fic > libafl_trace
+grep 'Hello\|command\|BBBB\|0000000000000000 A\|0000000000000000 1' ~/libafl_client1 > libafl_trace
 
 csplit -n 6 -f libafl_trace_split libafl_trace '/0000000000000000 A/' '{*}'
 
