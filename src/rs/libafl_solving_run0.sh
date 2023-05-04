@@ -3,7 +3,7 @@
 # SPDX-License-Identifier
 # Copyright (C) 2021-2022 Simon Fraser University (www.sfu.ca)
 
-set -euo pipefail
+set -euxo pipefail
 
 #
 
@@ -54,7 +54,7 @@ if [[ -v SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE ]] ; then
     mkfifo $fic_server
     $fuzz_bin_fic | tee ~/libafl_server | tee $fic_server &
 else
-    $fuzz_bin_fic | tee ~/libafl_server &
+    $fuzz_bin_fic > ~/libafl_server &
 fi
 
 # waiting for the server to listen to new clients

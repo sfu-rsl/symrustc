@@ -11,7 +11,7 @@ dir=libafl_stats
 fic_thy0=sha
 fic_thy=${fic_thy0}.thy
 
-$SYMRUSTC_HOME_RS/libafl_solving_run0.sh "$@"
+$SYMRUSTC_HOME_RS/libafl_solving_run0.sh "$@" 2>&1 | tee ~/libafl_solving_run
 
 mkdir $dir
 pushd $dir >/dev/null
