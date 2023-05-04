@@ -18,7 +18,7 @@ pushd $dir >/dev/null
 
 grep -a 'Hello\|command\|BBBB\|0000000000000000 A\|0000000000000000 1' ~/libafl_client1 > libafl_trace
 
-csplit -n 6 -f libafl_trace_split libafl_trace '/0000000000000000 A/' '{*}'
+csplit -n 6 -f libafl_trace_split libafl_trace '/0000000000000000 A/' '{*}' >/dev/null
 
 echo "theory $fic_thy0" > $fic_thy
 
