@@ -31,7 +31,7 @@ if [[ -v SYMRUSTC_LIBAFL_CONCOLIC ]] ; then
 mkdir $dir
 pushd $dir >/dev/null
 
-grep 'Hello\|command\|BBBB\|0000000000000000 A\|0000000000000000 1' $(ls -t "${SYMRUSTC_LOG_PREFIX}"_*_client1 | head -n 1) > libafl_trace
+grep -a 'Hello\|command\|BBBB\|0000000000000000 A\|0000000000000000 1' $(ls -t "${SYMRUSTC_LOG_PREFIX}"_*_client1 | head -n 1) > libafl_trace
 
 csplit -n 6 -f libafl_trace_split libafl_trace '/0000000000000000 A/' '{*}'
 
