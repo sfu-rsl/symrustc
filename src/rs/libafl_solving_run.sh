@@ -25,7 +25,7 @@ dir="${SYMRUSTC_LOG_PREFIX}_${date_now}_stats"
 fic_thy0=sha
 fic_thy=${fic_thy0}.thy
 
-$SYMRUSTC_HOME_RS/libafl_solving_run0.sh "$@"
+$SYMRUSTC_HOME_RS/libafl_solving_run0.sh "$@" 2>&1 | tee "${SYMRUSTC_LOG_PREFIX}_${date_now}_solving_run"
 
 if [[ -v SYMRUSTC_LIBAFL_CONCOLIC ]] ; then
 mkdir $dir
