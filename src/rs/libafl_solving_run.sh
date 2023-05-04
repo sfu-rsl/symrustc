@@ -7,10 +7,14 @@ set -euo pipefail
 
 #
 
+if [[ -z "${SYMRUSTC_LOG_PREFIX:-}" ]] ; then
+    SYMRUSTC_LOG_PREFIX="$PWD"/
+fi
+
 if [[ -v SYMRUSTC_LIBAFL_CONCOLIC ]] ; then
-    SYMRUSTC_LOG_PREFIX="${SYMRUSTC_LOG_PREFIX:-}_symrustc"
+    SYMRUSTC_LOG_PREFIX="${SYMRUSTC_LOG_PREFIX}_symrustc"
 else
-    SYMRUSTC_LOG_PREFIX="${SYMRUSTC_LOG_PREFIX:-}_libafl_fuzz"
+    SYMRUSTC_LOG_PREFIX="${SYMRUSTC_LOG_PREFIX}_libafl_fuzz"
 fi
 
 export SYMRUSTC_LOG_PREFIX
@@ -18,17 +22,16 @@ export SYMRUSTC_LOG_PREFIX
 date_now="$(date '+%F_%T' | tr -d ':-')"
 
 dir="${SYMRUSTC_LOG_PREFIX}_${date_now}_stats"
-fic="${SYMRUSTC_LOG_PREFIX}_${date_now}_solving_run.txt"
 fic_thy0=sha
 fic_thy=${fic_thy0}.thy
 
-$SYMRUSTC_HOME_RS/libafl_solving_run0.sh "$@" 2>&1 | tee $fic
+$SYMRUSTC_HOME_RS/libafl_solving_run0.sh "$@"
 
 if [[ -v SYMRUSTC_LIBAFL_CONCOLIC ]] ; then
 mkdir $dir
 pushd $dir >/dev/null
 
-grep 'Hello\|command\|BBBB\|0000000000000000 A\|0000000000000000 1' $fic > libafl_trace
+grep 'Hello\|command\|BBBB\|0000000000000000 A\|0000000000000000 1' $(ls -t "${SYMRUSTC_LOG_PREFIX}"_*_client1 | head -n 1) > libafl_trace
 
 csplit -n 6 -f libafl_trace_split libafl_trace '/0000000000000000 A/' '{*}'
 
