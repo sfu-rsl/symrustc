@@ -470,6 +470,8 @@ RUN rustup install nightly
 RUN rustup default nightly
 RUN cargo install cargo-fuzz
 
+COPY --chown=ubuntu:ubuntu src/rs belcarra_source/src/rs
+
 
 #
 # Build concolic Rust examples - set up project source - coreutils
@@ -489,8 +491,8 @@ ARG SYMRUSTC_FUZZ_DIR=$HOME/coreutils/src/uu/base64
 COPY --chown=ubuntu:ubuntu --from=builder_examples_rs_source_coreutils $HOME/coreutils coreutils
 COPY --chown=ubuntu:ubuntu examples/coreutils_base64/fuzz $SYMRUSTC_FUZZ_DIR/fuzz
 
-# RUN cd $SYMRUSTC_FUZZ_DIR \
-#     && cargo fuzz run $(cargo fuzz list | head -n 1)
+RUN cd $SYMRUSTC_FUZZ_DIR \
+    && $SYMRUSTC_HOME_RS/cargo_fuzz.sh
 
 
 #
@@ -511,8 +513,8 @@ ARG SYMRUSTC_FUZZ_DIR=$HOME/bincode
 COPY --chown=ubuntu:ubuntu --from=builder_examples_rs_source_bincode $HOME/bincode bincode
 COPY --chown=ubuntu:ubuntu examples/bincode/fuzz $SYMRUSTC_FUZZ_DIR/fuzz
 
-# RUN cd $SYMRUSTC_FUZZ_DIR \
-#     && cargo fuzz run $(cargo fuzz list | head -n 1)
+RUN cd $SYMRUSTC_FUZZ_DIR \
+    && $SYMRUSTC_HOME_RS/cargo_fuzz.sh
 
 
 #
