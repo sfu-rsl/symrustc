@@ -469,6 +469,60 @@ RUN $SYMRUSTC_HOME_RS/symcc_fuzzing_helper.sh
 
 
 #
+# Build cargo-fuzz
+#
+FROM builder_base_rust AS builder_cargo_fuzz
+
+RUN rustup install nightly
+RUN rustup default nightly
+RUN cargo install cargo-fuzz
+
+
+#
+# Build concolic Rust examples - set up project source - coreutils
+#
+FROM builder_symrustc_main AS builder_examples_rs_source_coreutils
+
+RUN git clone --depth 1 https://github.com/uutils/coreutils.git
+
+
+#
+# Build concolic Rust examples - set up project source - coreutils - fuzz
+#
+FROM builder_cargo_fuzz AS builder_examples_rs_source_coreutils_fuzz
+
+ARG SYMRUSTC_FUZZ_DIR=$HOME/coreutils/src/uu/base64
+
+COPY --chown=ubuntu:ubuntu --from=builder_examples_rs_source_coreutils $HOME/coreutils coreutils
+COPY --chown=ubuntu:ubuntu examples/coreutils_base64/fuzz $SYMRUSTC_FUZZ_DIR/fuzz
+
+# RUN cd $SYMRUSTC_FUZZ_DIR \
+#     && cargo fuzz run $(cargo fuzz list | head -n 1)
+
+
+#
+# Build concolic Rust examples - set up project source - bincode
+#
+FROM builder_symrustc_main AS builder_examples_rs_source_bincode
+
+RUN git clone --depth 1 -b v2.0.0-beta.0 https://github.com/bincode-org/bincode.git
+
+
+#
+# Build concolic Rust examples - set up project source - bincode - fuzz
+#
+FROM builder_cargo_fuzz AS builder_examples_rs_source_bincode_fuzz
+
+ARG SYMRUSTC_FUZZ_DIR=$HOME/bincode
+
+COPY --chown=ubuntu:ubuntu --from=builder_examples_rs_source_bincode $HOME/bincode bincode
+COPY --chown=ubuntu:ubuntu examples/bincode/fuzz $SYMRUSTC_FUZZ_DIR/fuzz
+
+# RUN cd $SYMRUSTC_FUZZ_DIR \
+#     && cargo fuzz run $(cargo fuzz list | head -n 1)
+
+
+#
 # Build extended main
 #
 FROM builder_symrustc_main AS builder_extended_main
