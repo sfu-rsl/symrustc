@@ -32,7 +32,7 @@ ML \<open>
 val l =
 EOF
 
-sha1sum -b libafl_trace_split* | sed -r 's/(.*) (.*)/  ("\1", "\2") :: /' | tee -a $fic_thy
+find . -name 'libafl_trace_split*' -print0 | xargs -0 sha1sum -b | sed -r 's/(.*) (.*)/  ("\1", "\2") :: /' | tee -a $fic_thy
 
 cat >> $fic_thy <<"EOF"
   []
