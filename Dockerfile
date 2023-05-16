@@ -232,7 +232,7 @@ ARG SYMRUSTC_RUST_BUILD_STAGE=$SYMRUSTC_RUST_BUILD/stage2
 ENV SYMRUSTC_CARGO=$SYMRUSTC_RUST_BUILD/stage0/bin/cargo
 ENV SYMRUSTC_RUSTC=$SYMRUSTC_RUST_BUILD_STAGE/bin/rustc
 ENV SYMRUSTC_LD_LIBRARY_PATH=$SYMRUSTC_RUST_BUILD_STAGE/lib
-ENV SYMRUSTC_LIBAFL_EXAMPLE0=$HOME/belcarra_source/examples/source_0_original_1c0_rs
+ENV SYMRUSTC_LIBAFL_EXAMPLE0=$HOME/belcarra_source/examples/source_0_original_1c8_rs
 ENV PATH=$HOME/.cargo/bin:$PATH
 
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_libcxx $SYMCC_LIBCXX_PATH $SYMCC_LIBCXX_PATH
@@ -471,6 +471,18 @@ RUN rustup default nightly
 RUN cargo install cargo-fuzz
 
 COPY --chown=ubuntu:ubuntu src/rs belcarra_source/src/rs
+COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
+
+
+#
+# Build concolic Rust examples - set up project source - local example - fuzz
+#
+FROM builder_cargo_fuzz AS builder_examples_rs_source_local_fuzz
+
+ARG SYMRUSTC_FUZZ_DIR=$SYMRUSTC_LIBAFL_EXAMPLE0
+
+RUN cd $SYMRUSTC_FUZZ_DIR \
+    && $SYMRUSTC_HOME_RS/cargo_fuzz.sh
 
 
 #
