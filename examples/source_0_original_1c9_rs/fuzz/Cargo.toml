@@ -1,19 +1,18 @@
 [package]
-name = "bincode-fuzz"
+name = "belcarra-fuzz"
 version = "0.0.0"
 publish = false
-edition = "2021"
+edition = "2018"
 
 [package.metadata]
 cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = "0.4"
+bincode = "=2.0.0-beta.0"
 
-[dependencies.bincode]
+[dependencies.belcarra]
 path = ".."
-default-features = false
-features = []
 
 # Prevent this from interfering with workspaces
 [workspace]
