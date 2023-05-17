@@ -515,28 +515,6 @@ RUN cd $SYMRUSTC_FUZZ_DIR \
 
 
 #
-# Build concolic Rust examples - set up project source - bincode
-#
-FROM builder_symrustc_main AS builder_examples_rs_source_bincode
-
-RUN git clone --depth 1 -b v2.0.0-beta.0 https://github.com/bincode-org/bincode.git
-
-
-#
-# Build concolic Rust examples - set up project source - bincode - fuzz
-#
-FROM builder_cargo_fuzz AS builder_examples_rs_source_bincode_fuzz
-
-ARG SYMRUSTC_FUZZ_DIR=$HOME/bincode
-
-COPY --chown=ubuntu:ubuntu --from=builder_examples_rs_source_bincode $HOME/bincode bincode
-COPY --chown=ubuntu:ubuntu examples/bincode/fuzz $SYMRUSTC_FUZZ_DIR/fuzz
-
-RUN cd $SYMRUSTC_FUZZ_DIR \
-    && $SYMRUSTC_HOME_RS/cargo_fuzz.sh
-
-
-#
 # Build extended main
 #
 FROM builder_symrustc_main AS builder_extended_main
