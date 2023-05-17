@@ -1,9 +1,18 @@
-pub fn main0(input: &[u8]) {
+use std::fs;
+use std::ffi::OsString;
+use std::io::Error;
+
+pub fn main0(args : Vec<OsString>) -> Result<(), Error> {
     use std::convert::TryInto;
     use std::mem::size_of;
     use std::time::Duration;
+    
+    match args.get(1) {
+        Some(file) => {
+            let input = fs::read(file).expect("Error reading the file");
+
     if input.len() != size_of::<u64>() + size_of::<u32>() {
-        return;
+        return Ok(());
     }
     let (secs, nanos) = input.split_at(size_of::<u64>());
 
@@ -28,5 +37,9 @@ pub fn main0(input: &[u8]) {
         ) {
             assert_eq!(dur, input_dur);
         }
+    }
+            Ok(())
+        }
+        None => Ok(())
     }
 }

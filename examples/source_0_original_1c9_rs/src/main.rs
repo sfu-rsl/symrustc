@@ -1,7 +1,11 @@
-use std::io::Read;
+use bel;
+use std::env;
+use std::io::Error;
 
-fn main() {
-    let mut input = [0u8; 12];
-    std::io::stdin().read_exact(&mut input).unwrap();
-    bel::main0(&input);
+fn main() -> Result<(), Error> {
+    let args: Vec<String> = env::args().collect();
+    match args.get(1) {
+        Some(file) => bel::main0(vec!["".into(), file.into()]),
+        None => Ok(())
+    }
 }
