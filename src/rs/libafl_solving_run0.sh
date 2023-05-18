@@ -65,7 +65,7 @@ if [[ -v SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE ]] ; then
     mkfifo $log_server_grep
     $fuzz_bin_fic | tee -a $log_server | tee $log_server_grep &
 else
-    $fuzz_bin_fic >> $log_server &
+    $fuzz_bin_fic | tee -a $log_server &
 fi
 
 # waiting for the server to listen to new clients

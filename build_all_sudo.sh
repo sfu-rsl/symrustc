@@ -33,9 +33,9 @@ export -f docker_b
 
 #
 
-function docker_b () {
-    docker_b0 "$@"
-}
-export -f docker_b
+# function docker_b () {
+#     docker_b0 "$@"
+# }
+# export -f docker_b
 
-./build_rustc.sh
+# ./build_rustc.sh
