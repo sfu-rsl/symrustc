@@ -9,8 +9,9 @@ source git_current_branch.sh
 
 name="$(basename $PWD)_log_${hash}__"
 
+fic="../$name$(date '+%F_%T' | tr -d ':-')"
+
 function tee_log () {
-    fic="../$name$(date '+%F_%T' | tr -d ':-')"
     if [ ! -f "$fic" ] ; then
         tee "$fic"
         date -R >> "$fic"
@@ -22,3 +23,4 @@ function tee_log () {
 #
 
 sudo ./build_all_sudo.sh "$SYMRUSTC_BRANCH" 2>&1 | tee_log
+sudo docker run -it --rm $(grep '\--->' "$fic" | tail -n 1 | cut -d ' ' -f 3)
