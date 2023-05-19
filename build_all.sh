@@ -9,8 +9,9 @@ source git_current_branch.sh
 
 name="$(basename $PWD)_log_${hash}__"
 
+fic="../$name$(date '+%F_%T' | tr -d ':-')"
+
 function tee_log () {
-    fic="../$name$(date '+%F_%T' | tr -d ':-')"
     if [ ! -f "$fic" ] ; then
         tee "$fic"
         date -R >> "$fic"
@@ -27,3 +28,4 @@ if [[ -v SYMRUSTC_DOCKER_PUSH ]] ; then
     # echo $TOKEN_GHCR | sudo_if_needed docker login ghcr.io -u $USER --password-stdin
     sudo_if_needed docker push ghcr.io/sfu-rsl/symrustc_hybrid:latest
 fi
+sudo_if_needed docker run -it --rm $(grep '\--->' "$fic" | tail -n 1 | cut -d ' ' -f 3)
