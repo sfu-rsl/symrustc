@@ -62,7 +62,7 @@ while ! nc -zv localhost 1337 ; do
     sleep 1
 done
 
-# starting the client
+# starting the clients
 $fuzz_bin_fic --concolic >~/libafl_client1 2>&1 &
 proc_client1=$!
 $fuzz_bin_fic >~/libafl_client2 2>&1 &
