@@ -10,7 +10,7 @@ SymRustC is a tool implemented in the Belcarra project
 efficient symbolic execution of Rust programs.
 
 Demo video:
-`https://www.youtube.com/watch?v=m_slazsMWko <https://www.youtube.com/watch?v=m_slazsMWko>`_
+`https://youtu.be/detXFU0dmrY <https://youtu.be/detXFU0dmrY>`_
 
 License
 *******
