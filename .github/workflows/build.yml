@@ -62,8 +62,23 @@ jobs:
       - name: Build additional tools
         run: docker build --target builder_addons -t belcarra_addons --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
 
+      - name: Build cargo-fuzz
+        run: docker build --target builder_cargo_fuzz -t belcarra_cargo_fuzz --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
+
+      - name: Build concolic Rust examples - set up project source - local example - fuzz
+        run: docker build --target builder_examples_rs_source_local_fuzz -t belcarra_examples_rs_source_local_fuzz --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
+
       - name: Build concolic Rust examples - set up project source - coreutils
         run: docker build --target builder_examples_rs_source_coreutils -t belcarra_examples_rs_source_coreutils --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
+
+      - name: Build concolic Rust examples - set up project source - coreutils - fuzz
+        run: docker build --target builder_examples_rs_source_coreutils_fuzz -t belcarra_examples_rs_source_coreutils_fuzz --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
+
+      - name: Build concolic Rust examples - set up project source - bincode
+        run: docker build --target builder_examples_rs_source_bincode -t belcarra_examples_rs_source_bincode --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
+
+      - name: Build concolic Rust examples - set up project source - bincode - fuzz
+        run: docker build --target builder_examples_rs_source_bincode_fuzz -t belcarra_examples_rs_source_bincode_fuzz --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .
 
       - name: Build concolic Rust examples - set up project source - coreutils - libafl
         run: docker build --target builder_examples_rs_source_coreutils_libafl -t belcarra_examples_rs_source_coreutils_libafl --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='extended_examples/1.66.1' --build-arg SYMRUSTC_SKIP_FAIL=yes --build-arg SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_TRACING=yes .

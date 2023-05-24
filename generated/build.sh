@@ -59,8 +59,23 @@ docker_b libafl_solving_example
 # Build additional tools
 docker_b addons
 
+# Build cargo-fuzz
+docker_b cargo_fuzz
+
+# Build concolic Rust examples - set up project source - local example - fuzz
+docker_b examples_rs_source_local_fuzz
+
 # Build concolic Rust examples - set up project source - coreutils
 docker_b examples_rs_source_coreutils
+
+# Build concolic Rust examples - set up project source - coreutils - fuzz
+docker_b examples_rs_source_coreutils_fuzz
+
+# Build concolic Rust examples - set up project source - bincode
+docker_b examples_rs_source_bincode
+
+# Build concolic Rust examples - set up project source - bincode - fuzz
+docker_b examples_rs_source_bincode_fuzz
 
 # Build concolic Rust examples - set up project source - coreutils - libafl
 docker_b examples_rs_source_coreutils_libafl
