@@ -62,6 +62,18 @@ jobs:
       - name: Build additional tools
         run: docker build --target builder_addons -t belcarra_addons --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.46.0' .
 
+      - name: Build cargo-fuzz
+        run: docker build --target builder_cargo_fuzz -t belcarra_cargo_fuzz --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.46.0' .
+
+      - name: Build concolic Rust examples - set up project source - local example - fuzz
+        run: docker build --target builder_examples_rs_source_local_fuzz -t belcarra_examples_rs_source_local_fuzz --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.46.0' .
+
+      - name: Build concolic Rust examples - set up project source - coreutils
+        run: docker build --target builder_examples_rs_source_coreutils -t belcarra_examples_rs_source_coreutils --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.46.0' .
+
+      - name: Build concolic Rust examples - set up project source - coreutils - fuzz
+        run: docker build --target builder_examples_rs_source_coreutils_fuzz -t belcarra_examples_rs_source_coreutils_fuzz --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.46.0' .
+
       - name: Build extended main
         run: docker build --target builder_extended_main -t belcarra_extended_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.46.0' .
 
