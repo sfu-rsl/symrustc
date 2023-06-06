@@ -238,7 +238,6 @@ ARG SYMRUSTC_RUST_BUILD_STAGE=$SYMRUSTC_RUST_BUILD/stage2
 ENV SYMRUSTC_CARGO=$SYMRUSTC_RUST_BUILD/stage0/bin/cargo
 ENV SYMRUSTC_RUSTC=$SYMRUSTC_RUST_BUILD_STAGE/bin/rustc
 ENV SYMRUSTC_LD_LIBRARY_PATH=$SYMRUSTC_RUST_BUILD_STAGE/lib
-ENV SYMRUSTC_LIBAFL_EXAMPLE0=$HOME/belcarra_source/examples/source_0_original_1c8_rs
 ENV PATH=$HOME/.cargo/bin:$PATH
 
 COPY --chown=ubuntu:ubuntu --from=builder_symcc_libcxx $SYMCC_LIBCXX_PATH $SYMCC_LIBCXX_PATH
@@ -310,6 +309,8 @@ RUN set -eux; \
     ./rustup-init -y --no-modify-path --profile minimal --default-toolchain $RUST_VERSION --default-host ${rustArch}
 
 RUN rustup component add rustfmt
+
+ENV SYMRUSTC_LIBAFL_EXAMPLE0=$HOME/belcarra_source/examples/source_0_original_1c8_rs
 
 
 #
@@ -408,7 +409,8 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
 #
 # Build LibAFL solving runtime main
 #
-FROM builder_symrustc_main AS builder_libafl_solving_main
+FROM builder_libafl_solving AS builder_libafl_solving_main
+#TODO: use the rustc version of builder_symrustc_main (with instrumentation disabled) whenever it belongs to the versions that can build LibAFL
 
 RUN sudo apt-get update \
     && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
@@ -416,9 +418,6 @@ RUN sudo apt-get update \
         netcat-openbsd \
         psmisc \
     && sudo apt-get clean
-
-COPY --chown=ubuntu:ubuntu --from=builder_libafl_solving $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/target $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer/target
-COPY --chown=ubuntu:ubuntu --from=builder_libafl_solving $SYMRUSTC_LIBAFL_SOLVING_DIR/runtime/target $SYMRUSTC_LIBAFL_SOLVING_DIR/runtime/target
 
 # Pointing to the Rust runtime back-end
 RUN cd -P $SYMRUSTC_RUNTIME_DIR/.. \
