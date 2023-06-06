@@ -431,27 +431,10 @@ ARG SYMRUSTC_LIBAFL_EXAMPLE=$SYMRUSTC_LIBAFL_EXAMPLE0
 ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING
 ARG SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE=yes
 
-# Updating the harness
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
     else \
-      cd $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer \
-      && ln -s $SYMRUSTC_LIBAFL_EXAMPLE harness; \
-    fi
-
-RUN if [[ -v SYMRUSTC_CI ]] ; then \
-      mkdir $SYMRUSTC_LIBAFL_SOLVING_DIR/target; \
-      echo "Ignoring the execution" >&2; \
-    else \
-      cd $SYMRUSTC_LIBAFL_EXAMPLE \
-      && $SYMRUSTC_HOME_RS/libafl_solving_build.sh; \
-    fi
-
-RUN if [[ -v SYMRUSTC_CI ]] ; then \
-      echo "Ignoring the execution" >&2; \
-    else \
-      cd $SYMRUSTC_LIBAFL_EXAMPLE \
-      && $SYMRUSTC_HOME_RS/libafl_solving_run.sh test; \
+      $SYMRUSTC_HOME_RS/symrustc_libafl.sh test; \
     fi
 
 
