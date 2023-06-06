@@ -22,5 +22,3 @@ export PATH=$SYMRUSTC_USER/clang_symcc_off:"$PATH"
 
 clang++ -c -o libsancov.o libsancov.cpp
 clang++ -shared -o libsancov.so libsancov.o
-
-cargo make test

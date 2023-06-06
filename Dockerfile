@@ -385,20 +385,17 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
 
 COPY --chown=ubuntu:ubuntu src/rs belcarra_source/src/rs
 COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
-ARG SYMRUSTC_LIBAFL_EXAMPLE=$SYMRUSTC_LIBAFL_EXAMPLE0
 
 # Updating the harness
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer \
-      && rm -rf harness \
-      && cp -R $SYMRUSTC_LIBAFL_EXAMPLE harness; \
+      && rm -rf harness; \
     fi
 
-# Building the client-server main fuzzing loop completely sanitized
+# Building the blank libsancov
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
-      mkdir $SYMRUSTC_LIBAFL_SOLVING_DIR/target; \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_SOLVING_DIR \
@@ -434,7 +431,16 @@ ARG SYMRUSTC_LIBAFL_EXAMPLE=$SYMRUSTC_LIBAFL_EXAMPLE0
 ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING
 ARG SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE=yes
 
+# Updating the harness
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer \
+      && ln -s $SYMRUSTC_LIBAFL_EXAMPLE harness; \
+    fi
+
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      mkdir $SYMRUSTC_LIBAFL_SOLVING_DIR/target; \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_EXAMPLE \
