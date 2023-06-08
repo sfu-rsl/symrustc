@@ -474,9 +474,7 @@ COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 #
 FROM builder_cargo_fuzz AS builder_examples_rs_source_local_fuzz
 
-ARG SYMRUSTC_FUZZ_DIR=$SYMRUSTC_LIBAFL_EXAMPLE0
-
-RUN cd $SYMRUSTC_FUZZ_DIR \
+RUN cd $SYMRUSTC_LIBAFL_EXAMPLE0 \
     && $SYMRUSTC_HOME_RS/cargo_fuzz.sh
 
 
