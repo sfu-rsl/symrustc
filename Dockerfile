@@ -434,7 +434,7 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_EXAMPLE0 \
-      && $SYMRUSTC_HOME_RS/symrustc_libafl.sh test; \
+      && $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
     fi
 
 
