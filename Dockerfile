@@ -427,14 +427,14 @@ RUN cd -P $SYMRUSTC_RUNTIME_DIR/.. \
 FROM builder_libafl_solving_main AS builder_libafl_solving_example
 
 ARG SYMRUSTC_CI
-ARG SYMRUSTC_LIBAFL_EXAMPLE=$SYMRUSTC_LIBAFL_EXAMPLE0
 ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING
 ARG SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE=yes
 
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
     else \
-      $SYMRUSTC_HOME_RS/symrustc_libafl.sh test; \
+      cd $SYMRUSTC_LIBAFL_EXAMPLE0 \
+      && $SYMRUSTC_HOME_RS/symrustc_libafl.sh test; \
     fi
 
 

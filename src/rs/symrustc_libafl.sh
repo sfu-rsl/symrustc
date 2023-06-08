@@ -5,13 +5,15 @@
 
 set -euo pipefail
 
+source $SYMRUSTC_HOME_RS/parse_args.sh
+
 #
 
 pushd $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer >/dev/null
 
-ln -s $SYMRUSTC_LIBAFL_EXAMPLE harness
+ln -s $SYMRUSTC_DIR harness
 
-pushd $SYMRUSTC_LIBAFL_EXAMPLE >/dev/null
+pushd $SYMRUSTC_DIR >/dev/null
 
 $SYMRUSTC_HOME_RS/libafl_solving_build.sh
 $SYMRUSTC_HOME_RS/libafl_solving_run.sh "$@"
