@@ -51,11 +51,15 @@ version1z=1.46.0
 version2z=full_runtime/1.46.0
 version3z=verbose/1.46.0
 version4z=hybrid/1.46.0
+version5z=extended_examples_verbose/1.46.0
 version1a=1.55.0
 version2a=rust_runtime/1.55.0
 version3a=symrustc_tools/1.55.0
 version1b=1.66.1
-version2b=extended_examples/1.66.1
+version1c=extended_examples/1.66.1
+version1d=extended_examples_ex_image/1.66.1
+version2d=extended_examples_verbose/1.66.1
+version1e=extended_examples_verbose_demo/1.66.1
 
 versions0=( ubuntu_20_04/1.47.0 \
             1.47.0 )
@@ -85,6 +89,7 @@ versions1=( 1.48.0 \
 git_count+=("$(git rev-list --count ^"$remote/$version1z" "$remote/$version2z")")
 git_count+=("$(git rev-list --count ^"$remote/$version1z" "$remote/$version3z")")
 git_count+=("$(git rev-list --count ^"$remote/$version1z" "$remote/$version4z")")
+git_count+=("$(git rev-list --count ^"$remote/$version1z" "$remote/$version5z")")
 
 br1=$version1z
 for br2 in "${versions0[@]}"
@@ -107,7 +112,10 @@ do
 done
 git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1a" "$remote/$version2a")")
 git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1a" "$remote/$version3a")")
-git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1b" "$remote/$version2b")")
+git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1b" "$remote/$version1c")")
+git_count+=("$(git rev-list --count ^"$remote/$version1c" "$remote/$version1d")")
+git_count+=("$(git rev-list --count ^"$remote/$version1c" "$remote/$version2d")")
+git_count+=("$(git rev-list --count ^"$remote/$version2d" "$remote/$version1e")")
 
 #
 
@@ -118,6 +126,7 @@ git push --force-with-lease "$remote" $version1z
 git_rebase_push $version1z $version2z "${git_count[0]}"; git_count=("${git_count[@]:1}")
 git_rebase_push $version1z $version3z "${git_count[0]}"; git_count=("${git_count[@]:1}")
 git_rebase_push $version1z $version4z "${git_count[0]}"; git_count=("${git_count[@]:1}")
+git_rebase_push $version1z $version5z "${git_count[0]}"; git_count=("${git_count[@]:1}")
 
 br1=$version1z
 for br2 in "${versions0[@]}"
@@ -140,7 +149,10 @@ do
 done
 git_rebase_push no_insert/$version1a $version2a "${git_count[0]}"; git_count=("${git_count[@]:1}")
 git_rebase_push no_insert/$version1a $version3a "${git_count[0]}"; git_count=("${git_count[@]:1}")
-git_rebase_push no_insert/$version1b $version2b "${git_count[0]}"; git_count=("${git_count[@]:1}")
+git_rebase_push no_insert/$version1b $version1c "${git_count[0]}"; git_count=("${git_count[@]:1}")
+git_rebase_push $version1c $version1d "${git_count[0]}"; git_count=("${git_count[@]:1}")
+git_rebase_push $version1c $version2d "${git_count[0]}"; git_count=("${git_count[@]:1}")
+git_rebase_push $version2d $version1e "${git_count[0]}"; git_count=("${git_count[@]:1}")
 
 #
 
