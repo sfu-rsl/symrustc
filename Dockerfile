@@ -310,7 +310,10 @@ RUN set -eux; \
 
 RUN rustup component add rustfmt
 
-ENV SYMRUSTC_LIBAFL_EXAMPLE0=$HOME/belcarra_source/examples/source_0_original_1c8_rs
+ENV SYMRUSTC_LIBAFL_EXAMPLE0=$HOME/belcarra_source/examples/source_0_original_1c3_rs
+ENV SYMRUSTC_LIBAFL_EXAMPLE1=$HOME/belcarra_source/examples/source_0_original_1c8_rs
+ENV SYMRUSTC_LIBAFL_EXAMPLE2=$HOME/belcarra_source/examples/source_0_original_1c7_rs
+ENV SYMRUSTC_LIBAFL_EXAMPLE3=$HOME/belcarra_source/examples/source_0_original_1c9_rs
 
 
 #
@@ -438,6 +441,27 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       && $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
     fi
 
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_EXAMPLE1 \
+      && $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
+    fi
+
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_EXAMPLE2 \
+      && $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
+    fi
+
+RUN if [[ -v SYMRUSTC_CI ]] ; then \
+      echo "Ignoring the execution" >&2; \
+    else \
+      cd $SYMRUSTC_LIBAFL_EXAMPLE3 \
+      && $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
+    fi
+
 
 #
 # Build additional tools
@@ -476,6 +500,15 @@ COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 FROM builder_cargo_fuzz AS builder_examples_rs_source_local_fuzz
 
 RUN cd $SYMRUSTC_LIBAFL_EXAMPLE0 \
+    && $SYMRUSTC_HOME_RS/cargo_fuzz.sh
+
+RUN cd $SYMRUSTC_LIBAFL_EXAMPLE1 \
+    && $SYMRUSTC_HOME_RS/cargo_fuzz.sh
+
+RUN cd $SYMRUSTC_LIBAFL_EXAMPLE2 \
+    && $SYMRUSTC_HOME_RS/cargo_fuzz.sh
+
+RUN cd $SYMRUSTC_LIBAFL_EXAMPLE3 \
     && $SYMRUSTC_HOME_RS/cargo_fuzz.sh
 
 
