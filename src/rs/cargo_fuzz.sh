@@ -7,12 +7,10 @@ set -euo pipefail
 
 #
 
-cargo fuzz run $(cargo fuzz list | head -n 1) &
-proc_fuzz=$!
+date_now="$(date '+%F_%T' | tr -d ':-')"
 
-# waiting
-sleep 300
+#
 
-# terminating the client
-kill $proc_fuzz || echo "error: kill ($?)" >&2
-wait $proc_fuzz || echo "error: wait ($?)" >&2
+cargo fuzz build # force the build to occur outside of our measured benchmark duration
+
+$SYMRUSTC_HOME_RS/cargo_fuzz0.sh 2>&1 | tee "$HOME/cargo_fuzz_${date_now}"
