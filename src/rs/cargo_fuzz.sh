@@ -13,4 +13,4 @@ date_now="$(date '+%F_%T' | tr -d ':-')"
 
 cargo fuzz build # force the build to occur outside of our measured benchmark duration
 
-$SYMRUSTC_HOME_RS/cargo_fuzz0.sh 2>&1 | tee "$HOME/cargo_fuzz_${date_now}"
+$SYMRUSTC_HOME_RS/cargo_fuzz0.sh 2>&1 | tee "${SYMRUSTC_LOG_PREFIX}_cargo_fuzz_${date_now}"

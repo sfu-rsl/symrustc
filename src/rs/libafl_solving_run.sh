@@ -18,12 +18,18 @@ swap
 
 #
 
+if [[ -v SYMRUSTC_LIBAFL_CONCOLIC ]] ; then
+    SYMRUSTC_LOG_PREFIX="${SYMRUSTC_LOG_PREFIX:-}_symrustc"
+else
+    SYMRUSTC_LOG_PREFIX="${SYMRUSTC_LOG_PREFIX:-}_libafl_fuzz"
+fi
+
 date_now="$(date '+%F_%T' | tr -d ':-')"
 
 log_server_grep=log_server
-log_server="$HOME/libafl_${date_now}_server"
-log_client1="$HOME/libafl_${date_now}_client1"
-log_client2="$HOME/libafl_${date_now}_client2"
+log_server="${SYMRUSTC_LOG_PREFIX}_${date_now}_server"
+log_client1="${SYMRUSTC_LOG_PREFIX}_${date_now}_client1"
+log_client2="${SYMRUSTC_LOG_PREFIX}_${date_now}_client2"
 
 pushd $SYMRUSTC_LIBAFL_SOLVING_DIR/fuzzer >/dev/null
 

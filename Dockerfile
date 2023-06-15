@@ -438,28 +438,28 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_EXAMPLE0 \
-      && $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
+      && SYMRUSTC_LOG_PREFIX=$HOME/csscolorparser $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
     fi
 
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_EXAMPLE1 \
-      && $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
+      && SYMRUSTC_LOG_PREFIX=$HOME/mp4ameta $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
     fi
 
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_EXAMPLE2 \
-      && $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
+      && SYMRUSTC_LOG_PREFIX=$HOME/libflate $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
     fi
 
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_EXAMPLE3 \
-      && $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
+      && SYMRUSTC_LOG_PREFIX=$HOME/bincode $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
     fi
 
 
@@ -500,16 +500,16 @@ COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
 FROM builder_cargo_fuzz AS builder_examples_rs_source_local_fuzz
 
 RUN cd $SYMRUSTC_LIBAFL_EXAMPLE0 \
-    && $SYMRUSTC_HOME_RS/cargo_fuzz.sh
+    && SYMRUSTC_LOG_PREFIX=$HOME/csscolorparser $SYMRUSTC_HOME_RS/cargo_fuzz.sh
 
 RUN cd $SYMRUSTC_LIBAFL_EXAMPLE1 \
-    && $SYMRUSTC_HOME_RS/cargo_fuzz.sh
+    && SYMRUSTC_LOG_PREFIX=$HOME/mp4ameta $SYMRUSTC_HOME_RS/cargo_fuzz.sh
 
 RUN cd $SYMRUSTC_LIBAFL_EXAMPLE2 \
-    && $SYMRUSTC_HOME_RS/cargo_fuzz.sh
+    && SYMRUSTC_LOG_PREFIX=$HOME/libflate $SYMRUSTC_HOME_RS/cargo_fuzz.sh
 
 RUN cd $SYMRUSTC_LIBAFL_EXAMPLE3 \
-    && $SYMRUSTC_HOME_RS/cargo_fuzz.sh
+    && SYMRUSTC_LOG_PREFIX=$HOME/bincode $SYMRUSTC_HOME_RS/cargo_fuzz.sh
 
 
 #
@@ -531,7 +531,7 @@ COPY --chown=ubuntu:ubuntu --from=builder_examples_rs_source_coreutils $HOME/cor
 COPY --chown=ubuntu:ubuntu examples/coreutils_base64/fuzz $SYMRUSTC_FUZZ_DIR/fuzz
 
 RUN cd $SYMRUSTC_FUZZ_DIR \
-    && $SYMRUSTC_HOME_RS/cargo_fuzz.sh
+    && SYMRUSTC_LOG_PREFIX=$HOME/base64 $SYMRUSTC_HOME_RS/cargo_fuzz.sh
 
 
 #
