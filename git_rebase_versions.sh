@@ -48,18 +48,18 @@ function git_rebase_push () {
 declare -a git_count=()
 
 version1z=1.46.0
-version2z=full_runtime/1.46.0
-version3z=verbose/1.46.0
-version4z=hybrid/1.46.0
-version5z=extended_examples_verbose/1.46.0
+version2z=full_runtime/$version1z
+version3z=verbose/$version1z
+version4z=hybrid/$version1z
+version5z=extended_examples_verbose/$version1z
 version1a=1.55.0
-version2a=rust_runtime/1.55.0
-version3a=symrustc_tools/1.55.0
+version2a=rust_runtime/$version1a
+version3a=symrustc_tools/$version1a
 version1b=1.66.1
-version1c=extended_examples/1.66.1
-version1d=extended_examples_ex_image/1.66.1
-version2d=extended_examples_verbose/1.66.1
-version1e=extended_examples_verbose_demo/1.66.1
+version1c=extended_examples/$version1b
+version1d=extended_examples_ex_image/$version1b
+version2d=extended_examples_verbose/$version1b
+version1e=extended_examples_verbose_demo/$version1b
 
 versions0=( ubuntu_20_04/1.47.0 \
             1.47.0 )
