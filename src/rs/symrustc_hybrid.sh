@@ -16,6 +16,15 @@ ln -s $SYMRUSTC_DIR harness
 pushd $SYMRUSTC_DIR >/dev/null
 
 $SYMRUSTC_HOME_RS/libafl_solving_build.sh
+
+# pure fuzzing execution
+if [[ -v SYMRUSTC_LIBAFL_PURE_FUZZING ]] ; then
+$SYMRUSTC_HOME_RS/libafl_solving_run.sh "$@"
+sleep 1 # forcing the date to change (for filenames relying on the date)
+fi
+
+# hybrid execution
+export SYMRUSTC_LIBAFL_CONCOLIC=yes
 $SYMRUSTC_HOME_RS/libafl_solving_run.sh "$@"
 
 popd >/dev/null

@@ -70,8 +70,10 @@ while ! nc -zv localhost 1337 ; do
 done
 
 # starting the clients
+if [[ -v SYMRUSTC_LIBAFL_CONCOLIC ]] ; then
 $fuzz_bin_fic --concolic >$log_client1 2>&1 &
 proc_client1=$!
+fi
 $fuzz_bin_fic >$log_client2 2>&1 &
 proc_client2=$!
 
@@ -85,8 +87,10 @@ else
 fi
 
 # terminating the client first, then any remaining forked processes not yet terminated
+if [[ -v SYMRUSTC_LIBAFL_CONCOLIC ]] ; then
 kill $proc_client1 || echo "error (client1): kill ($?)" >&2
 wait $proc_client1 || echo "error (client1): wait ($?)" >&2
+fi
 kill $proc_client2 || echo "error (client2): kill ($?)" >&2
 wait $proc_client2 || echo "error (client2): wait ($?)" >&2
 killall $fuzz_bin || echo "error: killall ($?)" >&2
