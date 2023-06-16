@@ -1,10 +1,8 @@
 #![no_main]
 
+use bel;
 use libfuzzer_sys::fuzz_target;
-use libflate::deflate::{Decoder};
 
 fuzz_target!(|data: &[u8]| {
-    // fuzzed code goes here
-    let mut decoder = Decoder::new(&data[..]);
-    std::io::copy(&mut decoder, &mut std::io::sink());
+    bel::fuzz_target(data);
 });

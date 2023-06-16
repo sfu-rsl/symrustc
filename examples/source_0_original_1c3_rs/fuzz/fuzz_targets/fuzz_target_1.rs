@@ -1,9 +1,8 @@
 #![no_main]
 
+use bel;
 use libfuzzer_sys::fuzz_target;
 
 fuzz_target!(|data: &[u8]| {
-    // fuzzed code goes here
-    let s = String::from_utf8_lossy(&data);
-    csscolorparser::parse(&s);
+    bel::fuzz_target(data);
 });

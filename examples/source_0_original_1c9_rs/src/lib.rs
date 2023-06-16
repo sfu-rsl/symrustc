@@ -1,20 +1,16 @@
-use std::fs;
 use std::ffi::OsString;
+use std::fs;
 use std::io::Error;
 
-pub fn main0(args : Vec<OsString>) -> Result<(), Error> {
+pub fn fuzz_target(data : &[u8]) -> Result<(), Error> {
     use std::convert::TryInto;
     use std::mem::size_of;
     use std::time::Duration;
     
-    match args.get(1) {
-        Some(file) => {
-            let input = fs::read(file).expect("Error reading the file");
-
-    if input.len() != size_of::<u64>() + size_of::<u32>() {
+    if data.len() != size_of::<u64>() + size_of::<u32>() {
         return Ok(());
     }
-    let (secs, nanos) = input.split_at(size_of::<u64>());
+    let (secs, nanos) = data.split_at(size_of::<u64>());
 
     let mut buffer = [0u8; 14];
     let secs = u64::from_ne_bytes(unsafe { secs.try_into().unwrap_unchecked() });
@@ -37,8 +33,15 @@ pub fn main0(args : Vec<OsString>) -> Result<(), Error> {
         ) {
             assert_eq!(dur, input_dur);
         }
-    }
-            Ok(())
+    };
+    Ok(())
+}
+
+pub fn main0(args : Vec<OsString>) -> Result<(), Error> {
+    match args.get(1) {
+        Some(file) => {
+            let data = fs::read(file).expect("Error reading the file");
+            fuzz_target(&data)
         }
         None => Ok(())
     }
