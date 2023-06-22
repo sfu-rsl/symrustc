@@ -426,9 +426,20 @@ RUN cd -P $SYMRUSTC_RUNTIME_DIR/.. \
 
 
 #
+# Build end user environment
+#
+FROM builder_libafl_solving_main AS builder_end_user
+
+ENV HOME=/home/user
+WORKDIR $HOME
+
+RUN sudo chown ubuntu:ubuntu $HOME
+
+
+#
 # Build concolic Rust examples for LibAFL solving
 #
-FROM builder_libafl_solving_main AS builder_libafl_solving_example
+FROM builder_end_user AS builder_libafl_solving_example
 
 ARG SYMRUSTC_CI
 ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING
@@ -511,6 +522,21 @@ RUN cd $SYMRUSTC_LIBAFL_EXAMPLE2 \
 
 RUN cd $SYMRUSTC_LIBAFL_EXAMPLE3 \
     && SYMRUSTC_LOG_PREFIX=$HOME/bincode $SYMRUSTC_HOME_RS/cargo_fuzz.sh
+
+RUN mkdir benchmark \
+    && mv -i *cargo_fuzz* benchmark
+
+
+#
+# Build end user environment main
+#
+FROM builder_libafl_solving_example AS builder_end_user_main
+
+COPY --chown=ubuntu:ubuntu . $HOME/
+COPY --chown=ubuntu:ubuntu --from=builder_examples_rs_source_local_fuzz $HOME/benchmark benchmark
+
+RUN mv -i benchmark/* . \
+    && rmdir benchmark
 
 
 #
