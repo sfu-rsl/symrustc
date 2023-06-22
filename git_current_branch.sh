@@ -32,16 +32,16 @@ else
 fi
 
 # https://github.com/project-oak/rust-verification-tools/pull/140
-function sudo_if_needed () {
+function sudo_docker_if_needed () {
     fic=/var/run/docker.sock
     if [[ -w $fic ]] ; then
-        "$@"
+        docker "$@"
     else
         echo "Running docker with sudo for writing to $fic" >&2
         echo 'See also the security implications of adding someone to the docker group:' >&2
         echo 'https://docs.docker.com/engine/security/#docker-daemon-attack-surface' >&2
         # https://docs.docker.com/engine/install/linux-postinstall/
-        sudo "$@"
+        sudo docker "$@"
     fi
 }
-export -f sudo_if_needed
+export -f sudo_docker_if_needed

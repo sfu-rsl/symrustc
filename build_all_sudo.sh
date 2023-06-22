@@ -9,7 +9,7 @@ export SYMRUSTC_BRANCH="$1"; shift
 export SYMRUSTC_DIR_COPY="$1"; shift
 
 unit=G
-size=$(echo $(df -B"$unit" --output=avail $(docker info | grep 'Root' | cut -d ':' -f 2) | tail -n 1))
+size=$(echo $(df -B"$unit" --output=avail $(sudo_docker_if_needed info | grep 'Root' | cut -d ':' -f 2) | tail -n 1))
 
 if (( $(echo "$size" | cut -d "$unit" -f 1) < 30 )) ; then
     echo "Error: too low remaining disk space: $size" >&2
@@ -17,8 +17,7 @@ if (( $(echo "$size" | cut -d "$unit" -f 1) < 30 )) ; then
 fi
 
 function docker_b0 () {
-    date -R
-    /usr/bin/time -v docker build "$@"
+    sudo_docker_if_needed build "$@"
 }
 export -f docker_b0
 

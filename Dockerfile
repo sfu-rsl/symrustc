@@ -359,86 +359,9 @@ RUN sudo chown ubuntu:ubuntu $HOME
 
 
 #
-# Build concolic Rust examples for LibAFL solving
-#
-FROM builder_end_user AS builder_libafl_solving_example
-
-ARG SYMRUSTC_CI
-ARG SYMRUSTC_LIBAFL_EXAMPLE_SKIP_BUILD_SOLVING
-ARG SYMRUSTC_LIBAFL_PURE_FUZZING=yes
-#ARG SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE=yes
-
-RUN if [[ -v SYMRUSTC_CI ]] ; then \
-      echo "Ignoring the execution" >&2; \
-    else \
-      cd $SYMRUSTC_LIBAFL_EXAMPLE0 \
-      && SYMRUSTC_LOG_PREFIX=$HOME/csscolorparser symrustc_hybrid.sh test; \
-    fi
-
-RUN if [[ -v SYMRUSTC_CI ]] ; then \
-      echo "Ignoring the execution" >&2; \
-    else \
-      cd $SYMRUSTC_LIBAFL_EXAMPLE1 \
-      && SYMRUSTC_LOG_PREFIX=$HOME/mp4ameta symrustc_hybrid.sh test; \
-    fi
-
-RUN if [[ -v SYMRUSTC_CI ]] ; then \
-      echo "Ignoring the execution" >&2; \
-    else \
-      cd $SYMRUSTC_LIBAFL_EXAMPLE2 \
-      && SYMRUSTC_LOG_PREFIX=$HOME/libflate symrustc_hybrid.sh test; \
-    fi
-
-RUN if [[ -v SYMRUSTC_CI ]] ; then \
-      echo "Ignoring the execution" >&2; \
-    else \
-      cd $SYMRUSTC_LIBAFL_EXAMPLE3 \
-      && SYMRUSTC_LOG_PREFIX=$HOME/bincode symrustc_hybrid.sh test; \
-    fi
-
-
-#
-# Build cargo-fuzz
-#
-FROM builder_base_rust AS builder_cargo_fuzz
-
-RUN rustup install nightly
-RUN rustup default nightly
-RUN cargo install cargo-fuzz
-
-COPY --chown=ubuntu:ubuntu src/rs belcarra_source/src/rs
-COPY --chown=ubuntu:ubuntu examples belcarra_source/examples
-
-
-#
-# Build concolic Rust examples - set up project source - local example - fuzz
-#
-FROM builder_cargo_fuzz AS builder_examples_rs_source_local_fuzz
-
-RUN cd $SYMRUSTC_LIBAFL_EXAMPLE0 \
-    && SYMRUSTC_LOG_PREFIX=$HOME/csscolorparser $SYMRUSTC_HOME_RS/cargo_fuzz.sh
-
-RUN cd $SYMRUSTC_LIBAFL_EXAMPLE1 \
-    && SYMRUSTC_LOG_PREFIX=$HOME/mp4ameta $SYMRUSTC_HOME_RS/cargo_fuzz.sh
-
-RUN cd $SYMRUSTC_LIBAFL_EXAMPLE2 \
-    && SYMRUSTC_LOG_PREFIX=$HOME/libflate $SYMRUSTC_HOME_RS/cargo_fuzz.sh
-
-RUN cd $SYMRUSTC_LIBAFL_EXAMPLE3 \
-    && SYMRUSTC_LOG_PREFIX=$HOME/bincode $SYMRUSTC_HOME_RS/cargo_fuzz.sh
-
-RUN mkdir benchmark \
-    && mv -i *cargo_fuzz* benchmark
-
-
-#
 # Build end user environment main
 #
-FROM builder_libafl_solving_example AS builder_end_user_main
+FROM builder_end_user AS builder_end_user_main
 
 ARG SYMRUSTC_DIR_COPY
 COPY --chown=ubuntu:ubuntu $SYMRUSTC_DIR_COPY $SYMRUSTC_DIR_COPY
-COPY --chown=ubuntu:ubuntu --from=builder_examples_rs_source_local_fuzz $HOME/benchmark benchmark
-
-RUN mv -i benchmark/* . \
-    && rmdir benchmark

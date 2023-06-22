@@ -46,7 +46,7 @@ fic='generated/build.sh'
 cat > "$fic" <<"EOF"
 #!/bin/bash
 
-set -euxo pipefail
+set -euo pipefail
 
 EOF
 parse_dockerfile print_sh >> "$fic"
