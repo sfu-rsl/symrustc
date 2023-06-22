@@ -60,6 +60,7 @@ version1c=extended_examples/$version1b
 version1d=extended_examples_ex_image/$version1b
 version2d=extended_examples_verbose/$version1b
 version1e=extended_examples_verbose_demo/$version1b
+version1f=end_user/$version1b
 
 versions0=( ubuntu_20_04/1.47.0 \
             1.47.0 )
@@ -117,6 +118,7 @@ git_count+=("$(git rev-list --count ^"$remote/no_insert/$version1b" "$remote/$ve
 git_count+=("$(git rev-list --count ^"$remote/$version1c" "$remote/$version1d")")
 git_count+=("$(git rev-list --count ^"$remote/$version1c" "$remote/$version2d")")
 git_count+=("$(git rev-list --count ^"$remote/$version2d" "$remote/$version1e")")
+git_count+=("$(git rev-list --count ^"$remote/$version1e" "$remote/$version1f")")
 
 #
 
@@ -154,6 +156,7 @@ git_rebase_push no_insert/$version1b $version1c "${git_count[0]}"; git_count=("$
 git_rebase_push $version1c $version1d "${git_count[0]}"; git_count=("${git_count[@]:1}")
 git_rebase_push $version1c $version2d "${git_count[0]}"; git_count=("${git_count[@]:1}")
 git_rebase_push $version2d $version1e "${git_count[0]}"; git_count=("${git_count[@]:1}")
+git_rebase_push $version1e $version1f "${git_count[0]}"; git_count=("${git_count[@]:1}")
 
 #
 
