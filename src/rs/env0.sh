@@ -15,14 +15,14 @@ export RUSTC=$SYMRUSTC_RUSTC
 
 if [[ -v SYMRUSTC_EXEC_CONCOLIC_OFF ]] ; then
 # Note: Changing $PATH is optional. For instance, it can be done for supporting Rust programs using clang or clang++ in their build.
-PATH=~/clang_symcc_off:"$PATH" \
+PATH=$SYMRUSTC_USER/clang_symcc_off:"$PATH" \
 CARGO_TARGET_DIR=$SYMRUSTC_DIR/target_cargo_off \
     eval fork "$@"
 fi
 
 if [[ ! -v SYMRUSTC_SKIP_CONCOLIC_ON ]] ; then
 # Note: Same remarks apply for SymRustC programs. However here, we have to use the "concolic SymCC" versions of clang or clang++.
-PATH=~/clang_symcc_on:"$PATH" \
+PATH=$SYMRUSTC_USER/clang_symcc_on:"$PATH" \
 CARGO_TARGET_DIR=$SYMRUSTC_DIR/target_cargo_on \
 RUSTFLAGS="$RUSTFLAGS -C passes=symcc -lSymRuntime" \
     eval fork "$@"

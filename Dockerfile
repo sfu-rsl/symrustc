@@ -62,6 +62,7 @@ RUN sudo apt-get update \
         python3-pip \
     && sudo apt-get clean
 
+ENV SYMRUSTC_USER=$HOME
 ENV SYMRUSTC_HOME=$HOME/belcarra_source
 ENV SYMRUSTC_HOME_CPP=$SYMRUSTC_HOME/src/cpp
 ENV SYMRUSTC_HOME_RS=$SYMRUSTC_HOME/src/rs

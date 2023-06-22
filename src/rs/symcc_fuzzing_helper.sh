@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-cd ~/symcc_source/util/symcc_fuzzing_helper
+cd $SYMRUSTC_USER/symcc_source/util/symcc_fuzzing_helper
 
 declare -i err=0
 $SYMRUSTC_HOME_RS/env.sh $SYMRUSTC_CARGO install --path $PWD --locked || err=$?
