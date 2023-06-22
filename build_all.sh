@@ -22,3 +22,5 @@ function tee_log () {
 #
 
 sudo ./build_all_sudo.sh "$SYMRUSTC_BRANCH" 2>&1 | tee_log
+sudo docker tag belcarra_end_user ghcr.io/sfu-rsl/symrustc_hybrid:latest
+#sudo docker push ghcr.io/sfu-rsl/symrustc_hybrid:latest
