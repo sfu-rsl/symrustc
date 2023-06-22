@@ -53,6 +53,9 @@ docker_b libafl_solving
 # Build LibAFL solving runtime main
 docker_b libafl_solving_main
 
+# Build end user environment
+docker_b end_user
+
 # Build concolic Rust examples for LibAFL solving
 docker_b libafl_solving_example
 
@@ -64,6 +67,9 @@ docker_b cargo_fuzz
 
 # Build concolic Rust examples - set up project source - local example - fuzz
 docker_b examples_rs_source_local_fuzz
+
+# Build end user environment main
+docker_b end_user_main
 
 # Build concolic Rust examples - set up project source - coreutils
 docker_b examples_rs_source_coreutils

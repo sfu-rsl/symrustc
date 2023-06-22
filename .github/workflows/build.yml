@@ -56,6 +56,9 @@ jobs:
       - name: Build LibAFL solving runtime main
         run: docker build --target builder_libafl_solving_main -t belcarra_libafl_solving_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.46.0' .
 
+      - name: Build end user environment
+        run: docker build --target builder_end_user -t belcarra_end_user --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.46.0' .
+
       - name: Build concolic Rust examples for LibAFL solving
         run: docker build --target builder_libafl_solving_example -t belcarra_libafl_solving_example --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.46.0' .
 
@@ -67,6 +70,9 @@ jobs:
 
       - name: Build concolic Rust examples - set up project source - local example - fuzz
         run: docker build --target builder_examples_rs_source_local_fuzz -t belcarra_examples_rs_source_local_fuzz --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.46.0' .
+
+      - name: Build end user environment main
+        run: docker build --target builder_end_user_main -t belcarra_end_user_main --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.46.0' .
 
       - name: Build concolic Rust examples - set up project source - coreutils
         run: docker build --target builder_examples_rs_source_coreutils -t belcarra_examples_rs_source_coreutils --build-arg SYMRUSTC_CI=yes --build-arg SYMRUSTC_VERBOSE=true --build-arg SYMRUSTC_BRANCH='1.46.0' .
