@@ -8,4 +8,5 @@
 ARG SYMRUSTC_SOURCE
 FROM $SYMRUSTC_SOURCE:latest AS builder_end_user_main
 
-COPY --chown=ubuntu:ubuntu examples examples
+ARG SYMRUSTC_DIR_COPY
+COPY --chown=ubuntu:ubuntu $SYMRUSTC_DIR_COPY $SYMRUSTC_DIR_COPY
