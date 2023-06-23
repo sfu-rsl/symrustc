@@ -430,6 +430,7 @@ RUN cd -P $SYMRUSTC_RUNTIME_DIR/.. \
 #
 FROM builder_libafl_solving_main AS builder_end_user
 
+ENV PATH=$SYMRUSTC_HOME_RS:$PATH
 ENV HOME=/home/user
 WORKDIR $HOME
 
@@ -450,28 +451,28 @@ RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_EXAMPLE0 \
-      && SYMRUSTC_LOG_PREFIX=$HOME/csscolorparser $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
+      && SYMRUSTC_LOG_PREFIX=$HOME/csscolorparser symrustc_hybrid.sh test; \
     fi
 
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_EXAMPLE1 \
-      && SYMRUSTC_LOG_PREFIX=$HOME/mp4ameta $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
+      && SYMRUSTC_LOG_PREFIX=$HOME/mp4ameta symrustc_hybrid.sh test; \
     fi
 
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_EXAMPLE2 \
-      && SYMRUSTC_LOG_PREFIX=$HOME/libflate $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
+      && SYMRUSTC_LOG_PREFIX=$HOME/libflate symrustc_hybrid.sh test; \
     fi
 
 RUN if [[ -v SYMRUSTC_CI ]] ; then \
       echo "Ignoring the execution" >&2; \
     else \
       cd $SYMRUSTC_LIBAFL_EXAMPLE3 \
-      && SYMRUSTC_LOG_PREFIX=$HOME/bincode $SYMRUSTC_HOME_RS/symrustc_hybrid.sh test; \
+      && SYMRUSTC_LOG_PREFIX=$HOME/bincode symrustc_hybrid.sh test; \
     fi
 
 
