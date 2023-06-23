@@ -532,7 +532,7 @@ RUN mkdir benchmark \
 #
 FROM builder_libafl_solving_example AS builder_end_user_main
 
-COPY --chown=ubuntu:ubuntu . $HOME/
+COPY --chown=ubuntu:ubuntu examples examples
 COPY --chown=ubuntu:ubuntu --from=builder_examples_rs_source_local_fuzz $HOME/benchmark benchmark
 
 RUN mv -i benchmark/* . \

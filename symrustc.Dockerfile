@@ -8,4 +8,4 @@
 ARG SYMRUSTC_SOURCE
 FROM $SYMRUSTC_SOURCE:latest AS builder_end_user_main
 
-COPY --chown=ubuntu:ubuntu . $HOME/
+COPY --chown=ubuntu:ubuntu examples examples
