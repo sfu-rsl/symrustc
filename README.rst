@@ -17,19 +17,28 @@ SymRustC: Usage
 
 We first suppose that \ ``$PWD``\  is at the root directory of the
 SymRustC project, and that Docker is installed. The execution
-of \ ``./build_all.sh``\  will install SymRustC inside a fresh
+of \ ``./build_remote.sh``\  will install SymRustC inside a fresh
 Docker container, copy the full content of \ ``$PWD``\  inside the
 container, and open a sub-shell for the user to manually run
-SymRustC. Note that \ ``./build_all.sh``\  does not affect the content
+SymRustC. Note that \ ``./build_remote.sh``\  does not affect the content
 of \ ``$PWD``\ . In the same spirit, the Docker container is by
 default configured to be removed once the sub-shell exits: any
 modifications made inside it will irremediably be lost.
 
 To run SymRustC with some Rust examples, it is then suggested for the
 user to put the examples of interests in \ ``$PWD``\  before invoking
-\ ``./build_all.sh``\ . Note that the SymRustC project already
+\ ``./build_remote.sh``\ . Note that the SymRustC project already
 contains minimal examples, so one can alternatively execute
-\ ``./build_all.sh``\  without anything at hand.
+\ ``./build_remote.sh``\  without anything at hand.
+
+Technically, \ ``./build_remote.sh``\  is downloading an uploaded image
+that we have already built using a local \ ``./build_all.sh``\ . At
+the time of writing, the upload is manually performed, so some best
+efforts have been made for the image to represent one of the latest
+states of the SymRustC project. If some network problems happen during
+the image retrieval, or to get the most accurate version, one can
+always execute \ ``./build_all.sh``\  instead of
+\ ``./build_remote.sh``\  to get the same result, and run SymRustC.
 
 SymRustC comes with two main scripts: a pure concolic engine
 \ ``symrustc.sh``\ , and a hybrid engine
