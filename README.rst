@@ -18,34 +18,52 @@ SymRustC: Usage
 We first suppose that \ ``$PWD``\  is at the root directory of the
 SymRustC project, and that Docker is installed. The execution
 of \ ``./build_remote.sh``\  will install SymRustC inside a fresh
-Docker container, copy the full content of \ ``$PWD``\  inside the
-container, and open a sub-shell for the user to manually run
-SymRustC. Note that \ ``./build_remote.sh``\  does not affect the content
-of \ ``$PWD``\ . In the same spirit, the Docker container is by
-default configured to be removed once the sub-shell exits: any
-modifications made inside it will irremediably be lost.
+Docker container, copy some examples we provide in \ ``$PWD``\  to the
+container, and open a sub-shell for the user to manually run SymRustC
+on the desired examples. Note that \ ``./build_remote.sh``\  does not
+modify anything in \ ``$PWD``\ . In the same spirit, the Docker
+container is currently configured to be minimally invasive. It will be
+removed once the sub-shell exits: any modifications made inside it
+will irremediably be lost.
 
-To run SymRustC with some Rust examples, it is then suggested for the
-user to put the examples of interests in \ ``$PWD``\  before invoking
-\ ``./build_remote.sh``\ . Note that the SymRustC project already
-contains minimal examples, so one can alternatively execute
-\ ``./build_remote.sh``\  without anything at hand.
+Instead of using the SymRustC examples, one can import some custom
+Rust examples from the host to the sub-shell, assuming the examples to
+import are following the template and naming conventions of any
+examples in the folder \ ``examples``\  (this is necessary as the
+examples to run with our tool will have to receive a generic
+pre-processing for LibAFL, e.g. various instrumentation and dependency
+phases).
+
+Overall, importing some data to the sub-shell can be made by first
+putting the data of interest inside some folder internal to
+\ ``$PWD``\ . It has to be inside \ ``$PWD``\ , because a
+default Docker configuration would limit the access scope to
+arbitrary files in the filesystem. Finally, it would remain to
+export the shell variable \ ``$SYMRUSTC_DIR_COPY``\ pointing to the
+appropriate local sub-path, prior to calling \ ``./build_remote.sh``\ .
+
+Example:
+
+.. code:: shell
+  
+  SYMRUSTC_DIR_COPY=examples ./build_remote.sh
 
 Technically, \ ``./build_remote.sh``\  is downloading an uploaded image
 that we have already built using a local \ ``./build_all.sh``\ . At
 the time of writing, the upload is manually performed, so some best
 efforts have been made for the image to represent one of the latest
-states of the SymRustC project. If some network problems happen during
-the image retrieval, or to get the most accurate version, one can
-always execute \ ``./build_all.sh``\  instead of
-\ ``./build_remote.sh``\  to get the same result, and run SymRustC.
+states of the SymRustC project, if not the last. If some network
+problems happen during the image retrieval, or to get the most
+accurate version, one can always execute \ ``./build_all.sh``\  instead
+of \ ``./build_remote.sh``\  to get the same result, and be able to run
+SymRustC.
 
 SymRustC comes with two main scripts: a pure concolic engine
 \ ``symrustc.sh``\ , and a hybrid engine
 \ ``symrustc_hybrid.sh``\ . The use of the concolic
 engine is not yet documented in this repository, as its design
-architecture may change soon, and be merged with the source of a
-sibling repository
+architecture is being changed: it will be merged at some point with
+the source of a sibling repository
 `https://github.com/sfu-rsl/symrustc_toolchain <https://github.com/sfu-rsl/symrustc_toolchain>`_.
 So for a pure concolic usage, we rather invite the user to refer to
 the later link.
@@ -64,12 +82,55 @@ Example:
 
 Note that the length of the input corpus may have an influence on the
 hybrid fuzzing quality (e.g. speed of the tool to find a potential
-first bug), whereas its content may be arbitrary.
+bug), whereas its content may be arbitrary.
 
 Overall, \ ``symrustc_hybrid.sh``\  takes the same
 options as \ ``echo``\  (e.g. without \ ``-n``\ , giving
 \ ``test``\  alone will make the tool receive a 5 bytes input,
 containing a newline in the end).
+
+Since our SymRustC hybrid tool runs LibAFL in the end, we might get
+the same hybrid-search experience than LibAFL in the end, and in
+particular obtain as output log the same information produced by
+LibAFL. As we configured LibAFL to execute 1 server and 2 clients, the
+user will find the relevant output information be respectively stored
+in \ ``_*_server``\ , \ ``_*_client1``\  and \ ``_*_client2``\ .
+
+Example:
+
+.. code:: shell
+  
+  ls _*_server _*_client1 _*_client2
+
+For the most accurate and complete documentation, the user is then
+referred to the documentation of LibAFL. Note that we are actually
+using a modified version of LibAFL in SymRustC, however we believe
+that all our modifications on LibAFL are only affecting its execution
+engine, and not the way it is presenting its output.
+
+As a summary of what we have understood from LibAFL's source and
+documentation, output lines in \ ``_*_server``\  correspond to regular
+printing of the state of the fuzzing experiment, i.e. printed at
+regular intervals. The user can there notice that each line has a
+field called \ ``objectives``\ , followed by a natural number. One of
+the most important information here is to detect if this
+\ ``objectives``\  field ever increases. If so, it means the tool has
+found a problem, as we configured LibAFL to make the
+\ ``objectives``\  be increased whenever the exit code of the binary in
+test gets abnormal.
+
+If a binary abnormally exits, it is often the case to find some
+abnormal message following the termination of the binary. This is
+where one can inspect the input and output traces of clients (which
+are repetitively running the binary in test), by opening the
+respective \ ``_*_client1``\  or \ ``_*_client2``\  files. If
+\ ``objectives``\  increases, most of the time the client files will
+allow to understand what input caused the problem. However, we also
+noticed rare situations where none of the client files are showing
+failing executions, despite a detected positive
+\ ``objectives``\  number. At the time of writing, more investigations
+on LibAFL's source and documentation might be necessary to understand
+the reasons and conditions behind this.
 
 License
 *******
