@@ -24,5 +24,6 @@ function tee_log () {
 sudo ./build_all_sudo.sh "$SYMRUSTC_BRANCH" "$SYMRUSTC_DIR_COPY" 2>&1 | tee_log
 sudo docker tag belcarra_end_user ghcr.io/sfu-rsl/symrustc_hybrid:latest
 if [[ -v SYMRUSTC_DOCKER_PUSH ]] ; then
+    # echo $TOKEN_GHCR | sudo docker login ghcr.io -u $USER --password-stdin
     sudo docker push ghcr.io/sfu-rsl/symrustc_hybrid:latest
 fi
