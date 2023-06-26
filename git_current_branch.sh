@@ -30,3 +30,18 @@ else
         SYMRUSTC_DIR_COPY=examples
     fi
 fi
+
+# https://github.com/project-oak/rust-verification-tools/pull/140
+function sudo_if_needed () {
+    fic=/var/run/docker.sock
+    if [[ -w $fic ]] ; then
+        "$@"
+    else
+        echo "Running docker with sudo for writing to $fic" >&2
+        echo 'See also the security implications of adding someone to the docker group:' >&2
+        echo 'https://docs.docker.com/engine/security/#docker-daemon-attack-surface' >&2
+        # https://docs.docker.com/engine/install/linux-postinstall/
+        sudo "$@"
+    fi
+}
+export -f sudo_if_needed

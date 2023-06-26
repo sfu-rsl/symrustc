@@ -11,6 +11,6 @@ img=end_user_main
 
 SYMRUSTC_SOURCE=ghcr.io/sfu-rsl/symrustc_hybrid
 
-sudo docker pull $SYMRUSTC_SOURCE
-sudo docker build -f symrustc.Dockerfile --target builder_$img -t belcarra_$img --build-arg SYMRUSTC_SOURCE=$SYMRUSTC_SOURCE --build-arg SYMRUSTC_DIR_COPY=$SYMRUSTC_DIR_COPY .
-sudo docker run -it --rm belcarra_$img
+sudo_if_needed docker pull $SYMRUSTC_SOURCE
+sudo_if_needed docker build -f symrustc.Dockerfile --target builder_$img -t belcarra_$img --build-arg SYMRUSTC_SOURCE=$SYMRUSTC_SOURCE --build-arg SYMRUSTC_DIR_COPY=$SYMRUSTC_DIR_COPY .
+sudo_if_needed docker run -it --rm belcarra_$img
