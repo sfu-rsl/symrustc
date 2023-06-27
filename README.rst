@@ -5,6 +5,9 @@
 SymRustC
 ********
 
+SymRustC is a novel hybrid fuzzer for Rust combining concolic
+execution using SymCC and fuzzing using LibAFL.
+
 Installation
 ============
 
@@ -173,3 +176,8 @@ The contribution part of the project developed at Simon Fraser
 University is licensed under the MIT license.
 
 SPDX-License-Identifier: MIT
+
+Publication
+***********
+
+`Frédéric Tuong <https://orcid.org/0009-0009-2462-6669>`_, `Mohammad Omidvar Tehrani <https://orcid.org/0009-0004-0078-0366>`_, `Marco Gaboardi <https://orcid.org/0000-0002-5235-7066>`_, and `Steven Y. Ko <https://orcid.org/0000-0003-3771-0156>`_. 2023. SymRustC: A Hybrid Fuzzer for Rust. In `Proceedings of the 32nd ACM SIGSOFT International Symposium on Software Testing and Analysis (ISSTA '23) <https://2023.issta.org/track/issta-2023-tool-demonstrations>`_, July 17–21, 2023, Seattle, WA, USA. ACM, New York, NY, USA, 4 pages. `https://doi.org/10.1145/3597926.3604927 <https://doi.org/10.1145/3597926.3604927>`_
