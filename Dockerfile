@@ -311,6 +311,7 @@ RUN set -eux; \
 
 RUN rustup component add rustfmt
 
+ENV SYMRUSTC_TIMEOUT_DEFAULT=300
 ENV SYMRUSTC_LIBAFL_EXAMPLE0=$HOME/belcarra_source/examples/source_0_original_1c3_rs
 ENV SYMRUSTC_LIBAFL_EXAMPLE1=$HOME/belcarra_source/examples/source_0_original_1c8_rs
 ENV SYMRUSTC_LIBAFL_EXAMPLE2=$HOME/belcarra_source/examples/source_0_original_1c7_rs

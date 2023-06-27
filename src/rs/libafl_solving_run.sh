@@ -18,6 +18,10 @@ swap
 
 #
 
+if [[ ! -v SYMRUSTC_TIMEOUT ]] ; then
+    SYMRUSTC_TIMEOUT=$SYMRUSTC_TIMEOUT_DEFAULT
+fi
+
 if [[ -v SYMRUSTC_LIBAFL_CONCOLIC ]] ; then
     SYMRUSTC_LOG_PREFIX="${SYMRUSTC_LOG_PREFIX:-}_symrustc"
 else
@@ -89,7 +93,7 @@ if [[ -v SYMRUSTC_LIBAFL_SOLVING_OBJECTIVE ]] ; then
     grep -q 'objectives: 2' $log_server_grep
 else
     echo "Only executing during a finite period of time, irrespective of objective search" >&2
-    sleep 300
+    sleep $SYMRUSTC_TIMEOUT
 fi
 
 # terminating the client first, then any remaining forked processes not yet terminated
