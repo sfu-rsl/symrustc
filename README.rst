@@ -45,15 +45,14 @@ the source of a sibling repository
 So for a pure concolic usage, we rather invite the user to refer to
 the link.
 
-The main hybrid engine \ ``symrustc_hybrid.sh``\  mandatorily takes an
-input corpus as parameter (e.g. \ ``test``\ ), and expects to be
-executed inside a Rust project (i.e. inside a directory where one
-would usually invoke \ ``cargo build``\ ). For example, if \
-``examples/source_0_original_1c9_rs``\  is a Rust project having a
-\ ``Cargo.toml``\ , then one can run \ ``symrustc_hybrid.sh``\  inside
-the directory.
+The main hybrid engine \ ``symrustc_hybrid.sh``\  mandatorily takes one
+input corpus as parameter, and this input must have at least one byte
+(e.g. \ ``test``\ ). The script expects to be executed inside a Rust
+project, i.e. inside a directory where one would usually invoke
+\ ``cargo build``\ .
 
-Example:
+Example where \ ``examples/source_0_original_1c9_rs``\  is a directory
+of a Rust project, with a \ ``Cargo.toml``\  at its root:
 
 .. code:: shell
   
@@ -64,20 +63,20 @@ Note that the length of the input corpus may have an influence on the
 hybrid fuzzing quality (e.g. speed of the tool to find a potential
 bug), whereas its content may be arbitrary.
 
-Overall, \ ``symrustc_hybrid.sh``\  takes the same
-options as \ ``echo``\  (e.g. without \ ``-n``\ , giving
-\ ``test``\  alone will make the tool receive a 5 bytes input,
-containing a newline in the end).
+Overall, \ ``symrustc_hybrid.sh``\  takes the same options as
+\ ``echo``\ . For example, without \ ``-n``\ , giving
+\ ``test``\  alone will make the tool receive the 5 bytes input
+\ ``test\n``\ , with a newline in the end.
 
 Understanding the results
 =========================
 
 Since our SymRustC hybrid tool runs LibAFL in the end, we might get
-the same hybrid-search experience than LibAFL in the end, and in
-particular obtain as output log the same information produced by
-LibAFL. As we configured LibAFL to execute 1 server and 2 clients, the
-user will find the relevant output information be respectively stored
-in \ ``_*_server``\ , \ ``_*_client1``\  and \ ``_*_client2``\ .
+the same hybrid-search experience than LibAFL in the end. In
+particular, we will obtain as output log the same information produced
+by LibAFL. As we configured LibAFL to execute 1 server and 2 clients,
+the user will find the relevant output information be respectively
+stored in \ ``_*_server``\ , \ ``_*_client1``\  and \ ``_*_client2``\ .
 
 Example:
 
@@ -90,10 +89,9 @@ referred to the source of LibAFL:
 `https://github.com/AFLplusplus/LibAFL <https://github.com/AFLplusplus/LibAFL>`_,
 as well as its generated documentation:
 `https://aflplus.plus/libafl-book/ <https://aflplus.plus/libafl-book/>`_.
-Note that we are actually using a modified version of LibAFL in
-SymRustC, however we believe that all our modifications on LibAFL are
-only affecting its execution engine, and not the way it is presenting
-its output.
+Note that while we are using a modified version of LibAFL in SymRustC,
+we believe that all our modifications on LibAFL are only affecting its
+execution engine, and not the way it is presenting its output.
 
 As a summary of what we have understood from LibAFL's source and
 documentation, output lines in \ ``_*_server``\  correspond to regular
@@ -103,21 +101,23 @@ field called \ ``objectives``\ , followed by a natural number. One of
 the most important information here is to detect if this
 \ ``objectives``\  field ever increases. If so, it means the tool has
 found a problem, as we configured LibAFL to make the
-\ ``objectives``\  be increased whenever the exit code of the binary in
-test is not zero.
+\ ``objectives``\  be increased whenever our example binary exits with
+an error status.
 
-If a binary abnormally exits, it is often the case to find some
-abnormal message following the termination of the binary. This is
-where one can inspect the input and output traces of clients (which
-are repetitively running the binary in test), by opening the
-respective \ ``_*_client1``\  or \ ``_*_client2``\  files. If
-\ ``objectives``\  increases, most of the time the client files will
-show what input caused the problem. However, we also
-noticed rare situations where none of the client files are showing
-failing executions, despite a detected positive
-\ ``objectives``\  number. At the time of writing, more investigations
-on LibAFL's source and documentation might be necessary to understand
-the reasons and conditions behind this.
+If the execution of a binary is not successful, it can be of crucial
+importance to find out the input making the error happened, as well as
+an informative error message following the termination of the
+binary. Since all input and output interaction messages are stored in
+\ ``_*_client1``\ or  \ ``_*_client2``\ , the user is then invited to
+open these files.
+
+Note that, whenever \ ``objectives``\  increases, most of the time the
+client files will contain the input and output reports of the
+problematic run. However, we also noticed rare situations where none
+of the client files are showing the failing execution, despite a
+detected positive \ ``objectives``\  number. At the time of writing,
+more investigations on LibAFL's source and documentation might be
+necessary to understand the reasons and conditions behind this.
 
 Experimenting with a local Rust example
 =======================================
@@ -131,21 +131,24 @@ LibAFL, e.g. various instrumentation and dependency phases.
 
 We provide a minimal template in 
 `https://github.com/sfu-rsl/LibAFL/blob/rust_runtime_verbose/20221214/fuzzers/libfuzzer_rust_concolic/fuzzer/harness <https://github.com/sfu-rsl/LibAFL/blob/rust_runtime_verbose/20221214/fuzzers/libfuzzer_rust_concolic/fuzzer/harness>`_,
-and invite the user to modify the body of \ ``main0``\  (in the file
-\ ``src/lib.rs``\ ), without modifying its type; it remains
-nevertheless possible to insert additional dependencies to other
-crates as desired. The \ ``args``\  parameter corresponds to the list
-of arguments provided from the command line. Following standard shell
+and invite the user to modify the body of \ ``main0``\  in the file
+\ ``src/lib.rs``\  of the directory link. As \ ``main0``\  is called by
+our LibAFL plug-in, we only suggest to modify the body of
+\ ``main0``\  and not its type. It remains nevertheless possible to
+insert additional dependencies to other Rust crates as desired. The
+\ ``args``\  parameter of \ ``main0``\  corresponds to the list of
+arguments provided from the command line. So, following standard shell
 calling conventions, the fuzzing corpus will be provided by LibAFL at
-position 1, since position 0 is for the binary name.
+position 1; position 0 is for the binary name.
 
 Once the example is defined, importing it to the sub-shell can be made
-by first putting the Rust-root-example project inside some folder internal
-to \ ``$PWD``\ . It has to be inside \ ``$PWD``\ , because a default
-Docker configuration would limit the access scope to arbitrary files
-in the filesystem. Finally, on the host side, we set the path of that example folder
-to the shell variable \ ``$SYMRUSTC_DIR_COPY``\ , and export that variable
-\ ``$SYMRUSTC_DIR_COPY``\ prior to calling \ ``./build_remote.sh``\ .
+by first putting it inside some folder internal to \ ``$PWD``\ . It
+has to be inside \ ``$PWD``\ , because a default Docker configuration
+would limit the access scope to arbitrary files in the
+filesystem. Finally, on the host side, we set the path of that example
+folder to the shell variable \ ``$SYMRUSTC_DIR_COPY``\  (the path can
+be either absolute or relative to \ ``$PWD``\ ), and we export this
+variable before calling \ ``./build_remote.sh``\ .
 
 Note that it is not mandatory to give the precise root directory of a
 Rust project in \ ``$SYMRUSTC_DIR_COPY``\ : any parent ancestor
