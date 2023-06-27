@@ -2,18 +2,11 @@
 
 .. Copyright (C) 2021-2022 Simon Fraser University (www.sfu.ca)
 
-SymRustC: Presentation
-**********************
+SymRustC
+********
 
-SymRustC is a tool implemented in the Belcarra project
-(\ `https://github.com/sfu-rsl <https://github.com/sfu-rsl>`_\ ) for practical and
-efficient symbolic execution of Rust programs.
-
-Demo video:
-`https://www.youtube.com/watch?v=ySIWT2CDi40 <https://www.youtube.com/watch?v=ySIWT2CDi40>`_
-
-SymRustC: Usage
-***************
+Installation
+============
 
 We first suppose that \ ``$PWD``\  is at the root directory of the
 SymRustC project, and that Docker is installed. The execution
@@ -24,29 +17,10 @@ on the desired examples. Note that \ ``./build_remote.sh``\  does not
 modify anything in \ ``$PWD``\ . In the same spirit, the Docker
 container is currently configured to be minimally invasive. It will be
 removed once the sub-shell exits: any modifications made inside it
-will irremediably be lost.
-
-Instead of using the SymRustC examples, one can import some custom
-Rust examples from the host to the sub-shell, assuming the examples to
-import are following the template and naming conventions of any
-examples in the folder \ ``examples``\  (this is necessary as the
-examples to run with our tool will have to receive a generic
-pre-processing for LibAFL, e.g. various instrumentation and dependency
-phases).
-
-Overall, importing some data to the sub-shell can be made by first
-putting the data of interest inside some folder internal to
-\ ``$PWD``\ . It has to be inside \ ``$PWD``\ , because a
-default Docker configuration would limit the access scope to
-arbitrary files in the filesystem. Finally, it would remain to
-export the shell variable \ ``$SYMRUSTC_DIR_COPY``\ pointing to the
-appropriate local sub-path, prior to calling \ ``./build_remote.sh``\ .
-
-Example:
-
-.. code:: shell
-  
-  SYMRUSTC_DIR_COPY=examples ./build_remote.sh
+will irremediably be lost. One way to make modifications persistent
+though is to mount a volume folder on the host into the guest
+container:
+`https://docs.docker.com/engine/reference/commandline/run <https://docs.docker.com/engine/reference/commandline/run/>`_.
 
 Technically, \ ``./build_remote.sh``\  is downloading an uploaded image
 that we have already built using a local \ ``./build_all.sh``\ . At
@@ -58,6 +32,9 @@ accurate version, one can always execute \ ``./build_all.sh``\  instead
 of \ ``./build_remote.sh``\  to get the same result, and be able to run
 SymRustC.
 
+Usage (inside the sub-shell container)
+======================================
+
 SymRustC comes with two main scripts: a pure concolic engine
 \ ``symrustc.sh``\ , and a hybrid engine
 \ ``symrustc_hybrid.sh``\ . The use of the concolic
@@ -66,18 +43,21 @@ architecture is being changed: it will be merged at some point with
 the source of a sibling repository
 `https://github.com/sfu-rsl/symrustc_toolchain <https://github.com/sfu-rsl/symrustc_toolchain>`_.
 So for a pure concolic usage, we rather invite the user to refer to
-the later link.
+the link.
 
-The main hybrid engine \ ``symrustc_hybrid.sh``\ 
-takes an input corpus as parameter, and expects to be executed inside
-a Rust project (i.e. inside a directory where one would usually invoke
-\ ``cargo build``\ ).
+The main hybrid engine \ ``symrustc_hybrid.sh``\  mandatorily takes an
+input corpus as parameter (e.g. \ ``test``\ ), and expects to be
+executed inside a Rust project (i.e. inside a directory where one
+would usually invoke \ ``cargo build``\ ). For example, if \
+``examples/source_0_original_1c9_rs``\  is a Rust project having a
+\ ``Cargo.toml``\ , then one can run \ ``symrustc_hybrid.sh``\  inside
+the directory.
 
 Example:
 
 .. code:: shell
   
-  cd $(find . -name Cargo.toml -exec dirname {} \; | grep -v fuzz | sort -r | head -n 1) \
+  cd examples/source_0_original_1c9_rs \
   && symrustc_hybrid.sh test
 
 Note that the length of the input corpus may have an influence on the
@@ -88,6 +68,9 @@ Overall, \ ``symrustc_hybrid.sh``\  takes the same
 options as \ ``echo``\  (e.g. without \ ``-n``\ , giving
 \ ``test``\  alone will make the tool receive a 5 bytes input,
 containing a newline in the end).
+
+Understanding the results
+=========================
 
 Since our SymRustC hybrid tool runs LibAFL in the end, we might get
 the same hybrid-search experience than LibAFL in the end, and in
@@ -103,10 +86,14 @@ Example:
   ls _*_server _*_client1 _*_client2
 
 For the most accurate and complete documentation, the user is then
-referred to the documentation of LibAFL. Note that we are actually
-using a modified version of LibAFL in SymRustC, however we believe
-that all our modifications on LibAFL are only affecting its execution
-engine, and not the way it is presenting its output.
+referred to the source of LibAFL:
+`https://github.com/AFLplusplus/LibAFL <https://github.com/AFLplusplus/LibAFL>`_,
+as well as its generated documentation:
+`https://aflplus.plus/libafl-book/ <https://aflplus.plus/libafl-book/>`_.
+Note that we are actually using a modified version of LibAFL in
+SymRustC, however we believe that all our modifications on LibAFL are
+only affecting its execution engine, and not the way it is presenting
+its output.
 
 As a summary of what we have understood from LibAFL's source and
 documentation, output lines in \ ``_*_server``\  correspond to regular
@@ -117,7 +104,7 @@ the most important information here is to detect if this
 \ ``objectives``\  field ever increases. If so, it means the tool has
 found a problem, as we configured LibAFL to make the
 \ ``objectives``\  be increased whenever the exit code of the binary in
-test gets abnormal.
+test is not zero.
 
 If a binary abnormally exits, it is often the case to find some
 abnormal message following the termination of the binary. This is
@@ -125,12 +112,56 @@ where one can inspect the input and output traces of clients (which
 are repetitively running the binary in test), by opening the
 respective \ ``_*_client1``\  or \ ``_*_client2``\  files. If
 \ ``objectives``\  increases, most of the time the client files will
-allow to understand what input caused the problem. However, we also
+show what input caused the problem. However, we also
 noticed rare situations where none of the client files are showing
 failing executions, despite a detected positive
 \ ``objectives``\  number. At the time of writing, more investigations
 on LibAFL's source and documentation might be necessary to understand
 the reasons and conditions behind this.
+
+Experimenting with a local Rust example
+=======================================
+
+Instead of using the SymRustC examples, one can import some custom
+Rust examples from the host to the sub-shell, assuming the examples to
+import are following some particular template and naming conventions,
+which are further described below. This is necessary as the examples
+to run with our tool will have to receive a generic pre-processing for
+LibAFL, e.g. various instrumentation and dependency phases.
+
+We provide a minimal template in 
+`https://github.com/sfu-rsl/LibAFL/blob/rust_runtime_verbose/20221214/fuzzers/libfuzzer_rust_concolic/fuzzer/harness <https://github.com/sfu-rsl/LibAFL/blob/rust_runtime_verbose/20221214/fuzzers/libfuzzer_rust_concolic/fuzzer/harness>`_,
+and invite the user to modify the body of \ ``main0``\  (in the file
+\ ``src/lib.rs``\ ), without modifying its type; it remains
+nevertheless possible to insert additional dependencies to other
+crates as desired. The \ ``args``\  parameter corresponds to the list
+of arguments provided from the command line. Following standard shell
+calling conventions, the fuzzing corpus will be provided by LibAFL at
+position 1, since position 0 is for the binary name.
+
+Once the example is defined, importing it to the sub-shell can be made
+by first putting the Rust-root-example project inside some folder internal
+to \ ``$PWD``\ . It has to be inside \ ``$PWD``\ , because a default
+Docker configuration would limit the access scope to arbitrary files
+in the filesystem. Finally, on the host side, we set the path of that example folder
+to the shell variable \ ``$SYMRUSTC_DIR_COPY``\ , and export that variable
+\ ``$SYMRUSTC_DIR_COPY``\ prior to calling \ ``./build_remote.sh``\ .
+
+Note that it is not mandatory to give the precise root directory of a
+Rust project in \ ``$SYMRUSTC_DIR_COPY``\ : any parent ancestor
+directory inside \ ``$PWD``\  would work, because the whole content of
+\ ``$SYMRUSTC_DIR_COPY``\  will be copied as such inside the
+\ ``$HOME``\  folder of the guest container.
+
+Example:
+
+.. code:: shell
+  
+  SYMRUSTC_DIR_COPY=$PWD/examples ./build_remote.sh
+
+Demo video
+==========
+`https://www.youtube.com/watch?v=ySIWT2CDi40 <https://www.youtube.com/watch?v=ySIWT2CDi40>`_
 
 License
 *******
