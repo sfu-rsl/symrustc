@@ -122,8 +122,26 @@ detected positive \ ``objectives``\  number. At the time of writing,
 more investigations on LibAFL's source and documentation might be
 necessary to understand the reasons and conditions behind this.
 
+Customizing the hybrid run
+==========================
+
+Experimenting with a specific timeout
+-------------------------------------
+
+Using \ ``$SYMRUSTC_TIMEOUT``\ , one can specify a custom timeout in
+seconds for \ ``symrustc_hybrid.sh``\  to stop its execution after the
+given duration.
+
+Example:
+
+.. code:: shell
+  
+  cd examples/source_0_original_1c9_rs \
+  && SYMRUSTC_TIMEOUT=300 symrustc_hybrid.sh test
+
+
 Experimenting with a local Rust example
-=======================================
+---------------------------------------
 
 Instead of using the SymRustC examples, one can import some custom
 Rust examples from the host to the sub-shell, assuming the examples to
