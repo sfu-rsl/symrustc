@@ -140,11 +140,10 @@ Experimenting with a local Rust example
 ---------------------------------------
 
 Instead of using the SymRustC examples, one can import some custom
-Rust examples from the host to the sub-shell, assuming the examples to
-import are following some particular template and naming conventions,
+Rust examples from the host to the container, assuming the examples to
+import are following particular template and naming conventions,
 which are further described below. This is necessary as the examples
-to run with our tool will have to receive a generic pre-processing for
-LibAFL, e.g. various instrumentation and dependency phases.
+to run with our tool need to have a harness and configure LibAFL.
 
 We provide a minimal template in 
 `https://github.com/sfu-rsl/LibAFL/blob/rust_runtime_verbose/20221214/fuzzers/libfuzzer_rust_concolic/fuzzer/harness <https://github.com/sfu-rsl/LibAFL/blob/rust_runtime_verbose/20221214/fuzzers/libfuzzer_rust_concolic/fuzzer/harness>`_,
@@ -155,11 +154,11 @@ our LibAFL plug-in, we only suggest to modify the body of
 insert additional dependencies to other Rust crates as desired. The
 \ ``args``\  parameter of \ ``main0``\  corresponds to the list of
 arguments provided from the command line. So, following standard shell
-calling conventions, the fuzzing corpus will be provided by LibAFL at
+calling conventions, the initial input will be provided by LibAFL at
 position 1; position 0 is for the binary name.
 
-Once the example is defined, importing it to the sub-shell can be made
-by first putting it inside some folder internal to \ ``$PWD``\ . It
+Once the example is defined, importing it to the container can be done
+by first putting it inside some folder inside \ ``$PWD``\ . It
 has to be inside \ ``$PWD``\ , because a default Docker configuration
 would limit the access scope to arbitrary files in the
 filesystem. Finally, on the host side, we set the path of that example
@@ -171,7 +170,7 @@ Note that it is not mandatory to give the precise root directory of a
 Rust project in \ ``$SYMRUSTC_DIR_COPY``\ : any parent ancestor
 directory inside \ ``$PWD``\  would work, because the whole content of
 \ ``$SYMRUSTC_DIR_COPY``\  will be copied as such inside the
-\ ``$HOME``\  folder of the guest container.
+\ ``$HOME``\  folder of the container.
 
 Example:
 
