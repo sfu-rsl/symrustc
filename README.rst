@@ -5,37 +5,35 @@
 SymRustC
 ********
 
-SymRustC is a novel hybrid fuzzer for Rust combining concolic
+SymRustC is a hybrid fuzzer for Rust combining concolic
 execution using SymCC and fuzzing using LibAFL.
 
 Installation
 ============
 
-We first suppose that \ ``$PWD``\  is at the root directory of the
-SymRustC project, and that Docker is installed. The execution
-of \ ``./build_remote.sh``\  will install SymRustC inside a fresh
-Docker container, copy some examples we provide in \ ``$PWD``\  to the
-container, and open a sub-shell for the user to manually run SymRustC
-on the desired examples. Note that \ ``./build_remote.sh``\  does not
-modify anything in \ ``$PWD``\ . In the same spirit, the Docker
-container is currently configured to be minimally invasive. It will be
-removed once the sub-shell exits: any modifications made inside it
-will irremediably be lost. One way to make modifications persistent
-though is to mount a volume folder on the host into the guest
-container:
+We assume that you have Docker installed and this repo is cloned
+into \ ``$PWD``\. The execution of \ ``./build_remote.sh``\  will
+install SymRustC inside a fresh Docker container, copy some examples
+we provide in \ ``$PWD``\  to the container, and open a shell for
+the user inside the container. Note that \ ``./build_remote.sh``\
+does not modify anything in \ ``$PWD``\ . In the same spirit, the
+Docker container is currently configured to be minimally invasive.
+It will be removed once the shell exits: any modifications made inside
+it will immediately be lost. One way to make modifications persistent
+is to mount a volume folder on the host into the guest container:
 `https://docs.docker.com/engine/reference/commandline/run <https://docs.docker.com/engine/reference/commandline/run/>`_.
 
-Technically, \ ``./build_remote.sh``\  is downloading an uploaded image
+\ ``./build_remote.sh``\  downloads an uploaded image
 that we have already built using a local \ ``./build_all.sh``\ . At
 the time of writing, the upload is manually performed, so some best
 efforts have been made for the image to represent one of the latest
-states of the SymRustC project, if not the last. If some network
+versions of the SymRustC project, if not the last. If some network
 problems happen during the image retrieval, or to get the most
-accurate version, one can always execute \ ``./build_all.sh``\  instead
+recent version, one can always execute \ ``./build_all.sh``\  instead
 of \ ``./build_remote.sh``\  to get the same result, and be able to run
 SymRustC.
 
-Usage (inside the sub-shell container)
+Usage (inside the container's shell)
 ======================================
 
 SymRustC comes with two main scripts: a pure concolic engine
@@ -45,16 +43,16 @@ engine is not yet documented in this repository, as its design
 architecture is being changed: it will be merged at some point with
 the source of a sibling repository
 `https://github.com/sfu-rsl/symrustc_toolchain <https://github.com/sfu-rsl/symrustc_toolchain>`_.
-So for a pure concolic usage, we rather invite the user to refer to
-the link.
+So for a pure concolic usage, we invite the user to refer to
+the repo.
 
 The main hybrid engine \ ``symrustc_hybrid.sh``\  mandatorily takes one
-input corpus as parameter, and this input must have at least one byte
-(e.g. \ ``test``\ ). The script expects to be executed inside a Rust
+inital input as a parameter, and this input must have at least one
+byte (e.g. \ ``test``\ ). The script expects to be executed inside a Rust
 project, i.e. inside a directory where one would usually invoke
 \ ``cargo build``\ .
 
-Example where \ ``examples/source_0_original_1c9_rs``\  is a directory
+For example, \ ``examples/source_0_original_1c9_rs``\  is a directory
 of a Rust project, with a \ ``Cargo.toml``\  at its root:
 
 .. code:: shell
@@ -62,9 +60,9 @@ of a Rust project, with a \ ``Cargo.toml``\  at its root:
   cd examples/source_0_original_1c9_rs \
   && symrustc_hybrid.sh test
 
-Note that the length of the input corpus may have an influence on the
-hybrid fuzzing quality (e.g. speed of the tool to find a potential
-bug), whereas its content may be arbitrary.
+Note that the length of the initial input may influence the fuzzing
+quality (e.g. speed of the tool to find a potential bug), whereas its
+content may be arbitrary.
 
 Overall, \ ``symrustc_hybrid.sh``\  takes the same options as
 \ ``echo``\ . For example, without \ ``-n``\ , giving
@@ -75,7 +73,7 @@ Understanding the results
 =========================
 
 Since our SymRustC hybrid tool runs LibAFL in the end, we might get
-the same hybrid-search experience than LibAFL in the end. In
+the same hybrid-search experience than LibAFL. In
 particular, we will obtain as output log the same information produced
 by LibAFL. As we configured LibAFL to execute 1 server and 2 clients,
 the user will find the relevant output information be respectively
@@ -93,19 +91,17 @@ referred to the source of LibAFL:
 as well as its generated documentation:
 `https://aflplus.plus/libafl-book/ <https://aflplus.plus/libafl-book/>`_.
 Note that while we are using a modified version of LibAFL in SymRustC,
-we believe that all our modifications on LibAFL are only affecting its
-execution engine, and not the way it is presenting its output.
+all our modifications on LibAFL are only affecting its execution
+engine, and not the way it is presenting its output.
 
-As a summary of what we have understood from LibAFL's source and
-documentation, output lines in \ ``_*_server``\  correspond to regular
-printing of the state of the fuzzing experiment, i.e. printed at
-regular intervals. The user can there notice that each line has a
-field called \ ``objectives``\ , followed by a natural number. One of
-the most important information here is to detect if this
-\ ``objectives``\  field ever increases. If so, it means the tool has
-found a problem, as we configured LibAFL to make the
-\ ``objectives``\  be increased whenever our example binary exits with
-an error status.
+Output lines in \ ``_*_server``\  correspond to regular printing of
+the state of the fuzzing printed at regular intervals. The user can
+there notice that each line has a field called \ ``objectives``\ ,
+followed by a natural number. One of the most important information
+here is to detect if this \ ``objectives``\  field ever increases. If
+so, it means the tool has found a problem, as we configured LibAFL to
+make the \ ``objectives``\  be increased whenever our example binary
+exits with an error status.
 
 If the execution of a binary is not successful, it can be of crucial
 importance to find out the input making the error happened, as well as
