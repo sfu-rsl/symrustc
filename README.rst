@@ -6,7 +6,8 @@ SymRustC
 ********
 
 SymRustC is a hybrid fuzzer for Rust combining concolic
-execution using SymCC and fuzzing using LibAFL.
+execution using `SymCC <https://github.com/eurecom-s3/symcc>`_ and
+fuzzing using `LibAFL <https://github.com/AFLplusplus/LibAFL>`_.
 
 Installation
 ============
@@ -181,6 +182,15 @@ Example:
 Demo video
 ==========
 `https://www.youtube.com/watch?v=ySIWT2CDi40 <https://www.youtube.com/watch?v=ySIWT2CDi40>`_
+
+Limitations
+===========
+Since we leverage `SymCC <https://github.com/eurecom-s3/symcc>`_ for 
+concolic execution and `LibAFL <https://github.com/AFLplusplus/LibAFL>`_
+for fuzzing, we inherit their limitations. The most notable limitation
+we have observed is that SymCC does not support all LLVM instructions
+and the Rust compiler generates a wide variety of LLVM instructions.
+This limits the ability to explore the code paths of a Rust program.
 
 License
 *******
